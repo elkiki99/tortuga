@@ -1,13 +1,19 @@
 <?php
 
 use Livewire\Volt\Component;
+use function Livewire\Volt\{layout, state};
+ 
+// state('users');
+ 
+// layout('components.layouts.admin');
 
 new class extends Component {
     //
 }; ?>
 
+
 <section class="w-full">
-    @include('partials.settings-heading')
+    @include('livewire.partials.settings-heading')
 
     <x-settings.layout :heading="__('Appearance')" :subheading=" __('Update the appearance settings for your account')">
         <flux:radio.group x-data variant="segmented" x-model="$flux.appearance">

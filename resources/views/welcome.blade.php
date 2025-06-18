@@ -1,5 +1,3 @@
-<x-layouts.app.main :title="$title ?? null">
-    <flux:main>
-        
-    </flux:main>
-</x-layouts.app.main>
+<x-layouts.main :title="$title ?? null">
+    {{-- <flux:heading>Hi</flux:heading> --}}
+</x-layouts.main>

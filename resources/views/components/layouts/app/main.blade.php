@@ -2,23 +2,23 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 
 <head>
-    @include('partials.head')
+    @include('livewire.partials.head')
 </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
-        <flux:brand href="#" logo="https://fluxui.dev/img/demo/logo.png" name="{{ config('app.name') }}"
-            class="max-lg:hidden dark:hidden" />
-        <flux:brand href="#" logo="https://fluxui.dev/img/demo/dark-mode-logo.png" name="{{ config('app.name') }}"
-            class="max-lg:hidden! hidden dark:flex" />
+
+        <a href="{{ route('dashboard') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0 max-lg:hidden" wire:navigate>
+            <x-app-logo />
+        </a>
 
         <flux:spacer />
         <flux:spacer />
 
         <flux:navbar class="-mb-px max-lg:hidden">
             <flux:navbar.item href="#">Novedades</flux:navbar.item>
-            <flux:dropdown class="max-lg:hidden">
+            <flux:dropdown class="max-lg:hidden" gap="12">
                 <flux:navbar.item icon:trailing="chevron-down">Ropa</flux:navbar.item>
                 <flux:navmenu>
                     <flux:navmenu.item href="#">Tops y remeras</flux:navmenu.item>
@@ -45,7 +45,7 @@
 
         @if (Route::has('login'))
             @auth
-                <flux:header class="!px-0">
+                {{-- <flux:header class="!mx-0"> --}}
                     <flux:dropdown position="top" align="end">
                         <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
@@ -86,11 +86,11 @@
                             </form>
                         </flux:menu>
                     </flux:dropdown>
-                </flux:header>
+                {{-- </flux:header> --}}
             @else
-                <flux:header class="!px-0">
+                {{-- <flux:header class="!mx-0"> --}}
                     <flux:button variant="primary" size="sm" href="{{ route('login') }}">Login</flux:button>
-                </flux:header>
+                {{-- </flux:header> --}}
             @endauth
         @endif
     </flux:header>
@@ -98,18 +98,21 @@
     <flux:sidebar stashable sticky
         class="lg:hidden bg-zinc-50 dark:bg-zinc-900 border rtl:border-r-0 rtl:border-l border-zinc-200 dark:border-zinc-700">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
-        <flux:brand href="#" logo="https://fluxui.dev/img/demo/logo.png" name="{{ config('app.name') }}"
-            class="px-2 dark:hidden" />
-        <flux:brand href="#" logo="https://fluxui.dev/img/demo/dark-mode-logo.png"
-            name="{{ config('app.name') }}" class="px-2 hidden dark:flex" />
+        
+        <a href="{{ route('dashboard') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0" wire:navigate>
+            <x-app-logo />
+        </a>
+
         <flux:navlist variant="outline">
             <flux:navlist.item href="#">Novedades</flux:navlist.item>
+
             <flux:navlist.group expandable :expanded="false" heading="Ropa" class="lg:hidden">
                 <flux:navlist.item href="#">Tops y remeras</flux:navlist.item>
                 <flux:navlist.item href="#">Abrigos y chaquetas</flux:navlist.item>
                 <flux:navlist.item href="#">Pantalones y jeans</flux:navlist.item>
                 <flux:navlist.item href="#">Faldas y vestidos</flux:navlist.item>
             </flux:navlist.group>
+
             <flux:navlist.item href="#">Calzado</flux:navlist.item>
             <flux:navlist.item href="#">Accesorios</flux:navlist.item>
             <flux:navlist.item href="#">Sale</flux:navlist.item>
