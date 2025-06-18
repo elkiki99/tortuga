@@ -62,7 +62,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
             return;
         }
 
-        Session::flash('status', __($status));
+        Flux::toast($status);
 
         $this->redirectRoute('login', navigate: true);
     }

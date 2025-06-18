@@ -1,16 +1,11 @@
 <?php
 
 use Livewire\Volt\Component;
-use function Livewire\Volt\{layout, state};
- 
-// state('users');
- 
-// layout('components.layouts.admin');
+use Livewire\Attributes\{Layout, Title};
 
-new class extends Component {
-    //
+new #[Layout('components.layouts.dashboard')] #[Title('Appearence • Tortuga')] class extends Component {
+
 }; ?>
-
 
 <section class="w-full">
     @include('livewire.partials.settings-heading')

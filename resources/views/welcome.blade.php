@@ -1,3 +1,3 @@
-<x-layouts.main :title="$title ?? null">
+<x-layouts.app :title="__('Tortuga • Second Hand')">
     {{-- <flux:heading>Hi</flux:heading> --}}
-</x-layouts.main>
+</x-layouts.app>

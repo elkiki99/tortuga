@@ -6,11 +6,9 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 
-// use function Livewire\Volt\{layout};
+use Livewire\Attributes\{Layout, Title};
 
-// layout('components.layouts.dashboard');
-
-new class extends Component {
+new #[Layout('components.layouts.dashboard')] #[Title('Profile • Tortuga')] class extends Component {
     public string $name = '';
     public string $email = '';
 
@@ -33,14 +31,7 @@ new class extends Component {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
 
-            'email' => [
-                'required',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                Rule::unique(User::class)->ignore($user->id)
-            ],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
         ]);
 
         $user->fill($validated);
@@ -51,7 +42,7 @@ new class extends Component {
 
         $user->save();
 
-        $this->dispatch('profile-updated', name: $user->name);
+        Flux::toast(variant: 'success', heading: 'Profile updated.', text: 'Your profile information has been successfully updated.');
     }
 
     /**
@@ -69,7 +60,7 @@ new class extends Component {
 
         $user->sendEmailVerificationNotification();
 
-        Session::flash('status', 'verification-link-sent');
+        Flux::toast(variant: 'success', heading: 'Verification link sent.', text: 'A new verification link has been sent to your email address.');
     }
 }; ?>
 
@@ -83,12 +74,13 @@ new class extends Component {
             <div>
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
 
-                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail &&! auth()->user()->hasVerifiedEmail())
+                @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())
                     <div>
                         <flux:text class="mt-4">
                             {{ __('Your email address is unverified.') }}
 
-                            <flux:link class="text-sm cursor-pointer" wire:click.prevent="resendVerificationNotification">
+                            <flux:link class="text-sm cursor-pointer"
+                                wire:click.prevent="resendVerificationNotification">
                                 {{ __('Click here to re-send the verification email.') }}
                             </flux:link>
                         </flux:text>
@@ -102,15 +94,10 @@ new class extends Component {
                 @endif
             </div>
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full">{{ __('Save') }}</flux:button>
-                </div>
-
-                <x-action-message class="me-3" on="profile-updated">
-                    {{ __('Saved.') }}
-                </x-action-message>
-            </div>
+            <!-- Submit button -->
+            <flux:button variant="primary" type="submit">
+                {{ __('Save') }}
+            </flux:button>
         </form>
 
         <livewire:settings.delete-user-form />
