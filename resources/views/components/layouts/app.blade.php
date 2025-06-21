@@ -4,10 +4,10 @@
 <head>
     @include('livewire.partials.head')
 </head>
-
+    
 <body class="min-h-screen bg-white dark:bg-zinc-800">
-    <flux:header container sticky class="z-50 bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
-        <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+    <flux:header container sticky class="z-20 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
+        <flux:sidebar.toggle class="lg:hidden mt-2" icon="bars-2" inset="left" />
 
         <a href="{{ route('dashboard') }}"
             class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0 max-lg:hidden" wire:navigate>
@@ -36,7 +36,7 @@
         <flux:spacer />
 
         <div class="max-lg:hidden">
-            <flux:input size="sm" variant="filled" placeholder="Search..." icon="magnifying-glass" />
+            <flux:input size="sm" variant="filled" placeholder="Buscar..." icon="magnifying-glass" />
         </div>
 
         <flux:navbar class="mx-2">
@@ -45,7 +45,7 @@
 
         @if (Route::has('login'))
             @auth
-                <flux:dropdown position="top" align="end">
+                <flux:dropdown class="mt-2 lg:mt-0" position="top" align="end">
                     <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
                     <flux:menu>
@@ -117,13 +117,11 @@
 
         <flux:spacer />
 
-        <flux:input size="sm" class="-mb-px lg:hidden" variant="filled" placeholder="Search..."
+        <flux:input size="sm" class="-mb-px lg:hidden" variant="filled" placeholder="Buscar..."
             icon="magnifying-glass" />
     </flux:sidebar>
 
-    {{-- <div class=""> --}}
-        {{ $slot }}
-    {{-- </div> --}}
+    {{ $slot }}
 
     @persist('toast')
         <flux:toast />

@@ -19,4 +19,6 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
+Volt::route('{product:slug}', 'products.show')->name('products.show');
+
 require __DIR__.'/auth.php';
