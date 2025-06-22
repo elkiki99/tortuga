@@ -1,11 +1,12 @@
 <?php
 
 use Livewire\Volt\Component;
+use App\Models\Category;
 
 new class extends Component {
     public $category;
 
-    public function mount($category)
+    public function mount(Category $category)
     {
         $this->category = $category;
     }

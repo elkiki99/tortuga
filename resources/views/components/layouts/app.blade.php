@@ -46,8 +46,11 @@
             <flux:input size="sm" variant="filled" placeholder="Buscar..." icon="magnifying-glass" />
         </div>
 
+
         <flux:navbar class="mx-2">
-            <flux:navbar.item class="max-lg:hidden" icon="shopping-bag" href="#" label="Cart" />
+            <flux:modal.trigger name="open-cart">
+                <flux:navbar.item class="max-lg:hidden" icon="shopping-bag" href="#" label="Cart" />
+            </flux:modal.trigger>
         </flux:navbar>
 
         @if (Route::has('login'))
@@ -78,7 +81,7 @@
 
                         <flux:menu.radio.group>
                             <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
-                                {{ __('Settings') }}</flux:menu.item>
+                                {{ __('Ajustes') }}</flux:menu.item>
                         </flux:menu.radio.group>
 
                         <flux:menu.separator />
@@ -87,7 +90,7 @@
                             @csrf
                             <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle"
                                 class="w-full">
-                                {{ __('Log Out') }}
+                                {{ __('Cerrar sesión') }}
                             </flux:menu.item>
                         </form>
                     </flux:menu>
@@ -109,8 +112,7 @@
 
         <flux:navlist variant="outline">
             @forelse (\App\Models\Category::take(6)->get() as $category)
-                <flux:navlist.item href="{{ route('categories.show', $category->slug) }}"
-                    wire:navigate>
+                <flux:navlist.item href="{{ route('categories.show', $category->slug) }}" wire:navigate>
                     {{ Str::ucfirst($category->name) }}
                 </flux:navlist.item>
             @empty
@@ -139,6 +141,8 @@
     {{ $slot }}
 
     @include('livewire.partials.footer')
+
+    <livewire:modals.cart />
 
     @persist('toast')
         <flux:toast />
