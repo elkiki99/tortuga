@@ -8,7 +8,7 @@
         </div>
 
         <!-- Contenido centrado -->
-        <div class="absolute inset-0 z-10 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div class="absolute inset-0 z-10 flex items-center justify-center">
             <div class="text-center space-y-4 max-w-2xl">
                 <flux:heading size="xl" class="!text-white">
                     {{ __('Tortuga Second Hand') }}

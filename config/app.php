@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Tortuga'),
+    'name' => env('APP_NAME', 'Tortuga Second Hand'),
 
     /*
     |--------------------------------------------------------------------------

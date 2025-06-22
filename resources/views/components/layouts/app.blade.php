@@ -4,9 +4,9 @@
 <head>
     @include('livewire.partials.head')
 </head>
-    
+
 <body class="min-h-screen bg-white dark:bg-zinc-800">
-    <flux:header container sticky class="z-20 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700">
+    <flux:header container sticky class="z-20 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
         <flux:sidebar.toggle class="lg:hidden mt-2" icon="bars-2" inset="left" />
 
         <a href="{{ route('dashboard') }}"
@@ -18,7 +18,14 @@
         <flux:spacer />
 
         <flux:navbar class="-mb-px max-lg:hidden">
-            <flux:navbar.item href="#">Novedades</flux:navbar.item>
+            @forelse(\App\Models\Category::take(6)->get() as $category)
+                <flux:navbar.item href="{{ route('categories.show', $category->slug) }}" wire:navigate>
+                    {{ Str::ucfirst($category->name) }}
+                </flux:navbar.item>
+            @empty
+                <flux:navbar.item href="#">No hay categorías disponibles</flux:navbar.item>
+            @endforelse
+            {{-- <flux:navbar.item href="#">Novedades</flux:navbar.item>
             <flux:dropdown class="max-lg:hidden" gap="12">
                 <flux:navbar.item icon:trailing="chevron-down">Ropa</flux:navbar.item>
                 <flux:navmenu>
@@ -30,7 +37,7 @@
             </flux:dropdown>
             <flux:navbar.item href="#">Calzado</flux:navbar.item>
             <flux:navbar.item href="#">Accesorios</flux:navbar.item>
-            <flux:navbar.item href="#">SALE</flux:navbar.item>
+            <flux:navbar.item href="#">SALE</flux:navbar.item> --}}
         </flux:navbar>
 
         <flux:spacer />
@@ -45,7 +52,7 @@
 
         @if (Route::has('login'))
             @auth
-                <flux:dropdown class="mt-2 lg:mt-0" position="top" align="end">
+                <flux:dropdown class="mt-2 lg:mt-0" gap="9" position="top" align="end">
                     <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
                     <flux:menu>
@@ -101,7 +108,15 @@
         </a>
 
         <flux:navlist variant="outline">
-            <flux:navlist.item href="#">Novedades</flux:navlist.item>
+            @forelse (\App\Models\Category::take(6)->get() as $category)
+                <flux:navlist.item href="{{ route('categories.show', $category->slug) }}"
+                    wire:navigate>
+                    {{ Str::ucfirst($category->name) }}
+                </flux:navlist.item>
+            @empty
+                <flux:navlist.item href="#">No hay categorías disponibles</flux:navlist.item>
+            @endforelse
+            {{-- <flux:navlist.item href="#">Novedades</flux:navlist.item>
 
             <flux:navlist.group expandable :expanded="false" heading="Ropa" class="lg:hidden">
                 <flux:navlist.item href="#">Tops y remeras</flux:navlist.item>
@@ -112,7 +127,7 @@
 
             <flux:navlist.item href="#">Calzado</flux:navlist.item>
             <flux:navlist.item href="#">Accesorios</flux:navlist.item>
-            <flux:navlist.item href="#">SALE</flux:navlist.item>
+            <flux:navlist.item href="#">SALE</flux:navlist.item> --}}
         </flux:navlist>
 
         <flux:spacer />
@@ -122,6 +137,8 @@
     </flux:sidebar>
 
     {{ $slot }}
+
+    @include('livewire.partials.footer')
 
     @persist('toast')
         <flux:toast />

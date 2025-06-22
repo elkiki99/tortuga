@@ -1,0 +1,78 @@
+<?php
+
+use Livewire\Volt\Component;
+use Livewire\Attributes\Layout;
+use Livewire\WithPagination;
+use App\Models\Category;
+use App\Models\Product;
+
+new #[Layout('components.layouts.app')] class extends Component {
+    use WithPagination;
+
+    public Category $category;
+
+    public function mount(Category $category)
+    {
+        $this->category = $category;
+    }
+
+    public function render(): mixed
+    {
+        $products = Product::where('category_id', $this->category->id)->where('in_stock', true)->latest()->paginate(12);
+
+        return view('livewire.categories.show', compact('products'))->title($this->category->name . ' • Tortuga Second Hand');
+    }
+}; ?>
+
+<div>
+    <section class="min-h-screen container mx-auto px-4 sm:px-6 lg:px-8 space-y-12 mb-12">
+        @include('livewire.partials.breadcrumb')
+
+        <div class="space-y-6">
+            <div class="flex items-start justify-between gap-24">
+                <div>
+                    <flux:heading size="xl" level="1">
+                        {{ Str::ucfirst($category->name) }}
+                    </flux:heading>
+                    <flux:subheading>
+                        {{ Str::ucfirst($category->description) }}</strong>
+                    </flux:subheading>
+                </div>
+
+
+                <div class="flex items-center gap-4">
+                    <flux:select variant="listbox" class="sm:max-w-fit" align="end">
+                        <x-slot name="trigger">
+                            <flux:select.button size="sm">
+                                <flux:icon.arrows-up-down variant="micro" class="mr-2 text-zinc-400" />
+                                <flux:select.selected />
+                            </flux:select.button>
+                        </x-slot>
+                        <flux:select.option value="popular" selected>Relevancia</flux:select.option>
+                        <flux:select.option value="newest">Más reciente</flux:select.option>
+                        <flux:select.option value="oldest">Precio más alto</flux:select.option>
+                        <flux:select.option value="oldest">Precio más alto</flux:select.option>
+                    </flux:select>
+
+                    <flux:modal.trigger name="more-filters-{{ $category->id }}">
+                        <flux:button variant="primary" size="sm">Más filtros</flux:button>
+                    </flux:modal.trigger>
+
+                    <livewire:modals.more-filters :$category />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @forelse ($products as $product)
+                    <x-product-card :product="$product" :key="$product->id" />
+                @empty
+                    <flux:text>No hay productos en esta categoría.</flux:text>
+                @endforelse
+            </div>
+
+            @if ($products->hasPages())
+                <flux:pagination :paginator="$products" />
+            @endif
+        </div>
+    </section>
+</div>
