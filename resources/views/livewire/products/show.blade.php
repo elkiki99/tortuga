@@ -13,7 +13,7 @@ new #[Layout('components.layouts.app')] class extends Component {
     {
         $this->product = $product;
 
-        $this->relatedProducts = Product::where('in_stock', true)->where('category_id', $product->category_id)->inRandomOrder()->take(4)->get();
+        $this->relatedProducts = Product::where('in_stock', true)->where('category_id', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(4)->get();
 
         $this->complete_look = Product::where('in_stock', true)->where('category_id', '!=', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(4)->get();
     }
@@ -47,7 +47,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                         <flux:icon.magnifying-glass />
                         {{-- </button> --}}
                     </div>
-                    <img src="{{ $product->image_url ?? 'https://via.placeholder.com/640x640?text=Sin+imagen' }}"
+                    <img src="{{ $product->featuredImage ?? 'https://via.placeholder.com/640x640?text=Sin+imagen' }}"
                         alt="{{ $product->name }}" class="object-contain">
                 </div>
             </div>
@@ -111,23 +111,27 @@ new #[Layout('components.layouts.app')] class extends Component {
         </div>
     </section>
 
-    <section>
-        <flux:heading size="xl">Más {{ Str::ucfirst($product->category->name) }}</flux:heading>
+    @if ($relatedProducts->isNotEmpty())
+        <section>
+            <flux:heading size="xl">Más {{ Str::ucfirst($product->category->name) }}</flux:heading>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
-            @foreach ($relatedProducts as $related_product)
-                <x-product-card :product="$related_product" />
-            @endforeach
-        </div>
-    </section>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+                @foreach ($relatedProducts as $related_product)
+                    <x-product-card :product="$related_product" />
+                @endforeach
+            </div>
+        </section>
+    @endif
 
-    <section>
-        <flux:heading size="xl">Completa tu look</flux:heading>
+    @if ($complete_look->isNotEmpty())
+        <section>
+            <flux:heading size="xl">Completa tu look</flux:heading>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
-            @foreach ($complete_look as $cl_product)
-                <x-product-card :product="$cl_product" />
-            @endforeach
-        </div>
-    </section>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+                @foreach ($complete_look as $cl_product)
+                    <x-product-card :product="$cl_product" />
+                @endforeach
+            </div>
+        </section>
+    @endif
 </div>

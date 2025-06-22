@@ -6,23 +6,10 @@
         {{-- </button> --}}
     </div>
 
-    {{-- Imagen destacada del producto --}}
-    @php
-        $image = \App\Models\Image::where('product_id', $product->id)->where('is_featured', true)->first();
-    @endphp
-
-    @if ($image)
-        <a href="{{ route('products.show', $product->slug) }}" wire:navigate
-            class="block w-full aspect-square overflow-hidden bg-gray-100 mb-4">
-            <img src="{{ $image->path }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
-        </a>
-    @else
-        <a href="{{ route('products.show', $product->slug) }}" wire:navigate
-            class="block w-full aspect-square overflow-hidden mb-4 bg-gray-100">
-            <img src="https://via.placeholder.com/640x480?text=Sin+imagen" alt="Sin imagen"
-                class="w-full h-full object-cover">
-        </a>
-    @endif
+    <a href="{{ route('products.show', $product->slug) }}" wire:navigate
+        class="block w-full aspect-square overflow-hidden bg-gray-100 mb-4">
+        <img src="{{ $product->featuredImage }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+    </a>
 
     {{-- Precio --}}
     @if ($product->discount_price)

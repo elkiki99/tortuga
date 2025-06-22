@@ -13,8 +13,6 @@ new class extends Component {
 
     public function addToCart()
     {
-        $this->dispatch('open-cart');
-
         if (Auth::check()) {
             $cart = Auth::user()->cart()->firstOrCreate([]);
 
@@ -22,6 +20,10 @@ new class extends Component {
                 $cart->items()->create([
                     'product_id' => $this->product->id,
                 ]);
+
+                $this->dispatch('open-cart');
+            } else {
+                Flux::toast(heading: 'Producto repetido.', text: 'El producto ya está en tu carrito de compras.', variant: 'warning');
             }
         } else {
             $cart = session()->get('cart', []);
@@ -31,6 +33,10 @@ new class extends Component {
                     'product_id' => $this->product->id,
                 ];
                 session()->put('cart', $cart);
+
+                $this->dispatch('open-cart');
+            } else {
+                Flux::toast(heading: 'Producto repetido.', text: 'El producto ya está en tu carrito de compras.', variant: 'warning');
             }
         }
     }
