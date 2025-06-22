@@ -28,7 +28,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         session(['auth.password_confirmed_at' => time()]);
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        if(Auth::user()->isAdmin()) {
+            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        } else {
+            $this->redirectIntended(default: route('home', absolute: false), navigate: true);
+        }
     }
 }; ?>
 

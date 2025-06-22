@@ -80,8 +80,17 @@
                         <flux:menu.separator />
 
                         <flux:menu.radio.group>
+                            @auth
+                                <flux:menu.item :href="route('client.cart')" icon="shopping-cart" wire:navigate>
+                                    {{ __('Carrito') }}
+                                </flux:menu.item>
+                                <flux:menu.item :href="route('client.wishlist')" icon="heart" wire:navigate>
+                                    {{ __('Wishlist') }}
+                                </flux:menu.item>
+                            @endauth
                             <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
-                                {{ __('Ajustes') }}</flux:menu.item>
+                                {{ __('Ajustes') }}
+                            </flux:menu.item>
                         </flux:menu.radio.group>
 
                         <flux:menu.separator />

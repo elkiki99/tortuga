@@ -42,7 +42,7 @@ new class extends Component {
     }
 }; ?>
 
-<div>
+<div class="flex-1">
     <flux:button wire:click="addToCart" variant="primary" class="!rounded-full w-full hover:cursor-pointer"
         icon="shopping-cart">
         Agregar al carrito

@@ -13,8 +13,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public function sendVerification(): void
     {
         if (Auth::user()->hasVerifiedEmail()) {
-            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
-
+            if (Auth::user()->isAdmin()) {
+                $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+            } else {
+                $this->redirectIntended(default: route('home', absolute: false), navigate: true);
+            }
             return;
         }
 
@@ -49,4 +52,3 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </flux:link>
     </div>
 </div>
-

@@ -22,6 +22,7 @@ class Product extends Model
         'description',
         'price',
         'discount_price',
+        'size',
         'in_stock',
         'category_id',
         'brand_id',
@@ -39,7 +40,7 @@ class Product extends Model
 
     public function images() : hasMany
     {
-        return $this->hasMany(Image::class);
+        return $this->hasMany(Image::class)->where('is_featured', false);
     }
 
     public function featuredImage() : hasOne

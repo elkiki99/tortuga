@@ -1,10 +1,10 @@
 <?php
 
+use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rules\Password;
+use Livewire\Attributes\{Layout, Title};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.dashboard')] #[Title('Password • Tortuga')] class extends Component {

@@ -1,7 +1,7 @@
 <?php
 
-use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout, Title};
+use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.dashboard')] #[Title('Appearence • Tortuga')] class extends Component {
 

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use App\Models\Wishlist;
 use App\Models\Cart;
 
 class User extends Authenticatable
@@ -68,5 +69,21 @@ class User extends Authenticatable
     public function cart() : HasOne
     {
         return $this->hasOne(Cart::class);
+    }
+
+    /**
+     * Get the user's wishlist.
+     */
+    public function wishlist() : HasOne
+    {
+        return $this->hasOne(Wishlist::class);
+    }
+
+    /**
+     * Get the user's role.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 }

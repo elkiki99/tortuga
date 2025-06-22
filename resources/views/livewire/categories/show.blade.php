@@ -64,7 +64,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @forelse ($products as $product)
-                    <x-product-card :product="$product" :key="$product->id" />
+                    <livewire:components.product-card wire:key="product-{{ $product->id }}" :product="$product" />
                 @empty
                     <flux:text>No hay productos en esta categoría.</flux:text>
                 @endforelse

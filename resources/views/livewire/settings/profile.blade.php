@@ -2,11 +2,11 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\{Layout, Title};
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 
-use Livewire\Attributes\{Layout, Title};
 
 new #[Layout('components.layouts.dashboard')] #[Title('Profile • Tortuga')] class extends Component {
     public string $name = '';

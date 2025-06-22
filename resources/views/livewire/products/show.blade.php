@@ -8,10 +8,13 @@ new #[Layout('components.layouts.app')] class extends Component {
     public Product $product;
     public $relatedProducts;
     public $complete_look;
+    public $images;
 
     public function mount(Product $product)
     {
         $this->product = $product;
+
+        $this->images = $product->images->take(4);
 
         $this->relatedProducts = Product::where('in_stock', true)->where('category_id', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(4)->get();
 
@@ -29,24 +32,26 @@ new #[Layout('components.layouts.app')] class extends Component {
         @include('livewire.partials.breadcrumb')
 
         <div class="flex flex-col lg:flex-row gap-6">
-            <div class="flex gap-4 lg:w-full">
-                {{-- Miniaturas a la izquierda --}}
+            <div class="flex gap-4 lg:w-3/4">
                 <div class="flex flex-col gap-4 w-1/6">
                     @for ($i = 0; $i < 4; $i++)
                         <div class="flex-1 aspect-square bg-gray-100 overflow-hidden">
-                            <img src="https://via.placeholder.com/150?text=IMG+{{ $i + 1 }}"
-                                alt="m-{{ $i + 1 }}" class="object-cover">
+                            @if ($i < $images->count())
+                                <img src="{{ $images[$i]->url ?? 'https://via.placeholder.com/150?text=IMG+' . $images[$i]->id }}"
+                                    alt="{{ $images[$i]->alt_text ?? '' }}" class="object-cover w-full h-full">
+                            @else
+                                <img src="https://via.placeholder.com/150?text=Placeholder+{{ $i + 1 }}"
+                                    alt="" class="object-cover w-full h-full">
+                            @endif
                         </div>
                     @endfor
                 </div>
 
                 {{-- Imagen principal --}}
                 <div class="flex-1 bg-gray-100 flex items-center justify-center aspect-square overflow-hidden relative">
-                    <div class="absolute top-4 right-4 z-10">
-                        {{-- <button class="bg-white/80 hover:bg-white p-2 rounded-full shadow"> --}}
-                        <flux:icon.magnifying-glass />
-                        {{-- </button> --}}
-                    </div>
+                    {{-- <div class="absolute top-4 right-4 z-10">
+                        <livewire:wishlist.add :product="$product" :key="'wishlist-add-' . $product->id" />
+                    </div> --}}
                     <img src="{{ $product->featuredImage ?? 'https://via.placeholder.com/640x640?text=Sin+imagen' }}"
                         alt="{{ $product->name }}" class="object-contain">
                 </div>
@@ -95,7 +100,10 @@ new #[Layout('components.layouts.app')] class extends Component {
                         </flux:heading>
                     @endif
 
-                    <livewire:cart.add :product="$product" />
+                    <div class="flex flex-grow items-center gap-4">
+                        <livewire:cart.add :product="$product" />
+                        <livewire:wishlist.add :product="$product" />
+                    </div>
 
                     <flux:callout icon="credit-card">
                         <flux:callout.heading>Pago en cuotas</flux:callout.heading>
@@ -117,7 +125,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
                 @foreach ($relatedProducts as $related_product)
-                    <x-product-card :product="$related_product" />
+                    <livewire:components.product-card wire:key="product-{{ $product->id }}" :product="$related_product" />
                 @endforeach
             </div>
         </section>
@@ -129,7 +137,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
                 @foreach ($complete_look as $cl_product)
-                    <x-product-card :product="$cl_product" />
+                    <livewire:components.product-card wire:key="product-{{ $product->id }}" :product="$cl_product" />
                 @endforeach
             </div>
         </section>

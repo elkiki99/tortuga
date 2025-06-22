@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
+            $table->string('size')->nullable();
             $table->decimal('discount_price', 10, 2)->nullable();
             $table->boolean('in_stock')->default(true);
             $table->foreignId('category_id')->constrained()->onDelete('cascade');

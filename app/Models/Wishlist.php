@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\WishlistItem;
 
 class Wishlist extends Model
 {
@@ -12,6 +14,10 @@ class Wishlist extends Model
 
     protected $fillable = [
         'user_id',
-        'product_id',
     ];
+
+    public function items() : HasMany
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
 }

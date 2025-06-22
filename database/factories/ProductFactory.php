@@ -23,6 +23,7 @@ class ProductFactory extends Factory
             'slug' => $this->faker->slug(),
             'description' => $this->faker->paragraph(),
             'price' => $this->faker->randomFloat(2, 10, 1000),
+            'size' => $this->faker->randomElement(['S', 'M', 'L', 'XL', 'XXL']),
             'discount_price' => $this->faker->optional()->randomFloat(2, 5, 500),
             'in_stock' => $this->faker->boolean(),
             'brand_id' => Brand::inRandomOrder()->value('id'),

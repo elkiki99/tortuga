@@ -3,13 +3,11 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Product;
-use App\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Wishlist>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\WishlistItem>
  */
-class WishlistFactory extends Factory
+class WishlistItemFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,7 +17,8 @@ class WishlistFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::inRandomOrder()->value('id'),
+            // 'wishlist_id' => \App\Models\Wishlist::factory(),
+            // 'product_id' => \App\Models\Product::factory(),
         ];
     }
 }
