@@ -27,7 +27,7 @@ class ProductFactory extends Factory
             'discount_price' => $this->faker->optional()->randomFloat(2, 5, 500),
             'in_stock' => $this->faker->boolean(),
             'brand_id' => Brand::inRandomOrder()->value('id'),
-            'category_id' => Category::inRandomOrder()->value('id'),
+            'category_id' => Category::whereNotNull('parent_id')->inRandomOrder()->value('id'),
         ];
     }
 }

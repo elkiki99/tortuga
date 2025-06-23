@@ -18,7 +18,13 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     public function render(): mixed
     {
-        $products = Product::where('category_id', $this->category->id)->where('in_stock', true)->latest()->paginate(12);
+        if ($this->category->children()->exists()) {
+            $childIds = $this->category->children()->pluck('id');
+
+            $products = Product::whereIn('category_id', $childIds)->where('in_stock', true)->latest()->paginate(12);
+        } else {
+            $products = Product::where('category_id', $this->category->id)->where('in_stock', true)->latest()->paginate(12);
+        }
 
         return view('livewire.categories.show', compact('products'))->title($this->category->name . ' • Tortuga Second Hand');
     }

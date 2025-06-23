@@ -9,7 +9,7 @@
     <flux:header container sticky class="z-20 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
         <flux:sidebar.toggle class="lg:hidden mt-2" icon="bars-2" inset="left" />
 
-        <a href="{{ route('dashboard') }}"
+        <a href="{{ route('home') }}"
             class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0 max-lg:hidden" wire:navigate>
             <x-app-logo />
         </a>
@@ -18,9 +18,9 @@
         <flux:spacer />
 
         <flux:navbar class="-mb-px max-lg:hidden">
-            @foreach(\App\Models\Category::whereNull('parent_id')->take(6)->get() as $parent)
+            @foreach(\App\Models\Category::whereNull('parent_id')->get()->all() as $parent)
                 @php
-                    $children = $parent->children; // o $parent->children()->get()
+                    $children = $parent->children;
                 @endphp
 
                 @if($children->isNotEmpty())
@@ -116,7 +116,7 @@
         class="lg:hidden bg-zinc-50 dark:bg-zinc-900 border rtl:border-r-0 rtl:border-l border-zinc-200 dark:border-zinc-700">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-        <a href="{{ route('dashboard') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0"
+        <a href="{{ route('home') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0"
             wire:navigate>
             <x-app-logo />
         </a>

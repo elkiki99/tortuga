@@ -35,20 +35,20 @@ new #[Layout('components.layouts.app')] class extends Component {
             <div class="flex gap-4 lg:w-3/4">
                 <div class="flex flex-col gap-4 w-1/6">
                     @for ($i = 0; $i < 4; $i++)
-                        <div class="flex-1 aspect-square bg-gray-100 overflow-hidden">
+                        <div class="flex-1 rounded-md aspect-square bg-gray-100 overflow-hidden">
                             @if ($i < $images->count())
                                 <img src="{{ $images[$i]->url ?? 'https://via.placeholder.com/150?text=IMG+' . $images[$i]->id }}"
-                                    alt="{{ $images[$i]->alt_text ?? '' }}" class="object-cover w-full h-full">
+                                    alt="{{ $images[$i]->product->name ?? '' }}" class="object-cover w-full h-full">
                             @else
                                 <img src="https://via.placeholder.com/150?text=Placeholder+{{ $i + 1 }}"
-                                    alt="" class="object-cover w-full h-full">
+                                    alt="img_{{ $i + 1 }}" class="object-cover w-full h-full">
                             @endif
                         </div>
                     @endfor
                 </div>
 
                 {{-- Imagen principal --}}
-                <div class="flex-1 bg-gray-100 flex items-center justify-center aspect-square overflow-hidden relative">
+                <div class="flex-1 bg-gray-100 flex items-center rounded-md justify-center aspect-square overflow-hidden relative">
                     {{-- <div class="absolute top-4 right-4 z-10">
                         <livewire:wishlist.add :product="$product" :key="'wishlist-add-' . $product->id" />
                     </div> --}}

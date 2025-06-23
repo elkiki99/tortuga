@@ -21,7 +21,7 @@ new class extends Component {
     @endauth
 
     <a href="{{ route('products.show', $product->slug) }}" wire:navigate
-        class="block w-full aspect-square overflow-hidden bg-gray-100 mb-4">
+        class="block rounded-md w-full aspect-square overflow-hidden bg-gray-100 mb-4">
         <img src="{{ $product->featuredImage }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
     </a>
 
