@@ -8,11 +8,6 @@ use Livewire\WithPagination;
 new #[Layout('components.layouts.app')] #[Title('Wishlist • Tortuga')] class extends Component {
     use WithPagination;
 
-    // public function refreshWishlist()
-    // {
-    //     $this->dispatch('$refresh');
-    // }
-
     #[On('wishlistUpdated')]
     public function render(): mixed
     {

@@ -18,7 +18,7 @@ class ImageFactory extends Factory
     public function definition(): array
     {
         return [
-            'path' => $this->faker->imageUrl(640, 640, 'image'),
+            'path' => $this->faker->unique()->imageUrl(640, 640, 'image'),
             'alt_text' => $this->faker->sentence(),
             'product_id' => Product::inRandomOrder()->value('id'),
             'is_featured' => $this->faker->boolean(50),

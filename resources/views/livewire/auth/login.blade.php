@@ -1,15 +1,16 @@
 <?php
 
-use Illuminate\Auth\Events\Lockout;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
+use App\Livewire\Actions\PersistSessionCartToDatabase;
 use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Lockout;
 use Livewire\Attributes\Validate;
+use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use Illuminate\Support\Str;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     #[Validate('required|string|email')]
@@ -23,7 +24,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     /**
      * Handle an incoming authentication request.
      */
-    public function login(): void
+    public function login(PersistSessionCartToDatabase $persistSessionCart): void
     {
         $this->validate();
 
@@ -39,6 +40,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
+
+        $persistSessionCart(Auth::user());
 
         if(Auth::user()->isAdmin()) {
             $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);

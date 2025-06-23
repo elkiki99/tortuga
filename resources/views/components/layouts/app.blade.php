@@ -18,26 +18,30 @@
         <flux:spacer />
 
         <flux:navbar class="-mb-px max-lg:hidden">
-            @forelse(\App\Models\Category::take(6)->get() as $category)
-                <flux:navbar.item href="{{ route('categories.show', $category->slug) }}" wire:navigate>
-                    {{ Str::ucfirst($category->name) }}
-                </flux:navbar.item>
-            @empty
-                <flux:navbar.item href="#">No hay categorías disponibles</flux:navbar.item>
-            @endforelse
-            {{-- <flux:navbar.item href="#">Novedades</flux:navbar.item>
-            <flux:dropdown class="max-lg:hidden" gap="12">
-                <flux:navbar.item icon:trailing="chevron-down">Ropa</flux:navbar.item>
-                <flux:navmenu>
-                    <flux:navmenu.item href="#">Tops y remeras</flux:navmenu.item>
-                    <flux:navmenu.item href="#">Abrigos y chaquetas</flux:navmenu.item>
-                    <flux:navmenu.item href="#">Pantalones y jeans</flux:navmenu.item>
-                    <flux:navmenu.item href="#">Faldas y vestidos</flux:navmenu.item>
-                </flux:navmenu>
-            </flux:dropdown>
-            <flux:navbar.item href="#">Calzado</flux:navbar.item>
-            <flux:navbar.item href="#">Accesorios</flux:navbar.item>
-            <flux:navbar.item href="#">SALE</flux:navbar.item> --}}
+            @foreach(\App\Models\Category::whereNull('parent_id')->take(6)->get() as $parent)
+                @php
+                    $children = $parent->children; // o $parent->children()->get()
+                @endphp
+
+                @if($children->isNotEmpty())
+                    <flux:dropdown class="max-lg:hidden" gap="12">
+                        <flux:navbar.item icon:trailing="chevron-down">
+                            {{ Str::ucfirst($parent->name) }}
+                        </flux:navbar.item>
+                        <flux:navmenu>
+                            @foreach($children as $child)
+                                <flux:navmenu.item href="{{ route('categories.show', $child->slug) }}" wire:navigate>
+                                    {{ Str::ucfirst($child->name) }}
+                                </flux:navmenu.item>
+                            @endforeach
+                        </flux:navmenu>
+                    </flux:dropdown>
+                @else
+                    <flux:navbar.item href="{{ route('categories.show', $parent->slug) }}" wire:navigate>
+                        {{ Str::ucfirst($parent->name) }}
+                    </flux:navbar.item>
+                @endif
+            @endforeach
         </flux:navbar>
 
         <flux:spacer />
@@ -80,14 +84,12 @@
                         <flux:menu.separator />
 
                         <flux:menu.radio.group>
-                            @auth
-                                <flux:menu.item :href="route('client.cart')" icon="shopping-cart" wire:navigate>
-                                    {{ __('Carrito') }}
-                                </flux:menu.item>
-                                <flux:menu.item :href="route('client.wishlist')" icon="heart" wire:navigate>
-                                    {{ __('Wishlist') }}
-                                </flux:menu.item>
-                            @endauth
+                            <flux:menu.item :href="route('client.cart')" icon="shopping-cart" wire:navigate>
+                                {{ __('Carrito') }}
+                            </flux:menu.item>
+                            <flux:menu.item :href="route('client.wishlist')" icon="heart" wire:navigate>
+                                {{ __('Wishlist') }}
+                            </flux:menu.item>
                             <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
                                 {{ __('Ajustes') }}
                             </flux:menu.item>

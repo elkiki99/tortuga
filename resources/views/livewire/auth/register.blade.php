@@ -1,12 +1,13 @@
 <?php
 
-use App\Models\User;
+use App\Livewire\Actions\PersistSessionCartToDatabase;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use App\Models\User;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     public string $name = '';
@@ -17,7 +18,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     /**
      * Handle an incoming registration request.
      */
-    public function register(): void
+    public function register(PersistSessionCartToDatabase $persistSessionCart): void
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -26,11 +27,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['role'] = 'client'; // Default role for new users
+        $validated['role'] = 'client';
 
         event(new Registered(($user = User::create($validated))));
 
         Auth::login($user);
+
+        $persistSessionCart($user);
 
         if (Auth::user()->isAdmin()) {
             $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
