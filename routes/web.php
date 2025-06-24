@@ -21,7 +21,8 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('wishlist', 'client.wishlist')->name('client.wishlist');
 });
 
-Volt::route('cart', 'client.cart')->name('client.cart');
+Volt::route('checkout', 'client.checkout')->name('client.checkout');
+// Volt::route('checkout/cart', 'client.cart')->name('client.cart');
 
 Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
 Volt::route('categorias/{category:slug}', 'categories.show')->name('categories.show');

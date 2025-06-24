@@ -50,7 +50,6 @@
             <flux:input size="sm" variant="filled" placeholder="Buscar..." icon="magnifying-glass" />
         </div>
 
-
         <flux:navbar class="mx-2">
             <flux:modal.trigger name="open-cart">
                 <flux:navbar.item class="max-lg:hidden" icon="shopping-bag" href="#" label="Cart" />
@@ -84,9 +83,9 @@
                         <flux:menu.separator />
 
                         <flux:menu.radio.group>
-                            <flux:menu.item :href="route('client.cart')" icon="shopping-cart" wire:navigate>
+                            {{-- <flux:menu.item :href="route('client.checkout')" icon="shopping-cart" wire:navigate>
                                 {{ __('Carrito') }}
-                            </flux:menu.item>
+                            </flux:menu.item> --}}
                             <flux:menu.item :href="route('client.wishlist')" icon="heart" wire:navigate>
                                 {{ __('Wishlist') }}
                             </flux:menu.item>

@@ -14,6 +14,12 @@
     @endisset
 
     @isset($product)
+        @if ($product->category->parent)
+            <flux:breadcrumbs.item href="{{ route('categories.show', $product->category->parent) }}" wire:navigate>
+                {{ Str::ucfirst($product->category->parent->name) }}
+            </flux:breadcrumbs.item>
+        @endif
+
         <flux:breadcrumbs.item href="{{ route('categories.show', $product->category) }}" wire:navigate>
             {{ Str::ucfirst($product->category->name) }}
         </flux:breadcrumbs.item>

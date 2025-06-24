@@ -1,15 +1,9 @@
 <?php
 
 use Livewire\Volt\Component;
-use Livewire\Attributes\On;
 
 new class extends Component {
-    #[On('open-cart')]
-    public function openCart(): void
-    {
-        Flux::modal('open-cart')->show();
-    }
-
+    
     public function removeFromCart($itemId): void
     {
         if (Auth::check()) {
@@ -56,19 +50,27 @@ new class extends Component {
             }
         }
 
-        return view('livewire.modals.cart', compact('items', 'cart', 'total'));
+        return view('livewire.client.checkout', compact('items', 'cart', 'total'));
     }
 }; ?>
 
-<flux:modal name="open-cart" variant="flyout" class="!h-screen">
-    <div class="flex flex-col h-full">
-        @if (count($items) > 0)
+<section class="min-h-screen container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12">
+    <flux:breadcrumbs class="my-6">
+        <flux:breadcrumbs.item href="{{ route('home') }}" wire:navigate>Home</flux:breadcrumbs.item>
+        {{-- <flux:breadcrumbs.item href="{{ route('client.cart') }}" wire:navigate>Carrito</flux:breadcrumbs.item> --}}
+        <flux:breadcrumbs.item>Checkout</flux:breadcrumbs.item>
+    </flux:breadcrumbs>
+
+    <flux:heading size="xl">Checkout</flux:heading>
+
+    <div class="flex flex-col h-full w-1/2">
+        {{-- @if (count($items) > 0)
             <div class="mb-6">
                 <flux:heading size="lg">Mi carrito</flux:heading>
                 <flux:text class="mt-2">¡Estas muy cerca de la prenda que queres!</flux:text>
             </div>
             <flux:separator />
-        @endif
+        @endif --}}
 
         <div class="space-y-6 flex-1 flex flex-col overflow-y-auto py-4 py-2">
             @forelse($items as $item)
@@ -113,7 +115,7 @@ new class extends Component {
                     </div>
                 @endif
             @empty
-                <div class="flex flex-col items-center justify-center h-full text-center space-y-4 overflow-y-hidden">
+                {{-- <div class="flex flex-col items-center justify-center h-full text-center space-y-4 overflow-y-hidden">
                     <flux:icon.shopping-cart class="size-12 text-zinc-400" />
                     <flux:heading size="lg">Tu carrito está vacío.</flux:heading>
                     <flux:subheading>Agrega productos para verlos aquí.</flux:subheading>
@@ -121,7 +123,7 @@ new class extends Component {
                         class="!rounded-full w-full mt-6">
                         Ir a la tienda
                     </flux:button>
-                </div>
+                </div> --}}
             @endforelse
         </div>
 
@@ -132,7 +134,7 @@ new class extends Component {
                     <flux:heading size="lg">Total</flux:heading>
                     <flux:heading size="lg">${{ number_format($total, 2) }} UYU</flux:heading>
                 </div>
-                <div class="flex flex-col">
+                {{-- <div class="flex flex-col">
                     <flux:button as:link href="{{ route('client.checkout') }}" wire:navigate variant="primary"
                         class="!rounded-full w-full">Finalizar
                         compra
@@ -140,8 +142,8 @@ new class extends Component {
                     <flux:button wire:click="clearCart" class="ml-auto mt-4" icon="backspace" size="sm"
                         variant="subtle">Vaciar carrito
                     </flux:button>
-                </div>
+                </div> --}}
             </footer>
         @endif
     </div>
-</flux:modal>
+</section>

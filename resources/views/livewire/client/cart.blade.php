@@ -13,4 +13,6 @@ new class extends Component {
     </flux:breadcrumbs>
 
     <flux:heading size="xl">Carrito</flux:heading>
+
+    
 </section>
