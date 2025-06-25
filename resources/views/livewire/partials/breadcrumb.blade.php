@@ -6,11 +6,15 @@
             <flux:breadcrumbs.item href="{{ route('categories.show', $category->parent) }}" wire:navigate>
                 {{ Str::ucfirst($category->parent->name) }}
             </flux:breadcrumbs.item>
-        @endif
 
-        <flux:breadcrumbs.item href="{{ route('categories.show', $category) }}" wire:navigate>
-            {{ Str::ucfirst($category->name) }}
-        </flux:breadcrumbs.item>
+            <flux:breadcrumbs.item>
+                {{ Str::ucfirst($category->name) }}
+            </flux:breadcrumbs.item>
+        @else
+            <flux:breadcrumbs.item>
+                {{ Str::ucfirst($category->name) }}
+            </flux:breadcrumbs.item>
+        @endif
     @endisset
 
     @isset($product)

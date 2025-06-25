@@ -24,7 +24,7 @@ new #[Layout('components.layouts.app')] #[Title('Wishlist • Tortuga')] class e
     }
 }; ?>
 
-<section class="min-h-screen container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12">
+<section class="container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12">
     <flux:breadcrumbs class="my-6">
         <flux:breadcrumbs.item href="{{ route('home') }}" wire:navigate>Home</flux:breadcrumbs.item>
         <flux:breadcrumbs.item>Wishlist</flux:breadcrumbs.item>

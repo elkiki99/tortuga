@@ -27,7 +27,7 @@ new #[Layout('components.layouts.app')] class extends Component {
     }
 }; ?>
 
-<div class="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 mb-12">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 space-y-12 mb-12">
     <section>
         @include('livewire.partials.breadcrumb')
 

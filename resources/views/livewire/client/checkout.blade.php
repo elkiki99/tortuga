@@ -1,8 +1,9 @@
 <?php
 
 use Livewire\Volt\Component;
+use Livewire\Attributes\{Layout, Title};
 
-new class extends Component {
+new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class extends Component {
     
     public function removeFromCart($itemId): void
     {
@@ -54,24 +55,15 @@ new class extends Component {
     }
 }; ?>
 
-<section class="min-h-screen container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12">
+<section class="container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12">
     <flux:breadcrumbs class="my-6">
         <flux:breadcrumbs.item href="{{ route('home') }}" wire:navigate>Home</flux:breadcrumbs.item>
-        {{-- <flux:breadcrumbs.item href="{{ route('client.cart') }}" wire:navigate>Carrito</flux:breadcrumbs.item> --}}
         <flux:breadcrumbs.item>Checkout</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
     <flux:heading size="xl">Checkout</flux:heading>
 
     <div class="flex flex-col h-full w-1/2">
-        {{-- @if (count($items) > 0)
-            <div class="mb-6">
-                <flux:heading size="lg">Mi carrito</flux:heading>
-                <flux:text class="mt-2">¡Estas muy cerca de la prenda que queres!</flux:text>
-            </div>
-            <flux:separator />
-        @endif --}}
-
         <div class="space-y-6 flex-1 flex flex-col overflow-y-auto py-4 py-2">
             @forelse($items as $item)
                 @if (Auth::check())

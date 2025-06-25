@@ -5,9 +5,9 @@
     @include('livewire.partials.head')
 </head>
 
-<body class="min-h-screen bg-white dark:bg-zinc-800">
+<body class="bg-white dark:bg-zinc-800">
     <flux:header container sticky class="z-20 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
-        <flux:sidebar.toggle class="lg:hidden mt-2" icon="bars-2" inset="left" />
+        <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
         <a href="{{ route('home') }}"
             class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0 max-lg:hidden" wire:navigate>
@@ -18,18 +18,18 @@
         <flux:spacer />
 
         <flux:navbar class="-mb-px max-lg:hidden">
-            @foreach(\App\Models\Category::whereNull('parent_id')->get()->all() as $parent)
+            @foreach (\App\Models\Category::whereNull('parent_id')->get()->all() as $parent)
                 @php
                     $children = $parent->children;
                 @endphp
 
-                @if($children->isNotEmpty())
+                @if ($children->isNotEmpty())
                     <flux:dropdown class="max-lg:hidden" gap="12">
                         <flux:navbar.item icon:trailing="chevron-down">
                             {{ Str::ucfirst($parent->name) }}
                         </flux:navbar.item>
                         <flux:navmenu>
-                            @foreach($children as $child)
+                            @foreach ($children as $child)
                                 <flux:navmenu.item href="{{ route('categories.show', $child->slug) }}" wire:navigate>
                                     {{ Str::ucfirst($child->name) }}
                                 </flux:navmenu.item>
@@ -50,15 +50,14 @@
             <flux:input size="sm" variant="filled" placeholder="Buscar..." icon="magnifying-glass" />
         </div>
 
+        <!-- Cart open modal -->
         <flux:navbar class="mx-2">
-            <flux:modal.trigger name="open-cart">
-                <flux:navbar.item class="max-lg:hidden" icon="shopping-bag" href="#" label="Cart" />
-            </flux:modal.trigger>
+            <livewire:modals.cart />
         </flux:navbar>
 
         @if (Route::has('login'))
             @auth
-                <flux:dropdown class="mt-2 lg:mt-0" gap="9" position="top" align="end">
+                <flux:dropdown gap="9" position="top" align="end">
                     <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
 
                     <flux:menu>
@@ -83,9 +82,6 @@
                         <flux:menu.separator />
 
                         <flux:menu.radio.group>
-                            {{-- <flux:menu.item :href="route('client.checkout')" icon="shopping-cart" wire:navigate>
-                                {{ __('Carrito') }}
-                            </flux:menu.item> --}}
                             <flux:menu.item :href="route('client.wishlist')" icon="heart" wire:navigate>
                                 {{ __('Wishlist') }}
                             </flux:menu.item>
@@ -128,31 +124,21 @@
             @empty
                 <flux:navlist.item href="#">No hay categorías disponibles</flux:navlist.item>
             @endforelse
-            {{-- <flux:navlist.item href="#">Novedades</flux:navlist.item>
-
-            <flux:navlist.group expandable :expanded="false" heading="Ropa" class="lg:hidden">
-                <flux:navlist.item href="#">Tops y remeras</flux:navlist.item>
-                <flux:navlist.item href="#">Abrigos y chaquetas</flux:navlist.item>
-                <flux:navlist.item href="#">Pantalones y jeans</flux:navlist.item>
-                <flux:navlist.item href="#">Faldas y vestidos</flux:navlist.item>
-            </flux:navlist.group>
-
-            <flux:navlist.item href="#">Calzado</flux:navlist.item>
-            <flux:navlist.item href="#">Accesorios</flux:navlist.item>
-            <flux:navlist.item href="#">SALE</flux:navlist.item> --}}
         </flux:navlist>
 
         <flux:spacer />
 
-        <flux:input size="sm" class="-mb-px lg:hidden" variant="filled" placeholder="Buscar..."
+        <flux:input size="sm" class="-mb-px lg:hidden mb-2" variant="filled" placeholder="Buscar..."
             icon="magnifying-glass" />
     </flux:sidebar>
 
-    {{ $slot }}
+    <div class="min-h-[91vh] flex flex-col flex-grow">
+        <div class="flex-1">
+            {{ $slot }}
+        </div>
 
-    @include('livewire.partials.footer')
-
-    <livewire:modals.cart />
+        @include('livewire.partials.footer')
+    </div>
 
     @persist('toast')
         <flux:toast />
