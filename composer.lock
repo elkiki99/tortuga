@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b66263f2042ab4e9a3d838e880719b3",
+    "content-hash": "7347d1a18b22f9d660fe4299447bd084",
     "packages": [
         {
             "name": "brick/math",
@@ -2273,6 +2273,45 @@
                 "source": "https://github.com/livewire/volt"
             },
             "time": "2025-04-08T15:13:36+00:00"
+        },
+        {
+            "name": "mercadopago/dx-php",
+            "version": "3.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mercadopago/sdk-php.git",
+                "reference": "657be1bf17b08b3c887891245825e56111006883"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mercadopago/sdk-php/zipball/657be1bf17b08b3c887891245825e56111006883",
+                "reference": "657be1bf17b08b3c887891245825e56111006883",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.22",
+                "phpunit/phpunit": "^10.2",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MercadoPago\\": "src/MercadoPago"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Mercado Pago PHP SDK",
+            "homepage": "https://github.com/mercadopago/sdk-php",
+            "support": {
+                "source": "https://github.com/mercadopago/sdk-php/tree/3.5.1"
+            },
+            "time": "2025-06-09T13:08:57+00:00"
         },
         {
             "name": "monolog/monolog",

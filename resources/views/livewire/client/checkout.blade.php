@@ -1,57 +1,102 @@
 <?php
 
-use Livewire\Volt\Component;
 use Livewire\Attributes\{Layout, Title};
+use App\Services\MercadoPagoService;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Volt\Component;
+use App\Models\Product;
 
 new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class extends Component {
-    
-    public function removeFromCart($itemId): void
-    {
-        if (Auth::check()) {
-            $cart = Auth::user()->cart;
-            $cart->items()->where('id', $itemId)->delete();
-        } else {
-            $cart = session('cart', []);
-            unset($cart[$itemId]);
-            session(['cart' => $cart]);
-        }
-    }
+    public $items = [];
+    public $total = 0;
+    public $preferenceId;
 
-    public function clearCart(): void
-    {
-        if (Auth::check()) {
-            $cart = Auth::user()->cart;
-            $cart->items()->delete();
-        } else {
-            session(['cart' => []]);
-        }
-    }
-
-    public function render(): mixed
+    public function mount()
     {
         if (Auth::check()) {
             $cart = Auth::user()->cart;
             if ($cart) {
-                $items = $cart->items;
-                $total = $items->sum(fn($item) => $item->product->price);
+                $this->items = $cart->items()->with('product')->get();
+                $this->total = $this->items->sum(fn($item) => $item->product->price);
             } else {
-                $items = [];
-                $total = 0;
+                $this->items = [];
+                $this->total = 0;
             }
         } else {
-            $cart = null;
-            $items = session('cart', []);
-            $total = 0;
+            $this->items = session('cart', []);
+            $productIds = collect($this->items)->pluck('product_id')->unique()->all();
 
-            foreach ($items as $item) {
-                $product = \App\Models\Product::find($item['product_id']);
-                if ($product) {
-                    $total += $product->price;
+            $products = \App\Models\Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+            $this->items = collect($this->items)
+                ->map(function ($item) use ($products) {
+                    $item['product'] = $products[$item['product_id']] ?? null;
+                    return $item;
+                })
+                ->filter(fn($item) => $item['product']);
+
+            $this->total = $this->items->sum(fn($item) => $item['product']->price);
+        }
+
+        $this->createPreference();
+    }
+
+    public function createPreference()
+    {
+        $items = [];
+
+        if (Auth::check()) {
+            // Si está autenticado, usar el carrito de la base de datos
+            $cart = Auth::user()->cart;
+
+            if ($cart) {
+                foreach ($cart->items()->with('product')->get() as $item) {
+                    if (!$item->product) {
+                        continue;
+                    }
+
+                    $items[] = [
+                        'id' => $item->product->id,
+                        'title' => $item->product->name,
+                        'description' => $item->product->description,
+                        'currency_id' => 'UYU',
+                        'quantity' => 1,
+                        'unit_price' => floatval($item->product->price),
+                    ];
                 }
+            }
+        } else {
+            $cart = session('cart', []);
+            foreach ($cart as $item) {
+                $product = Product::find($item['product_id']);
+                if (!$product) {
+                    continue;
+                }
+
+                $items[] = [
+                    'id' => $product->id,
+                    'title' => $product->name,
+                    'description' => $product->description,
+                    'currency_id' => 'UYU',
+                    'quantity' => 1,
+                    'unit_price' => floatval($product->price),
+                ];
             }
         }
 
-        return view('livewire.client.checkout', compact('items', 'cart', 'total'));
+        $payer = [
+            'name' => 'Pepito',
+            'surname' => 'Pepe',
+            'email' => Auth::check() ? Auth::user()->email : 'pepito@gmail.com',
+        ];
+
+        $mp = new MercadoPagoService();
+        $preference = $mp->createPreference($items, $payer);
+
+        if ($preference) {
+            $this->preferenceId = $preference->id;
+            $this->dispatch('preference-ready'); // Dispatch an event
+        }
     }
 }; ?>
 
@@ -63,10 +108,10 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
     <flux:heading size="xl">Checkout</flux:heading>
 
-    <div class="flex flex-col h-full w-1/2">
+    <div class="flex flex-col h-full w-1/2 mt-6">
         <div class="space-y-6 flex-1 flex flex-col overflow-y-auto py-4 py-2">
             @forelse($items as $item)
-                @if (Auth::check())
+                @auth
                     <div wire:key="item-{{ $item->product->id }}" class="flex items-center justify-between">
                         <div class="flex items-start gap-4">
                             <a href="{{ route('products.show', $item->product->slug) }}" wire:navigate
@@ -80,62 +125,91 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                                 <flux:subheading>${{ $item->product->price }}UYU</flux:subheading>
                             </div>
                         </div>
-                        <flux:button icon="trash" class="mr-2 hover:cursor-pointer" variant="subtle"
-                            wire:click="removeFromCart({{ $item->id }})" />
                     </div>
+                    <flux:separator />
                 @else
                     <div wire:key="item-{{ $item['product_id'] }}" class="flex items-center justify-between">
-                        @php
-                            $product = \App\Models\Product::find($item['product_id']);
-                        @endphp
-
-                        @if ($product)
+                        @if ($item['product'])
                             <div class="flex items-start gap-4">
-                                <a href="{{ route('products.show', $product->slug) }}" wire:navigate
+                                <a href="{{ route('products.show', $item['product']->slug) }}" wire:navigate
                                     class="block w-full aspect-square object-cover bg-gray-100">
-                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
+                                    <img src="{{ $item['product']->image_url }}" alt="{{ $item['product']->name }}"
                                         class="w-16 h-16 object-cover">
                                 </a>
                                 <div>
-                                    <flux:heading>{{ Str::ucfirst($product->name) }}</flux:heading>
-                                    <flux:subheading>${{ $product->price }}UYU</flux:subheading>
+                                    <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
+                                    <flux:subheading>${{ $item['product']->price }}UYU</flux:subheading>
                                 </div>
                             </div>
-                            <flux:button icon="trash" class="mr-2 hover:cursor-pointer" variant="subtle"
-                                wire:click="removeFromCart({{ $product->id }})" />
                         @endif
                     </div>
-                @endif
+                    <flux:separator />
+                @endauth
             @empty
-                {{-- <div class="flex flex-col items-center justify-center h-full text-center space-y-4 overflow-y-hidden">
-                    <flux:icon.shopping-cart class="size-12 text-zinc-400" />
-                    <flux:heading size="lg">Tu carrito está vacío.</flux:heading>
-                    <flux:subheading>Agrega productos para verlos aquí.</flux:subheading>
-                    <flux:button size="sm" wire:navigate href="{{ route('home') }}" variant="primary"
-                        class="!rounded-full w-full mt-6">
-                        Ir a la tienda
-                    </flux:button>
-                </div> --}}
+                <flux:text>No hay productos todavía.
+                    <flux:link href="{{ route('home') }}" wire:navigate>Vuelve a la tienda</flux:link>
+                </flux:text>
             @endforelse
         </div>
 
         @if (count($items) > 0)
             <footer class="space-y-6">
-                <flux:separator />
                 <div class="flex items-center justify-between">
                     <flux:heading size="lg">Total</flux:heading>
-                    <flux:heading size="lg">${{ number_format($total, 2) }} UYU</flux:heading>
+                    <flux:heading size="lg">${{ number_format($total, 2) }}UYU</flux:heading>
                 </div>
-                {{-- <div class="flex flex-col">
-                    <flux:button as:link href="{{ route('client.checkout') }}" wire:navigate variant="primary"
-                        class="!rounded-full w-full">Finalizar
-                        compra
-                    </flux:button>
-                    <flux:button wire:click="clearCart" class="ml-auto mt-4" icon="backspace" size="sm"
-                        variant="subtle">Vaciar carrito
-                    </flux:button>
-                </div> --}}
             </footer>
         @endif
+
+        <div class="mt-6" id="walletBrick_container"></div>
     </div>
 </section>
+
+@script
+    <script>
+        const publicKey = "{{ config('services.mercadopago.public_key') }}";
+        const preferenceId = "{{ $preferenceId }}";
+
+        let bricksBuilder = null;
+
+        async function renderWalletBrick() {
+            const containerId = "walletBrick_container";
+            const container = document.getElementById(containerId);
+            if (container.hasChildNodes()) {
+                return;
+            }
+
+            if (!preferenceId) {
+                console.warn('No preferenceId available, cannot render MercadoPago wallet brick.');
+                return;
+            }
+
+            const mp = new MercadoPago(publicKey);
+            bricksBuilder = mp.bricks();
+
+            await bricksBuilder.create("wallet", containerId, {
+                initialization: {
+                    preferenceId: preferenceId,
+                },
+            });
+        }
+
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('preference-ready', (event) => {
+                // Update the preferenceId with the value from the server if needed,
+                // though re-rendering the component should update it.
+                // A safer approach is to get the updated value from the component.
+                preferenceId = @this.get('preferenceId');
+                renderWalletBrick();
+            });
+        });
+
+        document.addEventListener("livewire:navigated", () => {
+            if (preferenceId) { // Only render if it was available on initial load
+                renderWalletBrick();
+            }
+        }, {
+            once: true
+        });
+    </script>
+@endscript

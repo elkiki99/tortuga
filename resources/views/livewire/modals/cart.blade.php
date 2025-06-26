@@ -2,6 +2,7 @@
 
 use Livewire\Volt\Component;
 use Livewire\Attributes\On;
+use App\Models\Product;
 
 new class extends Component {
     #[On('open-cart')]
@@ -37,10 +38,10 @@ new class extends Component {
         if (Auth::check()) {
             $cart = Auth::user()->cart;
             if ($cart) {
-                $items = $cart->items;
+                $items = $cart->items()->with('product')->get();
                 $total = $items->sum(fn($item) => $item->product->price);
             } else {
-                $items = [];
+                $items = collect(); // Usamos una colección vacía para evitar errores
                 $total = 0;
             }
         } else {
@@ -48,12 +49,17 @@ new class extends Component {
             $items = session('cart', []);
             $total = 0;
 
-            foreach ($items as $item) {
-                $product = \App\Models\Product::find($item['product_id']);
-                if ($product) {
-                    $total += $product->price;
-                }
-            }
+            $productIds = collect($items)->pluck('product_id')->unique()->all();
+            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+            $items = collect($items)
+                ->map(function ($item) use ($products) {
+                    $item['product'] = $products[$item['product_id']] ?? null;
+                    return $item;
+                })
+                ->filter(fn($item) => $item['product']);
+
+            $total = $items->sum(fn($item) => $item['product']->price);
         }
 
         return view('livewire.modals.cart', compact('items', 'cart', 'total'));
@@ -80,7 +86,7 @@ new class extends Component {
                 <flux:separator />
             @endif
 
-            <div class="space-y-6 flex-1 flex flex-col overflow-y-auto py-4 py-2">
+            <div class="space-y-6 flex-1 flex flex-col overflow-y-auto py-4">
                 @forelse($items as $item)
                     @if (Auth::check())
                         <div wire:key="item-{{ $item->product->id }}" class="flex items-center justify-between">
@@ -101,24 +107,20 @@ new class extends Component {
                         </div>
                     @else
                         <div wire:key="item-{{ $item['product_id'] }}" class="flex items-center justify-between">
-                            @php
-                                $product = \App\Models\Product::find($item['product_id']);
-                            @endphp
-
-                            @if ($product)
+                            @if ($item['product'])
                                 <div class="flex items-start gap-4">
-                                    <a href="{{ route('products.show', $product->slug) }}" wire:navigate
+                                    <a href="{{ route('products.show', $item['product']->slug) }}" wire:navigate
                                         class="block w-full aspect-square object-cover bg-gray-100">
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
-                                            class="w-16 h-16 object-cover">
+                                        <img src="{{ $item['product']->image_url }}"
+                                            alt="{{ $item['product']->name }}" class="w-16 h-16 object-cover">
                                     </a>
                                     <div>
-                                        <flux:heading>{{ Str::ucfirst($product->name) }}</flux:heading>
-                                        <flux:subheading>${{ $product->price }}UYU</flux:subheading>
+                                        <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
+                                        <flux:subheading>${{ $item['product']->price }}UYU</flux:subheading>
                                     </div>
                                 </div>
                                 <flux:button icon="trash" class="mr-2 hover:cursor-pointer" variant="subtle"
-                                    wire:click="removeFromCart({{ $product->id }})" />
+                                    wire:click="removeFromCart({{ $item['product']->id }})" />
                             @endif
                         </div>
                     @endif

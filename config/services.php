@@ -34,5 +34,23 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'mercadopago' => [
+        'public_key' => env('MERCADO_PAGO_PUBLIC_KEY'),
+        'access_token' => env('MERCADO_PAGO_ACCESS_TOKEN'),
+    ],
+    
 
+    // 'mercadopago' => [
+    //     'public' => [
+    //         'key' => env('MERCADO_PAGO_PUBLIC_KEY'),
+    //         'token' => env('MERCADO_PAGO_ACCESS_TOKEN'),
+    //     ],
+    //     'client' => [
+    //         'id' => env('MERCADO_PAGO_CLIENT_ID'),
+    //         'secret' => env('MERCADO_PAGO_CLIENT_SECRET'),
+    //     ],
+    //     'integrator' => [
+    //         'id' => env('MERCADO_PAGO_INTEGRATOR_ID'),
+    //     ],
+    // ],
 ];
