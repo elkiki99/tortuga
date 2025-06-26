@@ -95,7 +95,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
         if ($preference) {
             $this->preferenceId = $preference->id;
-            $this->dispatch('preference-ready'); // Dispatch an event
+            // $this->dispatch('preference-ready'); // Dispatch an event
         }
     }
 }; ?>
@@ -194,20 +194,20 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
             });
         }
 
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('preference-ready', (event) => {
-                // Update the preferenceId with the value from the server if needed,
-                // though re-rendering the component should update it.
-                // A safer approach is to get the updated value from the component.
-                preferenceId = @this.get('preferenceId');
-                renderWalletBrick();
-            });
-        });
+        // document.addEventListener('livewire:init', () => {
+        //     Livewire.on('preference-ready', (event) => {
+        //         // Update the preferenceId with the value from the server if needed,
+        //         // though re-rendering the component should update it.
+        //         // A safer approach is to get the updated value from the component.
+        //         preferenceId = @this.get('preferenceId');
+        //         renderWalletBrick();
+        //     });
+        // });
 
         document.addEventListener("livewire:navigated", () => {
-            if (preferenceId) { // Only render if it was available on initial load
+            // if (preferenceId) { // Only render if it was available on initial load
                 renderWalletBrick();
-            }
+            // }
         }, {
             once: true
         });
