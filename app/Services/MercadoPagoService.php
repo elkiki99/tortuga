@@ -43,12 +43,9 @@ class MercadoPagoService
             $preference = $client->create($request);
             return $preference;
         } catch (MPApiException $e) {
-            // This is the line you need to add or uncomment.
-            // It will stop the page from loading and show you the object's contents.
-            dd($e->getApiResponse());
-
+            // dd($e->getApiResponse());
             // The rest of the code below will not be executed.
-            logger()->error('MercadoPago Preference creation error: ' . $e->getMessage());
+            // logger()->error('MercadoPago Preference creation error: ' . $e->getMessage());
             return null;
         }
     }

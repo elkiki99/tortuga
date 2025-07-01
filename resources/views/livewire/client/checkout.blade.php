@@ -1,6 +1,6 @@
 <?php
 
-use Livewire\Attributes\{Layout, Title};
+use Livewire\Attributes\{Layout, Title, On};
 use App\Services\MercadoPagoService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
@@ -46,7 +46,6 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
         $items = [];
 
         if (Auth::check()) {
-            // Si está autenticado, usar el carrito de la base de datos
             $cart = Auth::user()->cart;
 
             if ($cart) {
@@ -95,7 +94,6 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
         if ($preference) {
             $this->preferenceId = $preference->id;
-            // $this->dispatch('preference-ready'); // Dispatch an event
         }
     }
 }; ?>
@@ -108,60 +106,72 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
     <flux:heading size="xl">Checkout</flux:heading>
 
-    <div class="flex flex-col h-full w-1/2 mt-6">
-        <div class="space-y-6 flex-1 flex flex-col overflow-y-auto py-4 py-2">
-            @forelse($items as $item)
-                @auth
-                    <div wire:key="item-{{ $item->product->id }}" class="flex items-center justify-between">
-                        <div class="flex items-start gap-4">
-                            <a href="{{ route('products.show', $item->product->slug) }}" wire:navigate
-                                class="block w-full aspect-square object-cover bg-gray-100">
-                                <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}"
-                                    class="w-16 h-16 object-cover">
-                            </a>
-
-                            <div>
-                                <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
-                                <flux:subheading>${{ $item->product->price }}UYU</flux:subheading>
-                            </div>
-                        </div>
-                    </div>
-                    <flux:separator />
-                @else
-                    <div wire:key="item-{{ $item['product_id'] }}" class="flex items-center justify-between">
-                        @if ($item['product'])
+    <div class="flex gap-12">
+        <div class="flex flex-col h-full w-1/2 mt-6">
+            <div class="space-y-6 flex-grow flex flex-col overflow-y-auto py-4 py-2">
+                @forelse($items as $item)
+                    @auth
+                        <div wire:key="item-{{ $item->product->id }}" class="flex items-center justify-between">
                             <div class="flex items-start gap-4">
-                                <a href="{{ route('products.show', $item['product']->slug) }}" wire:navigate
+                                <a href="{{ route('products.show', $item->product->slug) }}" wire:navigate
                                     class="block w-full aspect-square object-cover bg-gray-100">
-                                    <img src="{{ $item['product']->image_url }}" alt="{{ $item['product']->name }}"
+                                    <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}"
                                         class="w-16 h-16 object-cover">
                                 </a>
+
                                 <div>
-                                    <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
-                                    <flux:subheading>${{ $item['product']->price }}UYU</flux:subheading>
+                                    <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
+                                    <flux:subheading>${{ $item->product->price }}UYU</flux:subheading>
                                 </div>
                             </div>
-                        @endif
+                        </div>
+                        <flux:separator />
+                    @else
+                        <div wire:key="item-{{ $item['product_id'] }}" class="flex items-center justify-between">
+                            @if ($item['product'])
+                                <div class="flex items-start gap-4">
+                                    <a href="{{ route('products.show', $item['product']->slug) }}" wire:navigate
+                                        class="block w-full aspect-square object-cover bg-gray-100">
+                                        <img src="{{ $item['product']->image_url }}" alt="{{ $item['product']->name }}"
+                                            class="w-16 h-16 object-cover">
+                                    </a>
+                                    <div>
+                                        <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
+                                        <flux:subheading>${{ $item['product']->price }}UYU</flux:subheading>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                        <flux:separator />
+                    @endauth
+                @empty
+                    <flux:text>No hay productos todavía.
+                        <flux:link href="{{ route('home') }}" wire:navigate>Vuelve a la tienda</flux:link>
+                    </flux:text>
+                @endforelse
+            </div>
+
+            @if (count($items) > 0)
+                <footer class="space-y-6 mt-auto">
+                    <div class="flex items-center justify-between">
+                        <flux:heading size="lg">Total</flux:heading>
+                        <flux:heading size="lg">${{ number_format($total, 2) }}UYU</flux:heading>
                     </div>
-                    <flux:separator />
-                @endauth
-            @empty
-                <flux:text>No hay productos todavía.
-                    <flux:link href="{{ route('home') }}" wire:navigate>Vuelve a la tienda</flux:link>
-                </flux:text>
-            @endforelse
+                </footer>
+            @endif
+
+            @if (!session()->has('guest_checkout_data'))
+                <div class="mt-6 pointer-events-none opacity-50" id="walletBrick_container"></div>
+            @else
+                <div class="mt-6" id="walletBrick_container"></div>
+            @endif
         </div>
 
-        @if (count($items) > 0)
-            <footer class="space-y-6">
-                <div class="flex items-center justify-between">
-                    <flux:heading size="lg">Total</flux:heading>
-                    <flux:heading size="lg">${{ number_format($total, 2) }}UYU</flux:heading>
-                </div>
-            </footer>
-        @endif
-
-        <div class="mt-6" id="walletBrick_container"></div>
+        @guest
+            @if (!session()->has('guest_checkout_data'))
+                <livewire:partials.guest-checkout-form />
+            @endif
+        @endguest
     </div>
 </section>
 
@@ -194,20 +204,8 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
             });
         }
 
-        // document.addEventListener('livewire:init', () => {
-        //     Livewire.on('preference-ready', (event) => {
-        //         // Update the preferenceId with the value from the server if needed,
-        //         // though re-rendering the component should update it.
-        //         // A safer approach is to get the updated value from the component.
-        //         preferenceId = @this.get('preferenceId');
-        //         renderWalletBrick();
-        //     });
-        // });
-
         document.addEventListener("livewire:navigated", () => {
-            // if (preferenceId) { // Only render if it was available on initial load
-                renderWalletBrick();
-            // }
+            renderWalletBrick();
         }, {
             once: true
         });
