@@ -1,6 +1,6 @@
 <?php
 
-use Livewire\Attributes\{Layout, Title, On};
+use Livewire\Attributes\{Layout, Title};
 use App\Services\MercadoPagoService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
@@ -84,9 +84,8 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
         }
 
         $payer = [
-            'name' => 'Pepito',
-            'surname' => 'Pepe',
-            'email' => Auth::check() ? Auth::user()->email : 'pepito@gmail.com',
+            'name' => Auth::check() ? Auth::user()->name : null,
+            'email' => Auth::check() ? Auth::user()->email : null,
         ];
 
         $mp = new MercadoPagoService();
@@ -159,19 +158,19 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                     </div>
                 </footer>
             @endif
-
+{{-- 
             @if (!session()->has('guest_checkout_data'))
                 <div class="mt-6 pointer-events-none opacity-50" id="walletBrick_container"></div>
-            @else
+            @else --}}
                 <div class="mt-6" id="walletBrick_container"></div>
-            @endif
+            {{-- @endif --}}
         </div>
 
-        @guest
+        {{-- @guest
             @if (!session()->has('guest_checkout_data'))
                 <livewire:partials.guest-checkout-form />
             @endif
-        @endguest
+        @endguest --}}
     </div>
 </section>
 

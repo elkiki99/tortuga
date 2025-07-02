@@ -25,16 +25,17 @@ class MercadoPagoService
                 "default_installments" => 1
             ],
             'back_urls' => [
-                // 'success' => route('client.checkout-success'),
-                // 'failure' => route('client.checkout-failed'),
-                'success' => "https://www.httpbin.org/get?back_url=success",
-                'failure' => "https://www.httpbin.org/get?back_url=failure",
-                'pending' => "https://www.httpbin.org/get?back_url=pending"
+                'success' => route('checkout.success'),
+                'failure' => route('checkout.failure'),
+                'pending' => route('checkout.pending'),
+                // 'success' => "https://www.httpbin.org/get?back_url=success",
+                // 'failure' => "https://www.httpbin.org/get?back_url=failure",
+                // 'pending' => "https://www.httpbin.org/get?back_url=pending"
             ],
             'statement_descriptor' => config('app.name'),
             'external_reference' => uniqid(),
             'expires' => false,
-            'auto_return' => 'approved',
+            // 'auto_return' => 'approved',
         ];
 
         $client = new PreferenceClient();
