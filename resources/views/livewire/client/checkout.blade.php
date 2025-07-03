@@ -61,6 +61,8 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                         'currency_id' => 'UYU',
                         'quantity' => 1,
                         'unit_price' => floatval($item->product->price),
+                        'picture_url' => $item->product->featuredImage->path,
+                        'category_id' => 'fashion',
                     ];
                 }
             }
@@ -79,6 +81,8 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                     'currency_id' => 'UYU',
                     'quantity' => 1,
                     'unit_price' => floatval($product->price),
+                    'picture_url' => $product->featuredImage->path,
+                    'category_id' => 'fashion'
                 ];
             }
         }
@@ -158,19 +162,9 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                     </div>
                 </footer>
             @endif
-{{-- 
-            @if (!session()->has('guest_checkout_data'))
-                <div class="mt-6 pointer-events-none opacity-50" id="walletBrick_container"></div>
-            @else --}}
-                <div class="mt-6" id="walletBrick_container"></div>
-            {{-- @endif --}}
+            
+            <div class="mt-6" id="walletBrick_container"></div>
         </div>
-
-        {{-- @guest
-            @if (!session()->has('guest_checkout_data'))
-                <livewire:partials.guest-checkout-form />
-            @endif
-        @endguest --}}
     </div>
 </section>
 
