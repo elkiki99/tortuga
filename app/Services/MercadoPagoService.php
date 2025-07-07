@@ -32,6 +32,7 @@ class MercadoPagoService
             'statement_descriptor' => config('app.name'),
             'external_reference' => uniqid(),
             'expires' => false,
+            'notification_url' => route('webhook'),
             // 'auto_return' => 'approved',
         ];
 
