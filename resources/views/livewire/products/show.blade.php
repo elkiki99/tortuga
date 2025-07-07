@@ -47,17 +47,13 @@ new #[Layout('components.layouts.app')] class extends Component {
                     @endfor
                 </div>
 
-                {{-- Imagen principal --}}
-                <div class="flex-1 bg-gray-100 flex items-center rounded-md justify-center aspect-square overflow-hidden relative">
-                    {{-- <div class="absolute top-4 right-4 z-10">
-                        <livewire:wishlist.add :product="$product" :key="'wishlist-add-' . $product->id" />
-                    </div> --}}
+                <div
+                    class="flex-1 bg-gray-100 flex items-center rounded-md justify-center aspect-square overflow-hidden relative">
                     <img src="{{ $product->featuredImage ?? 'https://via.placeholder.com/640x640?text=Sin+imagen' }}"
                         alt="{{ $product->name }}" class="object-contain">
                 </div>
             </div>
 
-            {{-- Columna derecha: Solo título y subtítulo --}}
             <div class="lg:w-1/2">
                 <flux:heading size="xl" level="1">{{ Str::ucfirst($product->name) }}</flux:heading>
 
