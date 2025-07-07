@@ -33,7 +33,7 @@ class MercadoPagoService
             'external_reference' => uniqid(),
             'expires' => false,
             'notification_url' => route('webhook'),
-            // 'auto_return' => 'approved',
+            'auto_return' => 'approved',
         ];
 
         $client = new PreferenceClient();
@@ -42,9 +42,8 @@ class MercadoPagoService
             $preference = $client->create($request);
             return $preference;
         } catch (MPApiException $e) {
-            // dd($e->getApiResponse());
             // The rest of the code below will not be executed.
-            // logger()->error('MercadoPago Preference creation error: ' . $e->getMessage());
+            logger()->error('MercadoPago Preference creation error: ' . $e->getMessage());
             return null;
         }
     }
