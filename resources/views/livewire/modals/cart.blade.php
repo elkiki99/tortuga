@@ -146,7 +146,7 @@ new class extends Component {
                         <flux:heading size="lg">${{ number_format($total, 2) }} UYU</flux:heading>
                     </div>
                     <div class="flex flex-col">
-                        <flux:button as:link href="{{ route('client.checkout') }}" wire:navigate variant="primary"
+                        <flux:button as:link href="{{ route('client.checkout') }}" variant="primary"
                             class="!rounded-full w-full">Finalizar
                             compra
                         </flux:button>
