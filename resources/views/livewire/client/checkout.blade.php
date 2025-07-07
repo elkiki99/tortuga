@@ -68,6 +68,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
             }
         } else {
             $cart = session('cart', []);
+            
             foreach ($cart as $item) {
                 $product = Product::find($item['product_id']);
                 if (!$product) {
@@ -88,8 +89,8 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
         }
 
         $payer = [
-            'name' => Auth::check() ? Auth::user()->name : null,
-            'email' => Auth::check() ? Auth::user()->email : null,
+            'name' => Auth::user()->name ?? null,
+            'email' => Auth::user()->email ?? null,
         ];
 
         $mp = new MercadoPagoService();
