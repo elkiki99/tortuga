@@ -44,13 +44,18 @@ Route::post('/webhook', function (Request $request) {
 
     foreach ($parts as $part) {
         [$key, $value] = explode('=', $part);
-        if (trim($key) === 'ts') {
-            $ts = substr(trim($value), 0, 10); // cortar milisegundos
-        }
+        if (trim($key) === 'ts') $ts = substr(trim($value), 0, 10);
         if (trim($key) === 'v1') $hash = trim($value);
     }
 
-    $dataId = $request->input('data.id') ?? $request->get('data.id');
+    // $dataId = $request->input('data.id') ?? $request->get('data.id');
+    $dataId = $request->query('data.id');
+
+    if (!$dataId) {
+        Log::warning('Webhook sin data.id en query');
+        return response()->json(['error' => 'Falta data.id'], 400);
+    }
+
 
     $manifest = "id:{$dataId};request-id:{$requestId};ts:{$ts};";
     $generatedHash = hash_hmac('sha256', $manifest, $secret);
