@@ -48,7 +48,7 @@ Route::post('/webhook', function (Request $request) {
         if (trim($key) === 'v1') $hash = trim($value);
     }
 
-    $dataId = $request->query('data.id');
+    $dataId = $request->query('data.id') ?? $request->input('data.id');
 
     if (!$dataId) {
         Log::warning('Webhook sin data.id');
