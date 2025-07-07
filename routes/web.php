@@ -45,11 +45,7 @@ Route::post('/webhook', function (Request $request) {
 
     foreach ($parts as $part) {
         [$key, $value] = explode('=', $part);
-        // if (trim($key) === 'ts') $ts = trim($value);
-        if (trim($key) === 'ts') {
-            // Si el ts viene en milisegundos, toma solo los primeros 10 dígitos (segundos)
-            $ts = substr(trim($value), 0, 10);
-        }
+        if (trim($key) === 'ts') $ts = trim($value);
         if (trim($key) === 'v1') $hash = trim($value);
     }
 
@@ -59,30 +55,31 @@ Route::post('/webhook', function (Request $request) {
 
     if ($generatedHash !== $hash) {
         Log::warning('Webhook rechazado por firma inválida', compact('manifest', 'generatedHash', 'hash'));
+
+        Log::info('Webhook Headers', [
+            'signature' => $signature,
+            'requestId' => $requestId,
+        ]);
+
+        Log::info('Parsed signature parts', [
+            'ts' => $ts,
+            'hash' => $hash,
+        ]);
+
+        Log::info('Webhook payload data.id', [
+            'data.id' => $dataId,
+        ]);
+
+        Log::info('Manifest string', [
+            'manifest' => $manifest,
+        ]);
+
+        Log::info('Generated hash', [
+            'generatedHash' => $generatedHash,
+        ]);
         return response()->json(['error' => 'Firma inválida'], 403);
     }
 
-    Log::info('Webhook Headers', [
-        'signature' => $signature,
-        'requestId' => $requestId,
-    ]);
-
-    Log::info('Parsed signature parts', [
-        'ts' => $ts,
-        'hash' => $hash,
-    ]);
-
-    Log::info('Webhook payload data.id', [
-        'data.id' => $dataId,
-    ]);
-
-    Log::info('Manifest string', [
-        'manifest' => $manifest,
-    ]);
-
-    Log::info('Generated hash', [
-        'generatedHash' => $generatedHash,
-    ]);
 
     // ✨ ¡Webhook válido!
     Log::info('Webhook recibido y validado', $request->all());
