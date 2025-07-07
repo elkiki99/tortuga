@@ -61,7 +61,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                         'currency_id' => 'UYU',
                         'quantity' => 1,
                         'unit_price' => floatval($item->product->discount_price ?? $item->product->price),
-                        'picture_url' => $item->product->featuredImage->path,
+                        'picture_url' => $item->product->featuredImage?->path,
                         'category_id' => 'fashion',
                     ];
                 }
@@ -82,7 +82,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                     'currency_id' => 'UYU',
                     'quantity' => 1,
                     'unit_price' => floatval($product->discount_price ?? $product->price),
-                    'picture_url' => $product->featuredImage->path,
+                    'picture_url' => $product->featuredImage?->path,
                     'category_id' => 'fashion'
                 ];
             }
