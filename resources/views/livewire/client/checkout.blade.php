@@ -249,7 +249,6 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 @script
     <script>
         const publicKey = "{{ config('services.mercadopago.public_key') }}";
-        // const preferenceId = "{{ $preferenceId }}";
 
         let bricksBuilder = null;
 

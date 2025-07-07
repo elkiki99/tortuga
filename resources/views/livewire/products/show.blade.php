@@ -77,7 +77,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                     </flux:heading>
 
                     <flux:subheading class="text-gray-500">
-                        Hasta 12 cuotas de ${{ number_format($product->discount_price / 12, 2) }} UYU
+                        Hasta 6 cuotas de ${{ number_format($product->discount_price / 6, 2) }} UYU
                     </flux:subheading>
                 @else
                     <flux:heading size="lg">
@@ -85,7 +85,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                     </flux:heading>
 
                     <flux:subheading class="text-gray-500">
-                        Hasta 12 cuotas de ${{ number_format($product->price / 12, 2) }} UYU
+                        Hasta 6 cuotas de ${{ number_format($product->price / 6, 2) }} UYU
                     </flux:subheading>
                 @endif
 
@@ -108,7 +108,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                     <flux:callout icon="credit-card">
                         <flux:callout.heading>Pago en cuotas</flux:callout.heading>
                         <flux:callout.text>
-                            Podes pagar hasta en <strong>12 cuotas sin recargo</strong> con mercadopago.
+                            Podes pagar hasta en <strong>6 cuotas sin recargo</strong> con mercadopago.
                         </flux:callout.text>
                     </flux:callout>
 

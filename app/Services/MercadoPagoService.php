@@ -12,6 +12,7 @@ class MercadoPagoService
     {
         MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
         // MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::LOCAL); // only if using localhost, else SERVER
+        MercadoPagoConfig::setIntegratorId(config('services.mercadopago.integrator_id'));
     }
 
     public function createPreference(array $items, array $payer)
@@ -20,8 +21,13 @@ class MercadoPagoService
             'items' => $items,
             'payer' => $payer,
             'payment_methods' => [
-                "excluded_payment_methods" => [],
-                "installments" => 12,
+                "excluded_payment_methods" => [
+                    [
+                        'id' => 'visa',
+                    ]
+                ],
+                // "excluded_payment_methods" => [],
+                "installments" => 6,
                 "default_installments" => 1
             ],
             'back_urls' => [
@@ -30,7 +36,8 @@ class MercadoPagoService
                 'pending' => config('app.url') . '/pending',
             ],
             'statement_descriptor' => config('app.name'),
-            'external_reference' => uniqid(),
+            // 'external_reference' => uniqid(),
+            'external_reference' => 'brossani23@gmail.com',
             'expires' => false,
             'notification_url' => config('app.url') . '/webhook',
             'auto_return' => 'approved',
