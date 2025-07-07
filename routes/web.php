@@ -31,32 +31,32 @@ Volt::route('checkout/pending', 'checkout.pending')->name('checkout.pending');
 
 Route::post('/webhook', function (Request $request) {
     // Verifica autenticidad del webhook (opcional pero recomendado)
-    $signature = $request->header('x-signature');
-    $requestId = $request->header('x-request-id');
-    $secret = config('services.mercadopago.webhook_test'); // ⚠️ Copiala desde "Tus Integraciones"
+    // $signature = $request->header('x-signature');
+    // $requestId = $request->header('x-request-id');
+    // $secret = config('services.mercadopago.webhook_test'); // ⚠️ Copiala desde "Tus Integraciones"
 
-    if (!$signature || !$requestId) {
-        return response()->json(['error' => 'Falta firma'], 400);
-    }
+    // if (!$signature || !$requestId) {
+    //     return response()->json(['error' => 'Falta firma'], 400);
+    // }
 
-    $parts = explode(',', $signature);
-    $ts = null;
-    $hash = null;
+    // $parts = explode(',', $signature);
+    // $ts = null;
+    // $hash = null;
 
-    foreach ($parts as $part) {
-        [$key, $value] = explode('=', $part);
-        if (trim($key) === 'ts') $ts = trim($value);
-        if (trim($key) === 'v1') $hash = trim($value);
-    }
+    // foreach ($parts as $part) {
+    //     [$key, $value] = explode('=', $part);
+    //     if (trim($key) === 'ts') $ts = trim($value);
+    //     if (trim($key) === 'v1') $hash = trim($value);
+    // }
 
-    $dataId = $request->input('data.id');
-    $manifest = "id:{$dataId};request-id:{$requestId};ts:{$ts};";
-    $generatedHash = hash_hmac('sha256', $manifest, $secret);
+    // $dataId = $request->input('data.id');
+    // $manifest = "id:{$dataId};request-id:{$requestId};ts:{$ts};";
+    // $generatedHash = hash_hmac('sha256', $manifest, $secret);
 
-    if ($generatedHash !== $hash) {
-        Log::warning('Webhook rechazado por firma inválida', compact('manifest', 'generatedHash', 'hash'));
-        return response()->json(['error' => 'Firma inválida'], 403);
-    }
+    // if ($generatedHash !== $hash) {
+    //     Log::warning('Webhook rechazado por firma inválida', compact('manifest', 'generatedHash', 'hash'));
+    //     return response()->json(['error' => 'Firma inválida'], 403);
+    // }
 
     // ✨ ¡Webhook válido!
     Log::info('Webhook recibido y validado', $request->all());
