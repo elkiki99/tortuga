@@ -45,7 +45,9 @@ Route::post('/webhook', function (Request $request) {
 
     foreach ($parts as $part) {
         [$key, $value] = explode('=', $part);
-        if (trim($key) === 'ts') $ts = trim($value);
+        if (trim($key) === 'ts') {
+            $ts = substr(trim($value), 0, 10);
+        }
         if (trim($key) === 'v1') $hash = trim($value);
     }
 
