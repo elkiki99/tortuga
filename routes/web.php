@@ -26,6 +26,8 @@ Volt::route('checkout/success', 'checkout.success')->name('checkout.success');
 Volt::route('checkout/failure', 'checkout.failure')->name('checkout.failure');
 Volt::route('checkout/pending', 'checkout.pending')->name('checkout.pending');
 
+Volt::route('webhook', 'checkout.webhook')->name('checkout.webhook');
+
 Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
 Volt::route('categorias/{category:slug}', 'categories.show')->name('categories.show');
 
