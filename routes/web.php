@@ -32,10 +32,10 @@ Volt::route('checkout/pending', 'checkout.pending')->name('checkout.pending');
 Route::post('/webhook', function (Request $request) {
     $signature = $request->header('x-signature');
     $requestId = $request->header('x-request-id');
-    $secret = config('services.mercadopago.webhook_test'); // clave secreta
+    $secret = config('services.mercadopago.webhook_test'); // tu clave secreta
 
     if (!$signature || !$requestId) {
-        return response()->json(['error' => 'Falta firma'], 400);
+        return response()->json(['error' => 'Faltan headers'], 400);
     }
 
     $parts = explode(',', $signature);
@@ -48,14 +48,12 @@ Route::post('/webhook', function (Request $request) {
         if (trim($key) === 'v1') $hash = trim($value);
     }
 
-    // $dataId = $request->input('data.id') ?? $request->get('data.id');
-    $dataId = $request->query('data.id');
+    $dataId = $request->input('data.id');
 
     if (!$dataId) {
-        Log::warning('Webhook sin data.id en query');
+        Log::warning('Webhook sin data.id');
         return response()->json(['error' => 'Falta data.id'], 400);
     }
-
 
     $manifest = "id:{$dataId};request-id:{$requestId};ts:{$ts};";
     $generatedHash = hash_hmac('sha256', $manifest, $secret);
