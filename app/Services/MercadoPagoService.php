@@ -25,14 +25,14 @@ class MercadoPagoService
                 "default_installments" => 1
             ],
             'back_urls' => [
-                'success' => route('checkout.success'),
-                'failure' => route('checkout.failure'),
-                'pending' => route('checkout.pending'),
+                'success' => config('app.url') . '/success',
+                'failure' => config('app.url') . '/failure',
+                'pending' => config('app.url') . '/pending',
             ],
             'statement_descriptor' => config('app.name'),
             'external_reference' => uniqid(),
             'expires' => false,
-            'notification_url' => route('webhook'),
+            'notification_url' => config('app.url') . '/webhook',
             'auto_return' => 'approved',
         ];
 
