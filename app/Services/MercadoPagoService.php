@@ -28,9 +28,6 @@ class MercadoPagoService
                 'success' => route('checkout.success'),
                 'failure' => route('checkout.failure'),
                 'pending' => route('checkout.pending'),
-                // 'success' => "https://www.httpbin.org/get?back_url=success",
-                // 'failure' => "https://www.httpbin.org/get?back_url=failure",
-                // 'pending' => "https://www.httpbin.org/get?back_url=pending"
             ],
             'statement_descriptor' => config('app.name'),
             'external_reference' => uniqid(),

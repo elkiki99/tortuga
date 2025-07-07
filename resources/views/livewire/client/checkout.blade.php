@@ -17,7 +17,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
             $cart = Auth::user()->cart;
             if ($cart) {
                 $this->items = $cart->items()->with('product')->get();
-                $this->total = $this->items->sum(fn($item) => $item->product->price);
+                $this->total = $this->items->sum(fn($item) => $item->product->discount_price ?? $item->product->price);
             } else {
                 $this->items = [];
                 $this->total = 0;
@@ -35,7 +35,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                 })
                 ->filter(fn($item) => $item['product']);
 
-            $this->total = $this->items->sum(fn($item) => $item['product']->price);
+            $this->total = $this->items->sum(fn($item) => $item['product']->discount_price ?? $item['product']->price);
         }
 
         $this->createPreference();
@@ -60,7 +60,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                         'description' => $item->product->description,
                         'currency_id' => 'UYU',
                         'quantity' => 1,
-                        'unit_price' => floatval($item->product->price),
+                        'unit_price' => floatval($item->product->discount_price ?? $item->product->price),
                         'picture_url' => $item->product->featuredImage->path,
                         'category_id' => 'fashion',
                     ];
@@ -80,7 +80,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                     'description' => $product->description,
                     'currency_id' => 'UYU',
                     'quantity' => 1,
-                    'unit_price' => floatval($product->price),
+                    'unit_price' => floatval($product->discount_price ?? $product->price),
                     'picture_url' => $product->featuredImage->path,
                     'category_id' => 'fashion'
                 ];
@@ -124,7 +124,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
                                 <div>
                                     <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
-                                    <flux:subheading>${{ $item->product->price }}UYU</flux:subheading>
+                                    <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU</flux:subheading>
                                 </div>
                             </div>
                         </div>
@@ -140,7 +140,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                                     </a>
                                     <div>
                                         <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
-                                        <flux:subheading>${{ $item['product']->price }}UYU</flux:subheading>
+                                        <flux:subheading>${{ $item['product']->discount_price ?? $item['product']->price }}UYU</flux:subheading>
                                     </div>
                                 </div>
                             @endif

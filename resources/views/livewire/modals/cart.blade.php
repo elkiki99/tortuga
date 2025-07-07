@@ -39,9 +39,9 @@ new class extends Component {
             $cart = Auth::user()->cart;
             if ($cart) {
                 $items = $cart->items()->with('product')->get();
-                $total = $items->sum(fn($item) => $item->product->price);
+                $total = $items->sum(fn($item) => $item->product->discount_price ?? $item->product->price);
             } else {
-                $items = collect(); // Usamos una colección vacía para evitar errores
+                $items = collect();
                 $total = 0;
             }
         } else {
@@ -59,7 +59,7 @@ new class extends Component {
                 })
                 ->filter(fn($item) => $item['product']);
 
-            $total = $items->sum(fn($item) => $item['product']->price);
+            $total = $items->sum(fn($item) => $item['product']->discount_price ?? $item['product']->price);
         }
 
         return view('livewire.modals.cart', compact('items', 'cart', 'total'));
@@ -99,7 +99,7 @@ new class extends Component {
 
                                 <div>
                                     <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
-                                    <flux:subheading>${{ $item->product->price }}UYU</flux:subheading>
+                                    <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU</flux:subheading>
                                 </div>
                             </div>
                             <flux:button icon="trash" class="mr-2 hover:cursor-pointer" variant="subtle"
@@ -116,7 +116,7 @@ new class extends Component {
                                     </a>
                                     <div>
                                         <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
-                                        <flux:subheading>${{ $item['product']->price }}UYU</flux:subheading>
+                                        <flux:subheading>${{ $item['product']->discount_price ?? $item['product']->price }}UYU</flux:subheading>
                                     </div>
                                 </div>
                                 <flux:button icon="trash" class="mr-2 hover:cursor-pointer" variant="subtle"
