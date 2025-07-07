@@ -50,7 +50,7 @@ Route::post('/webhook', function (Request $request) {
         if (trim($key) === 'v1') $hash = trim($value);
     }
 
-    $dataId = $request->get('data.id');
+    $dataId = $request->input('data.id') ?? $request->get('data.id');
 
     $manifest = "id:{$dataId};request-id:{$requestId};ts:{$ts};";
     $generatedHash = hash_hmac('sha256', $manifest, $secret);
