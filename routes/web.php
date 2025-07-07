@@ -30,10 +30,9 @@ Volt::route('checkout/failure', 'checkout.failure')->name('checkout.failure');
 Volt::route('checkout/pending', 'checkout.pending')->name('checkout.pending');
 
 Route::post('/webhook', function (Request $request) {
-    // Verifica autenticidad del webhook (opcional pero recomendado)
     $signature = $request->header('x-signature');
     $requestId = $request->header('x-request-id');
-    $secret = config('services.mercadopago.webhook_test'); // ⚠️ Copiala desde "Tus Integraciones"
+    $secret = config('services.mercadopago.webhook_test'); // clave secreta
 
     if (!$signature || !$requestId) {
         return response()->json(['error' => 'Falta firma'], 400);
@@ -46,50 +45,22 @@ Route::post('/webhook', function (Request $request) {
     foreach ($parts as $part) {
         [$key, $value] = explode('=', $part);
         if (trim($key) === 'ts') {
-            $ts = substr(trim($value), 0, 10);
+            $ts = substr(trim($value), 0, 10); // cortar milisegundos
         }
         if (trim($key) === 'v1') $hash = trim($value);
     }
 
-    $dataId = $request->input('data.id');
+    $dataId = $request->get('data.id');
+
     $manifest = "id:{$dataId};request-id:{$requestId};ts:{$ts};";
     $generatedHash = hash_hmac('sha256', $manifest, $secret);
 
     if ($generatedHash !== $hash) {
         Log::warning('Webhook rechazado por firma inválida', compact('manifest', 'generatedHash', 'hash'));
-
-        Log::info('Webhook Headers', [
-            'signature' => $signature,
-            'requestId' => $requestId,
-        ]);
-
-        Log::info('Parsed signature parts', [
-            'ts' => $ts,
-            'hash' => $hash,
-        ]);
-
-        Log::info('Webhook payload data.id', [
-            'data.id' => $dataId,
-        ]);
-
-        Log::info('Manifest string', [
-            'manifest' => $manifest,
-        ]);
-
-        Log::info('Generated hash', [
-            'generatedHash' => $generatedHash,
-        ]);
         return response()->json(['error' => 'Firma inválida'], 403);
     }
 
-
-    // ✨ ¡Webhook válido!
-    Log::info('Webhook recibido y validado', $request->all());
-
-    // Podés consultar el pago si querés:
-    // $paymentId = $dataId;
-    // $paymentInfo = Http::withToken(env('MERCADOPAGO_ACCESS_TOKEN'))->get("https://api.mercadopago.com/v1/payments/{$paymentId}");
-
+    Log::info('✅ Webhook recibido y validado', ['data.id' => $dataId]);
     return response()->json(['received' => true], 200);
 })->name('webhook');
 
