@@ -82,9 +82,15 @@
                         <flux:menu.separator />
 
                         <flux:menu.radio.group>
-                            <flux:menu.item :href="route('client.wishlist')" icon="heart" wire:navigate>
-                                {{ __('Wishlist') }}
-                            </flux:menu.item>
+                            @if (Auth::user()->isAdmin())
+                                <flux:menu.item :href="route('dashboard')" icon="home" wire:navigate>
+                                    {{ __('Panel') }}
+                                </flux:menu.item>
+                            @else
+                                <flux:menu.item :href="route('client.wishlist')" icon="heart" wire:navigate>
+                                    {{ __('Wishlist') }}
+                                </flux:menu.item>
+                            @endif
                             <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
                                 {{ __('Ajustes') }}
                             </flux:menu.item>
@@ -102,7 +108,7 @@
                     </flux:menu>
                 </flux:dropdown>
             @else
-                <flux:button variant="primary" size="sm" href="{{ route('login') }}">Login</flux:button>
+                <flux:button size="sm" href="{{ route('login') }}">Login</flux:button>
             @endauth
         @endif
     </flux:header>

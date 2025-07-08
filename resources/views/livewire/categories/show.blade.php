@@ -31,8 +31,31 @@ new #[Layout('components.layouts.app')] class extends Component {
 }; ?>
 
 <div>
-    <section class="min-h-screen container mx-auto px-4 sm:px-6 lg:px-8 space-y-12 mb-12">
-        @include('livewire.partials.breadcrumb')
+    <section class="min-h-screen container mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div class="flex items-center justify-between">
+            @include('livewire.partials.breadcrumb')
+
+            <div class="flex items-center gap-4">
+                <flux:select variant="listbox" class="sm:max-w-fit" align="end">
+                    <x-slot name="trigger">
+                        <flux:select.button size="sm">
+                            <flux:icon.arrows-up-down variant="micro" class="mr-2 text-zinc-400" />
+                            <flux:select.selected />
+                        </flux:select.button>
+                    </x-slot>
+                    <flux:select.option value="popular" selected>Más reciente</flux:select.option>
+                    <flux:select.option value="newest">Más antiguo</flux:select.option>
+                    <flux:select.option value="oldest">Precio más bajo</flux:select.option>
+                    <flux:select.option value="oldest">Precio más alto</flux:select.option>
+                </flux:select>
+
+                <flux:modal.trigger name="more-filters-{{ $category->id }}">
+                    <flux:button variant="primary" size="sm">Más filtros</flux:button>
+                </flux:modal.trigger>
+
+                <livewire:modals.more-filters :$category />
+            </div>
+        </div>
 
         <div class="space-y-6">
             <div class="flex items-start justify-between gap-24">
@@ -43,28 +66,6 @@ new #[Layout('components.layouts.app')] class extends Component {
                     <flux:subheading>
                         {{ Str::ucfirst($category->description) }}</strong>
                     </flux:subheading>
-                </div>
-
-
-                <div class="flex items-center gap-4">
-                    <flux:select variant="listbox" class="sm:max-w-fit" align="end">
-                        <x-slot name="trigger">
-                            <flux:select.button size="sm">
-                                <flux:icon.arrows-up-down variant="micro" class="mr-2 text-zinc-400" />
-                                <flux:select.selected />
-                            </flux:select.button>
-                        </x-slot>
-                        <flux:select.option value="popular" selected>Relevancia</flux:select.option>
-                        <flux:select.option value="newest">Más reciente</flux:select.option>
-                        <flux:select.option value="oldest">Precio más alto</flux:select.option>
-                        <flux:select.option value="oldest">Precio más alto</flux:select.option>
-                    </flux:select>
-
-                    <flux:modal.trigger name="more-filters-{{ $category->id }}">
-                        <flux:button variant="primary" size="sm">Más filtros</flux:button>
-                    </flux:modal.trigger>
-
-                    <livewire:modals.more-filters :$category />
                 </div>
             </div>
 

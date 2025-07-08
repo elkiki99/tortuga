@@ -30,6 +30,8 @@ Volt::route('checkout/failure', 'checkout.failure')->name('checkout.failure');
 Volt::route('checkout/pending', 'checkout.pending')->name('checkout.pending');
 
 Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
+Volt::route('productos', 'products.index')->name('products.index');
+
 Volt::route('categorias/{category:slug}', 'categories.show')->name('categories.show');
 
 require __DIR__ . '/auth.php';

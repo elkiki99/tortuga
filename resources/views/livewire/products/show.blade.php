@@ -23,7 +23,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     public function render(): mixed
     {
-        return view('livewire.products.show')->title($this->product->name . ' • Tortuga Second Hand');
+        return view('livewire.products.show')->title($this->product->name . ' • Tortuga');
     }
 }; ?>
 
