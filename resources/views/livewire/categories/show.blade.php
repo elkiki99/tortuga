@@ -43,10 +43,10 @@ new #[Layout('components.layouts.app')] class extends Component {
                             <flux:select.selected />
                         </flux:select.button>
                     </x-slot>
-                    <flux:select.option value="popular" selected>Más reciente</flux:select.option>
-                    <flux:select.option value="newest">Más antiguo</flux:select.option>
-                    <flux:select.option value="oldest">Precio más bajo</flux:select.option>
-                    <flux:select.option value="oldest">Precio más alto</flux:select.option>
+                    <flux:select.option value="newest" selected>Más reciente</flux:select.option>
+                    <flux:select.option value="oldest">Más antiguo</flux:select.option>
+                    <flux:select.option value="cheapest">Precio más bajo</flux:select.option>
+                    <flux:select.option value="priciest">Precio más alto</flux:select.option>
                 </flux:select>
 
                 <flux:modal.trigger name="more-filters-{{ $category->id }}">

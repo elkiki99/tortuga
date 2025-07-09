@@ -86,23 +86,29 @@ new class extends Component {
                 <flux:separator />
             @endif
 
-            <div class="space-y-6 flex-1 flex flex-col overflow-y-auto py-4">
+            <div class="space-y-4 flex-1 flex flex-col overflow-y-auto py-4">
                 @forelse($items as $item)
                     @if (Auth::check())
                         <div wire:key="item-{{ $item->product->id }}" class="flex items-center justify-between">
                             <div class="flex items-start gap-4">
                                 <a href="{{ route('products.show', $item->product->slug) }}" wire:navigate
                                     class="block w-full aspect-square object-cover bg-gray-100">
-                                    <img src="{{ $item->product->image_url }}" alt="{{ $item->product->name }}"
-                                        class="w-16 h-16 object-cover">
+                                    @if ($item->product->featuredImage)
+                                        <img src="{{ Storage::url($item->product->featuredImage->path) }}"
+                                            alt="{{ $item->product->name }}" class="object cover w-16 h-16">
+                                    @else
+                                        <img src="{{ $item->product->featuredImage }}" alt="{{ $item->product->name }}"
+                                            class="object cover w-16 h-16">
+                                    @endif
                                 </a>
 
                                 <div>
                                     <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
-                                    <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU</flux:subheading>
+                                    <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU
+                                    </flux:subheading>
                                 </div>
                             </div>
-                            <flux:button icon="trash" class="mr-2 hover:cursor-pointer" variant="subtle"
+                            <flux:button icon="trash" class="mr-2" variant="subtle"
                                 wire:click="removeFromCart({{ $item->id }})" />
                         </div>
                     @else
@@ -111,15 +117,22 @@ new class extends Component {
                                 <div class="flex items-start gap-4">
                                     <a href="{{ route('products.show', $item['product']->slug) }}" wire:navigate
                                         class="block w-full aspect-square object-cover bg-gray-100">
-                                        <img src="{{ $item['product']->image_url }}"
-                                            alt="{{ $item['product']->name }}" class="w-16 h-16 object-cover">
+                                        @if ($item['product']->featuredImage)
+                                            <img src="{{ Storage::url($item['product']->featuredImage->path) }}"
+                                                alt="{{ $item['product']->name }}" class="object cover w-16 h-16">
+                                        @else
+                                            <img src="{{ $item['product']->featuredImage }}"
+                                                alt="{{ $item['product']->name }}" class="object cover w-16 h-16">
+                                        @endif
                                     </a>
                                     <div>
                                         <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
-                                        <flux:subheading>${{ $item['product']->discount_price ?? $item['product']->price }}UYU</flux:subheading>
+                                        <flux:subheading>
+                                            ${{ $item['product']->discount_price ?? $item['product']->price }}UYU
+                                        </flux:subheading>
                                     </div>
                                 </div>
-                                <flux:button icon="trash" class="mr-2 hover:cursor-pointer" variant="subtle"
+                                <flux:button icon="trash" class="mr-2" variant="subtle"
                                     wire:click="removeFromCart({{ $item['product']->id }})" />
                             @endif
                         </div>

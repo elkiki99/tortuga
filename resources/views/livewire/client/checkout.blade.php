@@ -107,9 +107,17 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                 }
             }
 
+            $fullName = trim(Auth::user()->name ?? '');
+
+            $parts = explode(' ', $fullName);
+            $lastIndex = count($parts) - 1;
+
+            $name = $lastIndex > 0 ? implode(' ', array_slice($parts, 0, $lastIndex)) : $parts[0] ?? null;
+            $surname = $lastIndex > 0 ? $parts[$lastIndex] : null;
+
             $payer = [
-                'name' => Auth::user()->name ?? null,
-                'surname' => Auth::user()->surname ?? null,
+                'name' => $name,
+                'surname' => $surname,
                 'email' => Auth::user()->email ?? null,
             ];
         } else {
@@ -139,13 +147,11 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
             ];
         }
 
-        // 1. Comparar hash actual con el anterior
         $newHash = $this->generatePreferenceHash($items, $payer);
         if ($this->preferenceHash === $newHash && $this->preferenceId) {
-            return; // No hay cambios, no se crea nueva preferencia
+            return;
         }
 
-        // 2. Crear preferencia si hay cambios
         $mp = new MercadoPagoService();
         $preference = $mp->createPreference($items, $payer);
 
@@ -233,7 +239,8 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
                             <div class="flex">
                                 <flux:spacer />
-                                <flux:button variant="primary" wire:click="saveGuestName">Enviar</flux:button>
+                                <flux:button variant="primary" wire:click="saveGuestName" icon-trailing="chevron-right">
+                                    Continuar</flux:button>
                             </div>
                         </div>
                     </flux:card>

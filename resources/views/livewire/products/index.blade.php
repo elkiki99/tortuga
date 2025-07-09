@@ -1,6 +1,6 @@
 <?php
 
-use Livewire\Attributes\{Layout, Title, Computed};
+use Livewire\Attributes\{Layout, Title, Computed, On};
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 use App\Models\Product;
@@ -10,6 +10,14 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
 
     public $sortBy = 'created_at';
     public $sortDirection = 'desc';
+    public $search = '';
+
+    #[On('productCreated')]
+    #[On('productDeleted')]
+    public function refreshPage()
+    {
+        $this->dispatch('$refresh');
+    }
 
     public function sort($column)
     {
@@ -25,11 +33,16 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
     public function products()
     {
         return Product::query()
-            ->when($this->sortBy === 'price', function ($query) {
-                $query->orderByRaw("COALESCE(discount_price, price) {$this->sortDirection}");
-            }, function ($query) {
-                $query->orderBy($this->sortBy, $this->sortDirection);
-            })
+            ->search($this->search)
+            ->when(
+                $this->sortBy === 'price',
+                function ($query) {
+                    $query->orderByRaw("COALESCE(discount_price, price) {$this->sortDirection}");
+                },
+                function ($query) {
+                    $query->orderBy($this->sortBy, $this->sortDirection);
+                },
+            )
             ->paginate(12);
     }
 }; ?>
@@ -43,10 +56,13 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
     </div>
 
     <div class="flex items-center gap-4">
-        <flux:button size="sm" variant="primary" icon="plus">Nuevo producto</flux:button>
+        <flux:modal.trigger name="create-product">
+            <flux:button size="sm" variant="primary" icon="plus">Nuevo producto</flux:button>
+        </flux:modal.trigger>
 
         <div class="w-full">
-            <flux:input size="sm" variant="filled" placeholder="Buscar..." icon="magnifying-glass" />
+            <flux:input wire:model.live="search" size="sm" variant="filled" placeholder="Buscar..."
+                icon="magnifying-glass" />
         </div>
 
         <flux:tabs variant="segmented" class="w-auto! ml-2" size="sm">
@@ -59,8 +75,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
         <flux:table.columns>
             <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection"
                 wire:click="sort('name')">Nombre</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'price'" :direction="$sortDirection"
-                wire:click="sort('price')">Precio</flux:table.column>
+            <flux:table.column sortable {{-- :sorted="$sortBy === 'price'" --}} :direction="$sortDirection" wire:click="sort('price')">
+                Precio</flux:table.column>
             <flux:table.column>Categoría</flux:table.column>
             <flux:table.column>Marca</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'created_at'" :direction="$sortDirection"
@@ -69,34 +85,71 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
         </flux:table.columns>
 
         <flux:table.rows>
-            @foreach ($this->products as $product)
-                <flux:table.row :key="$product->id">
-                    <flux:table.cell variant="strong" class="flex items-center gap-3">
-                        <flux:avatar size="xs" src="{{ $product->featuredImage }}" />
-                        {{ Str::ucfirst($product->name) }}
+            @forelse ($this->products as $product)
+                <flux:table.row wire:key="{{ $product->id }}">
+                    <flux:table.cell variant="strong">
+                        <flux:text>
+                            <flux:link variant="ghost" wire:navigate
+                                href="{{ route('products.show', $product->slug) }}">
+                                {{ Str::ucfirst($product->name) }}
+                            </flux:link>
+                        </flux:text>
                     </flux:table.cell>
+
                     <flux:table.cell class="whitespace-nowrap">${{ $product->discount_price ?? $product->price }}UYU
                     </flux:table.cell>
+
                     <flux:table.cell>
                         <flux:badge size="sm" inset="top bottom">
-                            {{ Str::ucfirst($product->category->name) }}
+                            <flux:link variant="subtle" wire:navigate
+                                href="{{ route('categories.show', $product->category->slug) }}">
+                                {{ Str::ucfirst($product->category->name) }}
+                            </flux:link>
                         </flux:badge>
                     </flux:table.cell>
+
                     <flux:table.cell>{{ Str::ucfirst($product->brand->name) }}</flux:table.cell>
+
                     <flux:table.cell>{{ $product->created_at->format('d/m/Y') }}</flux:table.cell>
+
                     <flux:table.cell>
-                        @if ($product->in_stock == true)
-                            <flux:badge size="sm" color="green" inset="top bottom">Si</flux:badge>
-                        @else
-                            <flux:badge size="sm" color="red" inset="top bottom">No</flux:badge>
-                        @endif
-                    </flux:table.cell>
-                    <flux:table.cell>
-                        <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom">
-                        </flux:button>
+                        <flux:dropdown>
+                            <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom">
+                            </flux:button>
+                            <flux:menu>
+                                <flux:menu.item icon-trailing="chevron-right">Ver producto</flux:menu.item>
+                                <flux:menu.separator />
+
+                                <flux:modal.trigger name="edit-product-{{ $product->id }}">
+                                    <flux:menu.item icon="pencil-square">Editar producto</flux:menu.item>
+                                </flux:modal.trigger>
+
+                                <flux:modal.trigger name="delete-product-{{ $product->id }}">
+                                    <flux:menu.item variant="danger" icon="trash">Eliminar producto</flux:menu.item>
+                                </flux:modal.trigger>
+                            </flux:menu>
+                        </flux:dropdown>
+
+                        <!-- Update sumary modal -->
+                        <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
+
+                        <!-- Delete product modal -->
+                        <livewire:products.delete :$product wire:key="delete-product-{{ $product->id }}" />
                     </flux:table.cell>
                 </flux:table.row>
-            @endforeach
+            @empty
+                <flux:table.row>
+                    <flux:table.cell colspan="6" class="text-center">
+                        @if ($this->search != '')
+                            No hay productos para la búsqueda "{{ $this->search }}"
+                        @else
+                            No hay productos
+                        @endif
+                    </flux:table.cell>
+                </flux:table.row>
+            @endforelse
         </flux:table.rows>
     </flux:table>
+
+    <livewire:products.create />
 </div>

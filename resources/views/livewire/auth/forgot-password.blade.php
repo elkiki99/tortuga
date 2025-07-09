@@ -18,12 +18,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         Password::sendResetLink($this->only('email'));
 
-        Flux::toast(variant: 'success', heading: 'Reset link sent.', text: 'A reset link will be sent if the account exists.');
+        Flux::toast(variant: 'success', heading: 'Enlace de verificación enviado', text: 'Hemos enviado un nuevo enlace de verificación a tu email');
     }
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Forgot password')" :description="__('Enter your email to receive a password reset link')" />
+    <x-auth-header :title="__('¿Olvidaste tu contraseña?')" :description="__('Ingresa tu email para recibir el enlace de verificación')" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -32,7 +32,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         <!-- Email Address -->
         <flux:input
             wire:model="email"
-            :label="__('Email Address')"
+            :label="__('Correo electrónico')"
             type="email"
             required
             autofocus
@@ -40,11 +40,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
             viewable
         />
 
-        <flux:button variant="primary" type="submit" class="w-full">{{ __('Email password reset link') }}</flux:button>
+        <flux:button variant="primary" type="submit" class="w-full">{{ __('Enviar') }}</flux:button>
     </form>
 
     <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-400">
-        {{ __('Or, return to') }}
-        <flux:link :href="route('login')" wire:navigate>{{ __('log in') }}</flux:link>
+        {{ __('O vuelve a ') }}
+        <flux:link :href="route('login')" wire:navigate>{{ __('iniciar sesión') }}</flux:link>
     </div>
 </div>

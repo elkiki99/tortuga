@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 
-
 new #[Layout('components.layouts.dashboard')] #[Title('Profile • Tortuga')] class extends Component {
     public string $name = '';
     public string $email = '';
@@ -42,7 +41,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Profile • Tortuga')] cl
 
         $user->save();
 
-        Flux::toast(variant: 'success', heading: 'Profile updated.', text: 'Your profile information has been successfully updated.');
+        Flux::toast(variant: 'success', heading: 'Perfil actualizado', text: 'Tu perfil se ha actualizado correctamente');
     }
 
     /**
@@ -53,23 +52,23 @@ new #[Layout('components.layouts.dashboard')] #[Title('Profile • Tortuga')] cl
         $user = Auth::user();
 
         if ($user->hasVerifiedEmail()) {
-            $this->redirectIntended(default: route('dashboard', absolute: false));
+            $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
 
             return;
         }
 
         $user->sendEmailVerificationNotification();
 
-        Flux::toast(variant: 'success', heading: 'Verification link sent.', text: 'A new verification link has been sent to your email address.');
+        Flux::toast(variant: 'success', heading: 'Enlace de verificación enviado', text: 'Hemos enviado un nuevo enlace de verificación a tu email');
     }
 }; ?>
 
 <section class="w-full">
     @include('livewire.partials.settings-heading')
 
-    <x-settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
+    <x-settings.layout :heading="__('Perfil')" :subheading="__('Actualiza tu nombre y tu email')">
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
-            <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
+            <flux:input wire:model="name" :label="__('Nombre')" type="text" required autofocus autocomplete="name" />
 
             <div>
                 <flux:input wire:model="email" :label="__('Email')" type="email" required autocomplete="email" />
@@ -77,17 +76,17 @@ new #[Layout('components.layouts.dashboard')] #[Title('Profile • Tortuga')] cl
                 @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())
                     <div>
                         <flux:text class="mt-4">
-                            {{ __('Your email address is unverified.') }}
+                            {{ __('Su dirección de correo electrónico no está verificada.') }}
 
                             <flux:link class="text-sm cursor-pointer"
                                 wire:click.prevent="resendVerificationNotification">
-                                {{ __('Click here to re-send the verification email.') }}
+                                {{ __('Haga clic aquí para volver a enviar el enlace de verificación.') }}
                             </flux:link>
                         </flux:text>
 
                         @if (session('status') === 'verification-link-sent')
                             <flux:text class="mt-2 font-medium !dark:text-green-400 !text-green-600">
-                                {{ __('A new verification link has been sent to your email address.') }}
+                                {{ __('Hemos enviado un nuevo enlace de verificación a tu email') }}
                             </flux:text>
                         @endif
                     </div>
@@ -96,7 +95,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Profile • Tortuga')] cl
 
             <!-- Submit button -->
             <flux:button variant="primary" type="submit">
-                {{ __('Save') }}
+                {{ __('Guardar') }}
             </flux:button>
         </form>
 

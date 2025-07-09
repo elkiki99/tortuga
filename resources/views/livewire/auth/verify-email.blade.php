@@ -23,7 +23,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         Auth::user()->sendEmailVerificationNotification();
 
-        Flux::toast(variant: 'success', heading: 'Verification link sent.', text: 'A new verification link has been sent to your email address.');
+        Flux::toast(variant: 'success', heading: 'Enlace de verificación enviado', text: 'Hemos enviado un nuevo enlace de verificación a tu email');
     }
 
     /**
@@ -39,16 +39,16 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
 <div class="mt-4 flex flex-col gap-6">
     <flux:text class="text-center">
-        {{ __('Please verify your email address by clicking on the link we just emailed to you.') }}
+        {{ __('Verifique su email haciendo clic en el enlace que le enviamos por correo electrónico.') }}
     </flux:text>
 
     <div class="flex flex-col items-center justify-between space-y-3">
         <flux:button wire:click="sendVerification" variant="primary" class="w-full">
-            {{ __('Resend verification email') }}
+            {{ __('Reenviar enlace de verificación') }}
         </flux:button>
 
         <flux:link class="text-sm cursor-pointer" wire:click="logout">
-            {{ __('Log out') }}
+            {{ __('Cerrar sesión') }}
         </flux:link>
     </div>
 </div>

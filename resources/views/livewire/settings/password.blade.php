@@ -34,24 +34,24 @@ new #[Layout('components.layouts.dashboard')] #[Title('Password • Tortuga')] c
 
         $this->reset('current_password', 'password', 'password_confirmation');
 
-        Flux::toast(variant: 'success', heading: 'Password updated.', text: 'Your password has been successfully updated.');
+        Flux::toast(variant: 'success', heading: 'Contraseña actualizada', text: 'Tu contraseña ha sido actualizada exitosamente');
     }
 }; ?>
 
 <section class="w-full">
     @include('livewire.partials.settings-heading')
 
-    <x-settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
+    <x-settings.layout :heading="__('Actualiza tu contraseña')" :subheading="__('Asegurate de que tu cuenta utilice una contraseña larga y aleatoria para mantener su seguridad')">
         <form wire:submit="updatePassword" class="mt-6 space-y-6">
-            <flux:input wire:model="current_password" :label="__('Current password')" type="password" required
+            <flux:input wire:model="current_password" :label="__('Contraseña actual')" type="password" required
                 autocomplete="current-password" viewable />
-            <flux:input wire:model="password" :label="__('New password')" type="password" required
+            <flux:input wire:model="password" :label="__('Nueva contraseña')" type="password" required
                 autocomplete="new-password" viewable />
-            <flux:input wire:model="password_confirmation" :label="__('Confirm Password')" type="password" required
+            <flux:input wire:model="password_confirmation" :label="__('Confirmar contraseña')" type="password" required
                 autocomplete="new-password" viewable />
 
             <!-- Submit button -->
-            <flux:button variant="primary" type="submit">{{ __('Save') }}</flux:button>
+            <flux:button variant="primary" type="submit">{{ __('Guardar') }}</flux:button>
         </form>
     </x-settings.layout>
 </section>

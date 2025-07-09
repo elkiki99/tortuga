@@ -38,13 +38,20 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
-    public function images() : hasMany
+    public function images(): hasMany
     {
         return $this->hasMany(Image::class)->where('is_featured', false);
     }
 
-    public function featuredImage() : hasOne
+    public function featuredImage(): hasOne
     {
         return $this->hasOne(Image::class)->where('is_featured', true);
+    }
+
+    public function scopeSearch($query, $term)
+    {
+        if (trim($term) === '') return $query;
+
+        return $query->where('name', 'like', '%' . $term . '%');
     }
 }

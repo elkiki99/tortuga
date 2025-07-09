@@ -22,7 +22,13 @@ new class extends Component {
 
     <a href="{{ route('products.show', $product->slug) }}" wire:navigate
         class="block rounded-md w-full aspect-square overflow-hidden bg-gray-100 mb-4">
-        <img src="{{ $product->featuredImage }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+        @if ($product->featuredImage)
+            <img src="{{ Storage::url($product->featuredImage->path) }}" alt="{{ $product->name }}"
+                class="w-full h-full object-cover">
+        @else
+            <img src="{{ $product->featuredImage }}" alt="{{ $product->name }}"
+                class="w-full h-full object-cover">
+        @endif
     </a>
 
     {{-- Precio --}}
