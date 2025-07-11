@@ -33,5 +33,6 @@ Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
 Volt::route('productos', 'products.index')->name('products.index');
 
 Volt::route('categorias/{category:slug}', 'categories.show')->name('categories.show');
+Volt::route('categorias', 'categories.index')->name('categories.index');
 
 require __DIR__ . '/auth.php';

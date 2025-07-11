@@ -1,8 +1,11 @@
 <?php
 
+use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
 use Livewire\Volt\Component;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\Brand;
 
 new class extends Component {
     use WithFileUploads;
@@ -30,8 +33,7 @@ new class extends Component {
             'in_stock' => 'required|boolean',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
-
-            'featured_image' => 'nullable|image|max:2048',
+            'featured_image' => 'required|image|max:2048',
             'attachments.*' => 'nullable|image|max:2048',
         ]);
 
@@ -73,14 +75,30 @@ new class extends Component {
 
         $this->dispatch('productCreated');
 
-        Flux::toast(heading: 'Changes saved', text: 'Your changes have been saved.', variant: 'success');
+        Flux::toast(heading: 'Producto creado', text: 'El producto fue creado exitosamente', variant: 'success');
     }
 
-    public function closeModal()
+    public function removeTempImage($index)
     {
-        Flux::modals()->close();
+        unset($this->attachments[$index]);
+        $this->attachments = array_values($this->attachments);
+    }
 
-        $this->reset(['name', 'description', 'price', 'discount_price', 'size', 'in_stock', 'category_id', 'brand_id']);
+    #[Computed]
+    public function categories()
+    {
+        return Category::query()
+                ->whereNotNull('categories.parent_id')
+                ->join('categories as parents', 'categories.parent_id', '=', 'parents.id')
+                ->orderBy('parents.name')
+                ->select('categories.*')
+                ->get();
+    }
+
+    #[Computed]
+    public function brands()
+    {
+        return Brand::all();
     }
 }; ?>
 
@@ -118,8 +136,8 @@ new class extends Component {
 
         <flux:select wire:model="category_id" required label="Categoría" variant="listbox" searchable
             placeholder="Selecciona una categoría">
-            @forelse (\App\Models\Category::all() as $category)
-                <flux:select.option value="{{ $category->id }}">{{ $category->name }}</flux:select.option>
+            @forelse ($this->categories as $category)
+                <flux:select.option value="{{ $category->id }}">{{ $category->parent->name }} - {{ $category->name }}</flux:select.option>
             @empty
                 <flux:select.option disabled>No hay categorías</flux:select.option>
             @endforelse
@@ -127,25 +145,31 @@ new class extends Component {
 
         <flux:select wire:model="brand_id" label="Marca" badge="Opcional" variant="listbox" searchable
             placeholder="Selecciona una marca">
-            @forelse (\App\Models\Brand::all() as $brand)
+            @forelse ($this->brands as $brand)
                 <flux:select.option value="{{ $brand->id }}">{{ $brand->name }}</flux:select.option>
             @empty
                 <flux:select.option disabled>No hay marcas</flux:select.option>
             @endforelse
         </flux:select>
 
-        <flux:input label="Imagen destacada" type="file" wire:model="featured_image" />
+        <flux:input label="Imagen destacada" type="file" wire:model="featured_image" required />
 
         @if ($featured_image)
             <img src="{{ $featured_image->temporaryUrl() }}">
         @endif
 
-        <flux:input label="Imágenes" type="file" wire:model="attachments" multiple />
+        <flux:input label="Imágenes" badge="Opcional" type="file" wire:model="attachments" multiple />
 
         @if (count($attachments) > 0)
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                @foreach ($attachments as $attachment)
-                    <img src="{{ $attachment->temporaryUrl() }}" alt="Product Image">
+                @foreach ($attachments as $index => $attachment)
+                    <div class="relative">
+                        <div class="absolute top-2 right-2">
+                            <flux:button variant="ghost" icon="x-mark"
+                                wire:click="removeTempImage({{ $index }})" />
+                        </div>
+                        <img src="{{ $attachment->temporaryUrl() }}" class="w-full">
+                    </div>
                 @endforeach
             </div>
         @endif
@@ -153,7 +177,7 @@ new class extends Component {
         <flux:switch label="En stock" wire:model.live="in_stock" checked="true" />
 
         <div class="flex justify-end gap-2">
-            <flux:button type="button" variant="ghost" wire:click.prevent="closeModal">Cancelar</flux:button>
+            <flux:button type="button" variant="ghost" x-on:click="$flux.modals().close()">Cancelar</flux:button>
             <flux:button type="submit" variant="primary">Guardar producto</flux:button>
         </div>
     </form>

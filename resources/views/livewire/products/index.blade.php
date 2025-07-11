@@ -13,6 +13,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
     public $search = '';
 
     #[On('productCreated')]
+    #[On('productUpdated')]
     #[On('productDeleted')]
     public function refreshPage()
     {
@@ -57,7 +58,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
 
     <div class="flex items-center gap-4">
         <flux:modal.trigger name="create-product">
-            <flux:button size="sm" variant="primary" icon="plus">Nuevo producto</flux:button>
+            <flux:button size="sm" variant="primary" icon="plus">Agregar producto</flux:button>
         </flux:modal.trigger>
 
         <div class="w-full">
@@ -113,11 +114,23 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                     <flux:table.cell>{{ $product->created_at->format('d/m/Y') }}</flux:table.cell>
 
                     <flux:table.cell>
+                        @if($product->in_stock == true)
+                            <flux:badge color="green" size="sm" inset="top bottom">
+                                Si
+                            </flux:badge>
+                        @else
+                            <flux:badge color="red" size="sm" inset="top bottom">
+                                No
+                            </flux:badge>
+                        @endif
+                    </flux:table.cell>
+
+                    <flux:table.cell>
                         <flux:dropdown>
                             <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom">
                             </flux:button>
                             <flux:menu>
-                                <flux:menu.item icon-trailing="chevron-right">Ver producto</flux:menu.item>
+                                <flux:menu.item href="{{ route('products.show', $product->slug) }}" wire:navigate icon-trailing="chevron-right">Ver producto</flux:menu.item>
                                 <flux:menu.separator />
 
                                 <flux:modal.trigger name="edit-product-{{ $product->id }}">

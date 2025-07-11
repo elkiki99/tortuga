@@ -27,7 +27,7 @@
             </flux:navlist.group>
 
             <flux:navlist.group>
-                <flux:navlist.item icon="tag" href="#" wire:navigate>{{ __('Categorías') }}</flux:navlist.item>
+                <flux:navlist.item icon="tag" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>{{ __('Categorías') }}</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group>

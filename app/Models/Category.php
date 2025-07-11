@@ -12,7 +12,7 @@ class Category extends Model
 {
     /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
         'slug',
@@ -20,7 +20,7 @@ class Category extends Model
         'parent_id',
     ];
 
-    public function products() : HasMany
+    public function products(): HasMany
     {
         return $this->hasMany(Product::class);
     }
@@ -40,5 +40,12 @@ class Category extends Model
     public function allChildren(): HasMany
     {
         return $this->children()->with('allChildren');
+    }
+
+    public function scopeSearch($query, $term)
+    {
+        if (trim($term) === '') return $query;
+
+        return $query->where('name', 'like', '%' . $term . '%');
     }
 }

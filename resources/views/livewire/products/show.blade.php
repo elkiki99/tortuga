@@ -1,20 +1,18 @@
 <?php
+
+use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\{Layout, On};
 use Livewire\Volt\Component;
-use Livewire\Attributes\Layout;
 use App\Models\Product;
-use Illuminate\Support\Facades\Storage; // Make sure this is present
 
 new #[Layout('components.layouts.app')] class extends Component {
     public Product $product;
     public $relatedProducts;
     public $complete_look;
     public $images;
-    // No need for a separate $featuredImage public property if we always access via $product->featuredImage
-    // public $featuredImage; // Remove this if you go with Option 1
 
     public function mount(Product $product)
     {
-        // Eager load the specific featuredImage relation, and other images/relations
         $this->product = $product->load([
             'featuredImage', // Load the specific hasOne relationship
             'images' => function ($query) {
@@ -25,15 +23,18 @@ new #[Layout('components.layouts.app')] class extends Component {
             'brand',
         ]);
 
-        // No need to set $this->featuredImage if you access via $this->product->featuredImage directly
-        // $this->featuredImage = $this->product->images->where('is_featured', true)->first(); // Remove this line
-
         // $this->images is already loaded with non-featured ones
         $this->images = $this->product->images; // This now contains the filtered non-featured images from eager loading
 
         $this->relatedProducts = Product::where('in_stock', true)->where('category_id', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(4)->get();
 
         $this->complete_look = Product::where('in_stock', true)->where('category_id', '!=', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(4)->get();
+    }
+
+    #[On('productUpdated')]
+    public function updatedProduct()
+    {
+        $this->dispatch('$refresh');
     }
 
     public function render(): mixed
@@ -89,7 +90,17 @@ new #[Layout('components.layouts.app')] class extends Component {
             </div>
 
             <div class="lg:w-1/2">
-                <flux:heading size="xl" level="1">{{ Str::ucfirst($product->name) }}</flux:heading>
+                <div class="flex items-center gap-4">
+                    <flux:heading size="xl" level="1">{{ Str::ucfirst($product->name) }}</flux:heading>
+
+                    @if(Auth::user()->isAdmin())
+                        <flux:modal.trigger name="edit-product-{{ $product->id }}">
+                            <flux:button icon="pencil" size="sm" variant="ghost" />
+                        </flux:modal.trigger>
+
+                        <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
+                    @endif
+                </div>
 
                 <flux:subheading size="lg" class="mb-6">
                     <flux:link variant="subtle" href="{{ route('categories.show', $product->category->slug) }}"
@@ -119,7 +130,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                     </flux:subheading>
                 @endif
 
-                <div class="mt-6 space-y-6">
+                <div class="mt-6 space-y-6">    
                     <flux:text>
                         {{ Str::ucfirst($product->description) }}
                     </flux:text>
@@ -144,6 +155,16 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                     <flux:link href="mailto:{{ config('mail.from.address') }}">¿Querés reservar esta prenda? Mandanos
                         un mail</flux:link>
+                    
+                    @if(Auth::user()->isAdmin())
+                        <div class="mt-6">
+                            <flux:modal.trigger name="delete-product-{{ $product->id }}">
+                                <flux:badge as="button" color="red" icon="trash">Eliminar producto</flux:button>
+                            </flux:modal.trigger>
+
+                            <livewire:products.delete :$product wire:key="delete-product-{{ $product->id }}" />
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

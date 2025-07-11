@@ -226,20 +226,20 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                     </div>
                 </footer>
 
-                @if (!Auth::check() && (!trim($guestName ?? '') || !trim($guestSurname ?? '')))
+                @if (!Auth::check() && (!trim($guestName ?? '') || !trim($guestSurname ?? '') || !trim($guestEmail ?? '')))
                     <flux:card class="mt-6">
                         <div class="space-y-6">
                             <flux:heading size="lg">Agrega tu nombre y apellido para concluir el pago
                             </flux:heading>
 
-                            <flux:input wire:model="guestName" type="text" placeholder="Tu nombre" label="Nombre" />
-                            <flux:input wire:model="guestSurname" type="text" placeholder="Tu apellido"
+                            <flux:input required wire:model="guestName" type="text" placeholder="Tu nombre" label="Nombre" />
+                            <flux:input required wire:model="guestSurname" type="text" placeholder="Tu apellido"
                                 label="Apellido" />
-                            <flux:input wire:model="guestEmail" type="email" placeholder="Tu email" label="Email" />
+                            <flux:input required wire:model="guestEmail" type="email" placeholder="Tu email" label="Email" />
 
                             <div class="flex">
                                 <flux:spacer />
-                                <flux:button variant="primary" wire:click="saveGuestName" icon-trailing="chevron-right">
+                                <flux:button variant="primary" wire:click.prevent="saveGuestName" icon-trailing="chevron-right">
                                     Continuar</flux:button>
                             </div>
                         </div>
