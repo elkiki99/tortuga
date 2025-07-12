@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Component;
 use App\Models\Product;
 
