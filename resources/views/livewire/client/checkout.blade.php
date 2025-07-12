@@ -15,6 +15,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
     public $guestName;
     public $guestSurname;
     public $guestEmail;
+    public bool $providedInfo = false;
 
     public function mount()
     {
@@ -47,7 +48,9 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
             $this->total = $this->items->sum(fn($item) => $item['product']->discount_price ?? $item['product']->price);
 
-            if ($this->guestName && $this->guestSurname && $this->items->isNotEmpty()) {
+            $this->providedInfo = session()->has('guest.name') && session()->has('guest.surname') && session()->has('guest.email');
+
+            if ($this->providedInfo && $this->items->isNotEmpty()) {
                 $this->createPreference();
             }
         }
@@ -56,14 +59,16 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
     public function saveGuestName()
     {
         $this->validate([
-            'guestName' => 'required',
-            'guestSurname' => 'required',
-            'guestEmail' => 'required',
+            'guestName' => 'required|string|max:255',
+            'guestSurname' => 'required|string|max:255',
+            'guestEmail' => 'required|email',
         ]);
 
         session(['guest.name' => $this->guestName]);
         session(['guest.surname' => $this->guestSurname]);
         session(['guest.email' => $this->guestEmail]);
+
+        $this->providedInfo = true;
 
         $this->createPreference();
 
@@ -226,20 +231,23 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                     </div>
                 </footer>
 
-                @if (!Auth::check() && (!trim($guestName ?? '') || !trim($guestSurname ?? '') || !trim($guestEmail ?? '')))
+                @if (!Auth::check() && $providedInfo == false)
                     <flux:card class="mt-6">
                         <div class="space-y-6">
                             <flux:heading size="lg">Agrega tu nombre y apellido para concluir el pago
                             </flux:heading>
 
-                            <flux:input required wire:model="guestName" type="text" placeholder="Tu nombre" label="Nombre" />
+                            <flux:input required wire:model="guestName" type="text" placeholder="Tu nombre"
+                                label="Nombre" />
                             <flux:input required wire:model="guestSurname" type="text" placeholder="Tu apellido"
                                 label="Apellido" />
-                            <flux:input required wire:model="guestEmail" type="email" placeholder="Tu email" label="Email" />
+                            <flux:input required wire:model="guestEmail" type="email" placeholder="Tu email"
+                                label="Email" />
 
                             <div class="flex">
                                 <flux:spacer />
-                                <flux:button variant="primary" wire:click.prevent="saveGuestName" icon-trailing="chevron-right">
+                                <flux:button variant="primary" wire:click.prevent="saveGuestName"
+                                    icon-trailing="chevron-right">
                                     Continuar</flux:button>
                             </div>
                         </div>

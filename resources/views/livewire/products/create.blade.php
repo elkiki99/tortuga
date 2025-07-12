@@ -39,7 +39,7 @@ new class extends Component {
 
         $product = Product::create([
             'name' => $this->name,
-            'slug' => \Str::slug($this->name) . '-' . \Str::random(5),
+            'slug' => \Str::slug($this->name),
             'description' => $this->description,
             'price' => $this->price,
             'discount_price' => $this->discount_price,

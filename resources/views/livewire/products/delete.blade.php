@@ -32,7 +32,7 @@ new class extends Component {
     <flux:modal name="delete-product-{{ $product->id }}" class="md:w-96">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">¿Estás seguro que querés eliminar este producto?</flux:heading>
+                <flux:heading size="lg">¿Eliminar producto?</flux:heading>
 
                 <flux:subheading>
                     Esta acción eliminará permanentemente el producto <strong>{{ Str::ucfirst($product->name) }}</strong>. ¿Deseas

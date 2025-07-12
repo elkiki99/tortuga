@@ -24,28 +24,34 @@ new class extends Component {
             'parent_id' => $this->parent_id,
         ]);
 
+        Flux::modals()->close();
         $this->reset(['name', 'description', 'parent_id']);
 
-        Flux::toast(heading: 'Categoría creada', text: 'La categoría fue creada exitosamente', variant: 'success');
         $this->dispatch('categoryCreated');
-        Flux::modals()->close();
+        Flux::toast(heading: 'Categoría creada', text: 'La categoría fue creada exitosamente', variant: 'success');
     }
 }; ?>
 
-<flux:modal name="create-category">
-    <form wire:submit.prevent="createCategory" class="space-y-4">
-        <flux:heading size="lg">Nueva categoría</flux:heading>
+<flux:modal name="create-category" class="md:w-auto">
+    <form wire:submit.prevent="createCategory" class="space-y-6">
+        <div>
+            <flux:heading size="lg">Nueva categoría</flux:heading>
+            <flux:text class="mt-2">Agrega una nueva categoría a tu tienda</flux:text>
+        </div>
 
-        <flux:input wire:model="name" label="Nombre" required />
+        <flux:input placeholder="Nombre de la categoría" wire:model="name" label="Nombre" required />
 
-        <flux:textarea wire:model="description" label="Descripción" />
+        <flux:textarea label="Descripción" badge="Opcional" placeholder="Descripción de la categoría"
+            wire:model="description" rows="3" />
 
-        <flux:select wire:model="parent_id" label="Categoría padre (opcional)" placeholder="Ninguna">
-            <flux:select.option value="">-- Sin padre (categoría principal) --</flux:select.option>
+        <flux:select wire:model="parent_id" label="Categoría padre" badge="Opcional" variant="listbox" searchable>
+            <flux:select.option selected value="">Categoría principal</flux:select.option>
 
-            @foreach (\App\Models\Category::whereNull('parent_id')->orderBy('name')->get() as $cat)
+            @forelse(Category::whereNull('parent_id')->orderBy('name')->get() as $cat)
                 <flux:select.option value="{{ $cat->id }}">{{ $cat->name }}</flux:select.option>
-            @endforeach
+            @empty
+                <flux:select.option disabled>No hay categorías principales</flux:select.option>
+            @endforelse
         </flux:select>
 
         <div class="flex justify-end gap-2">

@@ -30,13 +30,11 @@ class Category extends Model
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
-    // Relación: subcategorías
     public function children(): HasMany
     {
         return $this->hasMany(Category::class, 'parent_id');
     }
 
-    // Helper recursivo para árbol completo (opcional)
     public function allChildren(): HasMany
     {
         return $this->children()->with('allChildren');

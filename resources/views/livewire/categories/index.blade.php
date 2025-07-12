@@ -122,10 +122,10 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
                         </flux:dropdown>
 
                         <!-- Update sumary modal -->
-                        {{-- <livewire:categories.edit :$category wire:key="edit-category-{{ $category->id }}" />
+                        <livewire:categories.edit :$category wire:key="edit-category-{{ $category->id }}" />
 
                         <!-- Delete category modal -->
-                        <livewire:categories.delete :$category wire:key="delete-category-{{ $category->id }}" /> --}}
+                        <livewire:categories.delete :$category wire:key="delete-category-{{ $category->id }}" />
                     </flux:table.cell>
                 </flux:table.row>
             @empty

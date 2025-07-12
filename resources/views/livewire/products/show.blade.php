@@ -93,13 +93,15 @@ new #[Layout('components.layouts.app')] class extends Component {
                 <div class="flex items-center gap-4">
                     <flux:heading size="xl" level="1">{{ Str::ucfirst($product->name) }}</flux:heading>
 
-                    @if(Auth::user()->isAdmin())
-                        <flux:modal.trigger name="edit-product-{{ $product->id }}">
-                            <flux:button icon="pencil" size="sm" variant="ghost" />
-                        </flux:modal.trigger>
+                    @auth
+                        @if(Auth::user()->isAdmin())
+                            <flux:modal.trigger name="edit-product-{{ $product->id }}">
+                                <flux:button icon="pencil" size="sm" variant="ghost" />
+                            </flux:modal.trigger>
 
-                        <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
-                    @endif
+                            <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
+                        @endif
+                    @endauth
                 </div>
 
                 <flux:subheading size="lg" class="mb-6">
@@ -156,15 +158,17 @@ new #[Layout('components.layouts.app')] class extends Component {
                     <flux:link href="mailto:{{ config('mail.from.address') }}">¿Querés reservar esta prenda? Mandanos
                         un mail</flux:link>
                     
-                    @if(Auth::user()->isAdmin())
-                        <div class="mt-6">
-                            <flux:modal.trigger name="delete-product-{{ $product->id }}">
-                                <flux:badge as="button" color="red" icon="trash">Eliminar producto</flux:button>
-                            </flux:modal.trigger>
+                    @auth
+                        @if(Auth::user()->isAdmin())
+                            <div class="mt-6">
+                                <flux:modal.trigger name="delete-product-{{ $product->id }}">
+                                    <flux:badge as="button" color="red" icon="trash">Eliminar producto</flux:button>
+                                </flux:modal.trigger>
 
-                            <livewire:products.delete :$product wire:key="delete-product-{{ $product->id }}" />
-                        </div>
-                    @endif
+                                <livewire:products.delete :$product wire:key="delete-product-{{ $product->id }}" />
+                            </div>
+                        @endif
+                    @endauth
                 </div>
             </div>
         </div>

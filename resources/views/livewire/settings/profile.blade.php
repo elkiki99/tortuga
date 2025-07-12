@@ -99,6 +99,6 @@ new #[Layout('components.layouts.dashboard')] #[Title('Profile • Tortuga')] cl
             </flux:button>
         </form>
 
-        <livewire:settings.delete-user-form />
+        {{-- <livewire:settings.delete-user-form /> --}}
     </x-settings.layout>
 </section>

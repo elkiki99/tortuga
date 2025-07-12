@@ -11,7 +11,7 @@ class MercadoPagoService
     public function __construct()
     {
         MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
-        // MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::LOCAL); // only if using localhost, else SERVER
+        MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::SERVER); // only if using localhost, else SERVER
         // MercadoPagoConfig::setIntegratorId(config('services.mercadopago.integrator_id'));
     }
 
@@ -27,13 +27,13 @@ class MercadoPagoService
             ],
             'back_urls' => [
                 'success' => config('app.url') . '/success',
-                'failure' => config('app.url') . '/failure',
                 'pending' => config('app.url') . '/pending',
+                'failure' => config('app.url') . '/failure',
             ],
+            'notification_url' => config('app.url') . '/webhook',
             'statement_descriptor' => config('app.name'),
             'external_reference' => uniqid(),
             'expires' => false,
-            'notification_url' => config('app.url') . '/webhook',
             'auto_return' => 'approved',
         ];
 
