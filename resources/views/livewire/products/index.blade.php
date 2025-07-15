@@ -66,10 +66,10 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                 icon="magnifying-glass" />
         </div>
 
-        <flux:tabs variant="segmented" class="w-auto! ml-2" size="sm">
+        {{-- <flux:tabs variant="segmented" class="w-auto! ml-2" size="sm">
             <flux:tab icon="list-bullet" icon:variant="outline" />
             <flux:tab icon="squares-2x2" icon:variant="outline" />
-        </flux:tabs>
+        </flux:tabs> --}}
     </div>
 
     <flux:table :paginate="$this->products">
@@ -163,6 +163,12 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
             @endforelse
         </flux:table.rows>
     </flux:table>
+
+    @if ($this->search != '' && $this->products->isEmpty())
+        <div class="flex justify-center mt-6">
+            <flux:icon.magnifying-glass variant="solid" class="size-48 dark:text-zinc-700 text-zinc-100" />
+        </div>
+    @endif
 
     <livewire:products.create />
 </div>

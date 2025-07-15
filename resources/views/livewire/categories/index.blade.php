@@ -60,10 +60,10 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
                 icon="magnifying-glass" />
         </div>
 
-        <flux:tabs variant="segmented" class="w-auto! ml-2" size="sm">
+        {{-- <flux:tabs variant="segmented" class="w-auto! ml-2" size="sm">
             <flux:tab icon="list-bullet" icon:variant="outline" />
             <flux:tab icon="squares-2x2" icon:variant="outline" />
-        </flux:tabs>
+        </flux:tabs> --}}
     </div>
 
     <flux:table :paginate="$this->categories">
@@ -131,8 +131,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
             @empty
                 <flux:table.row>
                     <flux:table.cell colspan="6" class="text-center">
-                        @if ($search != '')
-                            No hay categorías para la búsqueda "{{ $search }}"
+                        @if ($this->search != '')
+                            No hay categorías para la búsqueda "{{ $this->search }}"
                         @else
                             No hay categorías
                         @endif
@@ -141,6 +141,12 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
             @endforelse
         </flux:table.rows>
     </flux:table>
+
+    @if ($this->search != '' && $this->categories->isEmpty())
+        <div class="flex justify-center mt-6">
+            <flux:icon.magnifying-glass variant="solid" class="size-48 dark:text-zinc-700 text-zinc-100" />
+        </div>
+    @endif
 
     <livewire:categories.create />
 </div>

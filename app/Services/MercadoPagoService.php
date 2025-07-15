@@ -27,8 +27,8 @@ class MercadoPagoService
             ],
             'back_urls' => [
                 'success' => config('app.url') . '/checkout/exito',
-                'pending' => config('app.url') . '/checkout/pendiente',
-                'failure' => config('app.url') . '/checkout/error',
+                'pending' => config('app.url') . '/checkout',
+                'failure' => config('app.url') . '/checkout',
             ],
             'notification_url' => config('app.url') . '/webhook',
             'notification_url' => route('webhook'),

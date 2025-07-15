@@ -27,8 +27,8 @@ Route::post('/webhook', WebhookController::class)->name('webhook');
 Volt::route('checkout', 'client.checkout')->name('client.checkout');
 
 Volt::route('checkout/exito', 'client.checkout.success')->name('checkout.success');
-Volt::route('checkout/error', 'client.checkout.failure')->name('checkout.failure');
-Volt::route('checkout/pendiente', 'client.checkout.pending')->name('checkout.pending');
+// Volt::route('checkout/error', 'client.checkout.failure')->name('checkout.failure');
+// Volt::route('checkout/pendiente', 'client.checkout.pending')->name('checkout.pending');
 
 Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
 Volt::route('productos', 'products.index')->name('products.index');

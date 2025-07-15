@@ -14,7 +14,7 @@ new #[Layout('components.layouts.app')] class extends Component {
     public function mount(Product $product)
     {
         $this->product = $product->load([
-            'featuredImage', // Load the specific hasOne relationship
+            'featuredImage',
             'images' => function ($query) {
                 $query->where('is_featured', false)->take(4);
             },
@@ -22,8 +22,7 @@ new #[Layout('components.layouts.app')] class extends Component {
             'brand',
         ]);
 
-        // $this->images is already loaded with non-featured ones
-        $this->images = $this->product->images; // This now contains the filtered non-featured images from eager loading
+        $this->images = $this->product->images;
 
         $this->relatedProducts = Product::where('in_stock', true)->where('category_id', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(4)->get();
 
@@ -35,7 +34,6 @@ new #[Layout('components.layouts.app')] class extends Component {
     {
         $this->product->refresh();
         $this->images = $this->product->images()->where('is_featured', false)->take(4)->get();
-        // $this->dispatch('$refresh');
     }
 
     public function render(): mixed
@@ -50,12 +48,9 @@ new #[Layout('components.layouts.app')] class extends Component {
 
         <div class="flex flex-col lg:flex-row gap-6">
             <div class="flex gap-2 lg:w-3/4">
-                {{-- Small image thumbnails --}}
                 <div class="flex flex-col gap-2 w-1/6">
                     @php
-                        // Ensure we have a collection of non-featured images for the thumbnails
-                        // $this->images already contains non-featured ones due to mount method
-                        $thumbnailImages = $this->images; // Renaming for clarity in the loop
+                        $thumbnailImages = $this->images;
                         $totalThumbnails = 4;
                     @endphp
 
@@ -74,11 +69,9 @@ new #[Layout('components.layouts.app')] class extends Component {
                     @endfor
                 </div>
 
-                {{-- Main featured image --}}
                 <div
                     class="flex-1 bg-gray-100 flex items-center rounded-sm justify-center aspect-square overflow-hidden relative">
                     @if ($this->product->featuredImage)
-                        {{-- Check if the RELATIONSHIP exists --}}
                         <img src="{{ Storage::url($this->product->featuredImage->path) }}"
                             alt="{{ $this->product->featuredImage->alt_text ?? $this->product->name . ' - Imagen principal' }}"
                             class="object-contain w-full h-full">
