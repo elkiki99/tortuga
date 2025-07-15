@@ -1,5 +1,5 @@
 <flux:breadcrumbs class="my-6">
-    <flux:breadcrumbs.item href="{{ route('home') }}" wire:navigate>Home</flux:breadcrumbs.item>
+    <flux:breadcrumbs.item href="{{ route('home') }}" wire:navigate>Inicio</flux:breadcrumbs.item>
 
     @isset($category)
         @if ($category->parent)

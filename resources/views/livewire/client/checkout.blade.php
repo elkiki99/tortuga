@@ -170,7 +170,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
 <section class="container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12">
     <flux:breadcrumbs class="my-6">
-        <flux:breadcrumbs.item href="{{ route('home') }}" wire:navigate>Home</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('home') }}" wire:navigate>Inicio</flux:breadcrumbs.item>
         <flux:breadcrumbs.item>Checkout</flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
@@ -237,10 +237,17 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                             <flux:heading size="lg">Agrega tu nombre y apellido para concluir el pago
                             </flux:heading>
 
-                            <flux:input required wire:model="guestName" type="text" placeholder="Tu nombre"
-                                label="Nombre" />
-                            <flux:input required wire:model="guestSurname" type="text" placeholder="Tu apellido"
-                                label="Apellido" />
+                            <div class="flex items-center gap-4 w-full">
+                                <div class="w-1/2">
+                                <flux:input required wire:model="guestName" type="text" placeholder="Tu nombre"
+                                    label="Nombre" />
+                                </div>
+                                <div class="w-1/2">
+                                <flux:input required wire:model="guestSurname" type="text" placeholder="Tu apellido"
+                                    label="Apellido" />
+                                </div>
+                            </div>
+
                             <flux:input required wire:model="guestEmail" type="email" placeholder="Tu email"
                                 label="Email" />
 
