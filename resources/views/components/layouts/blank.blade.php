@@ -10,7 +10,7 @@
         {{ $slot }}
     </div>
 
-    @include('livewire.partials.footer')
+    {{-- @include('livewire.partials.footer') --}}
 
     @persist('toast')
         <flux:toast />

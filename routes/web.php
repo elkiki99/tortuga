@@ -13,11 +13,11 @@ Route::view('dashboard', 'dashboard')
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
+    Route::redirect('ajustes', 'ajustes/perfil');
 
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
-    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+    Volt::route('ajustes/perfil', 'settings.profile')->name('settings.profile');
+    Volt::route('ajustes/contraseña', 'settings.password')->name('settings.password');
+    Volt::route('ajustes/apariencia', 'settings.appearance')->name('settings.appearance');
 
     Volt::route('wishlist', 'client.wishlist')->name('client.wishlist');
 });
@@ -26,9 +26,9 @@ Route::post('/webhook', WebhookController::class)->name('webhook');
 
 Volt::route('checkout', 'client.checkout')->name('client.checkout');
 
-Volt::route('checkout/exito', 'checkout.success')->name('checkout.success');
-Volt::route('checkout/error', 'checkout.failure')->name('checkout.failure');
-Volt::route('checkout/pendiente', 'checkout.pending')->name('checkout.pending');
+Volt::route('checkout/exito', 'client.checkout.success')->name('checkout.success');
+Volt::route('checkout/error', 'client.checkout.failure')->name('checkout.failure');
+Volt::route('checkout/pendiente', 'client.checkout.pending')->name('checkout.pending');
 
 // Route::get('checkout/success', function() {
 //     return view('checkout.success');

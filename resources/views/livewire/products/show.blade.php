@@ -14,9 +14,8 @@ new #[Layout('components.layouts.app')] class extends Component {
     public function mount(Product $product)
     {
         $this->product = $product->load([
-            'featuredImage', // Load the specific hasOne relationship
+            'featuredImage',
             'images' => function ($query) {
-                // Load non-featured images for thumbnails
                 $query->where('is_featured', false)->take(4);
             },
             'category',
@@ -34,7 +33,9 @@ new #[Layout('components.layouts.app')] class extends Component {
     #[On('productUpdated')]
     public function updatedProduct()
     {
-        $this->dispatch('$refresh');
+        $this->product->refresh();
+        $this->images = $this->product->images()->where('is_featured', false)->take(4)->get();
+        // $this->dispatch('$refresh');
     }
 
     public function render(): mixed
@@ -94,7 +95,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                     <flux:heading size="xl" level="1">{{ Str::ucfirst($product->name) }}</flux:heading>
 
                     @auth
-                        @if(Auth::user()->isAdmin())
+                        @if (Auth::user()->isAdmin())
                             <flux:modal.trigger name="edit-product-{{ $product->id }}">
                                 <flux:button icon="pencil" size="sm" variant="ghost" />
                             </flux:modal.trigger>
@@ -132,7 +133,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                     </flux:subheading>
                 @endif
 
-                <div class="mt-6 space-y-6">    
+                <div class="mt-6 space-y-6">
                     <flux:text>
                         {{ Str::ucfirst($product->description) }}
                     </flux:text>
@@ -157,9 +158,9 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                     <flux:link href="mailto:{{ config('mail.from.address') }}">¿Querés reservar esta prenda? Mandanos
                         un mail</flux:link>
-                    
+
                     @auth
-                        @if(Auth::user()->isAdmin())
+                        @if (Auth::user()->isAdmin())
                             <div class="mt-6">
                                 <flux:modal.trigger name="delete-product-{{ $product->id }}">
                                     <flux:badge as="button" color="red" icon="trash">Eliminar producto</flux:button>
