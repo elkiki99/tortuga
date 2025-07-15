@@ -6,11 +6,11 @@ use Livewire\Volt\Component;
 new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class extends Component {
     public function mount()
     {
-        // $paymentId = request()->query('payment_id');
+        $paymentId = request()->query('payment_id');
 
-        // if (!$paymentId) {
-        //     abort(404);
-        // }
+        if (!$paymentId) {
+            abort(404);
+        }
     }
 }; ?>
 

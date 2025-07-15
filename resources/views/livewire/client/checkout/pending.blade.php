@@ -4,7 +4,11 @@ use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class extends Component {
-    //
+    $paymentId = request()->query('payment_id');
+
+    if (!$paymentId) {
+        abort(404);
+    }
 }; ?>
 
 <section class="container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12">
