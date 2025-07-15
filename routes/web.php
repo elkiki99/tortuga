@@ -25,9 +25,22 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/webhook', WebhookController::class)->name('webhook');
 
 Volt::route('checkout', 'client.checkout')->name('client.checkout');
-Volt::route('checkout/success', 'checkout.success')->name('checkout.success');
-Volt::route('checkout/failure', 'checkout.failure')->name('checkout.failure');
-Volt::route('checkout/pending', 'checkout.pending')->name('checkout.pending');
+
+// Volt::route('checkout/success', 'checkout.success')->name('checkout.success');
+// Volt::route('checkout/failure', 'checkout.failure')->name('checkout.failure');
+// Volt::route('checkout/pending', 'checkout.pending')->name('checkout.pending');
+
+Route::get('checkout/success', function() {
+    return view('checkout.success');
+})->name('checkout.success');
+
+Route::get('checkout/pending', function() {
+    return view('checkout.pending');
+})->name('checkout.pending');
+
+Route::get('checkout/failure', function() {
+    return view('checkout.failure');
+})->name('checkout.failure');
 
 Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
 Volt::route('productos', 'products.index')->name('products.index');
