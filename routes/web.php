@@ -30,18 +30,6 @@ Volt::route('checkout/exito', 'client.checkout.success')->name('checkout.success
 Volt::route('checkout/error', 'client.checkout.failure')->name('checkout.failure');
 Volt::route('checkout/pendiente', 'client.checkout.pending')->name('checkout.pending');
 
-// Route::get('checkout/success', function() {
-//     return view('checkout.success');
-// })->name('checkout.success');
-
-// Route::get('checkout/pending', function() {
-//     return view('checkout.pending');
-// })->name('checkout.pending');
-
-// Route::get('checkout/failure', function() {
-//     return view('checkout.failure');
-// })->name('checkout.failure');
-
 Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
 Volt::route('productos', 'products.index')->name('products.index');
 

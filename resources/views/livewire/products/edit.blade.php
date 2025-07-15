@@ -39,7 +39,8 @@ new class extends Component {
         $this->category_id = $product->category_id;
         $this->brand_id = $product->brand_id;
 
-        $this->visibleImages = $product->images->pluck('id')->toArray(); // Solo las visibles
+        $this->visibleImages = $product->images->pluck('id')->toArray();
+        // dd($this->visibleImages);
     }
 
     public function updateProduct()
@@ -69,11 +70,12 @@ new class extends Component {
         ]);
 
         if ($this->featured_image) {
-            $path = $this->featured_image->store('products', 'public');
-            $this->product->images()->where('is_featured', true)->delete();
+            $this->product->featuredImage->delete();
+
+            $featuredPath = $this->featured_image->store('products', 'public');
 
             $this->product->images()->create([
-                'path' => $path,
+                'path' => $featuredPath,
                 'alt_text' => $this->name . '_featured',
                 'is_featured' => true,
             ]);
@@ -81,22 +83,25 @@ new class extends Component {
 
         foreach ($this->attachments as $key => $attachment) {
             $path = $attachment->store('products', 'public');
+
             $this->product->images()->create([
                 'path' => $path,
                 'alt_text' => $this->name . '_' . ($key + 1),
                 'is_featured' => false,
             ]);
         }
+        $this->attachments = [];
 
         foreach ($this->imagesToDelete as $imageId) {
             $image = $this->product->images()->find($imageId);
+
             if ($image) {
                 \Storage::disk('public')->delete($image->path);
                 $image->delete();
             }
         }
-
         $this->imagesToDelete = [];
+        $this->visibleImages = $this->product->images->pluck('id')->toArray();
 
         Flux::modals()->close();
         $this->dispatch('productUpdated');
@@ -107,8 +112,10 @@ new class extends Component {
     public function removeImage($type, $key)
     {
         if ($type === 'db') {
-            $this->imagesToDelete[] = $key;
-            $this->visibleImages = array_filter($this->visibleImages, fn($id) => $id !== $key);
+            if (!in_array($key, $this->imagesToDelete)) {
+                $this->imagesToDelete[] = $key;
+            }
+            $this->visibleImages = array_values(array_filter($this->visibleImages, fn($id) => $id !== $key));
         }
 
         if ($type === 'temp') {
@@ -116,16 +123,11 @@ new class extends Component {
             $this->attachments = array_values($this->attachments);
         }
     }
-
+    
     #[Computed]
     public function categories()
     {
-        return Category::query()
-                ->whereNotNull('categories.parent_id')
-                ->join('categories as parents', 'categories.parent_id', '=', 'parents.id')
-                ->orderBy('parents.name')
-                ->select('categories.*')
-                ->get();
+        return Category::query()->whereNotNull('categories.parent_id')->join('categories as parents', 'categories.parent_id', '=', 'parents.id')->orderBy('parents.name')->select('categories.*')->get();
     }
 
     #[Computed]
@@ -168,7 +170,8 @@ new class extends Component {
         <flux:select wire:model="category_id" required label="Categoría" variant="listbox" searchable
             placeholder="Selecciona una categoría">
             @forelse ($this->categories as $category)
-                <flux:select.option value="{{ $category->id }}">{{ $category->parent->name }} - {{ $category->name }}</flux:select.option>
+                <flux:select.option value="{{ $category->id }}">{{ $category->parent->name }} - {{ $category->name }}
+                </flux:select.option>
             @empty
                 <flux:select.option disabled>No hay categorías</flux:select.option>
             @endforelse
@@ -189,7 +192,8 @@ new class extends Component {
             <img src="{{ $featured_image->temporaryUrl() }}">
         @else
             @if ($product->featuredImage)
-                <img src="{{ Storage::url($product->featuredImage->path) }}" alt="{{ $product->featuredImage->alt_text }}">
+                <img src="{{ Storage::url($product->featuredImage->path) }}"
+                    alt="{{ $product->featuredImage->alt_text }}">
             @endif
         @endif
 

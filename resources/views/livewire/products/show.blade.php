@@ -14,7 +14,7 @@ new #[Layout('components.layouts.app')] class extends Component {
     public function mount(Product $product)
     {
         $this->product = $product->load([
-            'featuredImage',
+            'featuredImage', // Load the specific hasOne relationship
             'images' => function ($query) {
                 $query->where('is_featured', false)->take(4);
             },
