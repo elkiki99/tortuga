@@ -62,14 +62,9 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
         </flux:modal.trigger>
 
         <div class="w-full">
-            <flux:input wire:model.live="search" size="sm" variant="filled" placeholder="Buscar por nombre o categoría..."
-                icon="magnifying-glass" />
+            <flux:input wire:model.live="search" size="sm" variant="filled"
+                placeholder="Buscar por nombre o categoría..." icon="magnifying-glass" />
         </div>
-
-        {{-- <flux:tabs variant="segmented" class="w-auto! ml-2" size="sm">
-            <flux:tab icon="list-bullet" icon:variant="outline" />
-            <flux:tab icon="squares-2x2" icon:variant="outline" />
-        </flux:tabs> --}}
     </div>
 
     <flux:table :paginate="$this->products">
@@ -97,7 +92,11 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                         </flux:text>
                     </flux:table.cell>
 
-                    <flux:table.cell class="whitespace-nowrap">${{ $product->discount_price ?? $product->price }}UYU
+                    @php
+                        $price = $product->discount_price ?? $product->price;
+                    @endphp
+
+                    <flux:table.cell class="whitespace-nowrap">${{ number_format($price, 2, ',', '.') }}&nbsp;UYU
                     </flux:table.cell>
 
                     <flux:table.cell>
@@ -114,7 +113,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                     <flux:table.cell>{{ $product->created_at->format('d/m/Y') }}</flux:table.cell>
 
                     <flux:table.cell>
-                        @if($product->in_stock == true)
+                        @if ($product->in_stock == true)
                             <flux:badge color="green" size="sm" inset="top bottom">
                                 Si
                             </flux:badge>
@@ -130,7 +129,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                             <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom">
                             </flux:button>
                             <flux:menu>
-                                <flux:menu.item href="{{ route('products.show', $product->slug) }}" wire:navigate icon-trailing="chevron-right">Ver producto</flux:menu.item>
+                                <flux:menu.item href="{{ route('products.show', $product->slug) }}" wire:navigate
+                                    icon-trailing="chevron-right">Ver producto</flux:menu.item>
                                 <flux:menu.separator />
 
                                 <flux:modal.trigger name="edit-product-{{ $product->id }}">

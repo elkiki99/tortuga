@@ -12,8 +12,6 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
     public $sortDirection = 'desc';
     public $search = '';
 
-    #[On('orderCreated')]
-    #[On('orderUpdated')]
     #[On('orderDeleted')]
     public function refreshPage()
     {
@@ -33,7 +31,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
     #[Computed]
     public function orders()
     {
-        return Order::query()->search($this->search)->orderBy($this->sortBy, $this->sortDirection)->paginate(10);
+        return Order::query()->search($this->search)->orderBy($this->sortBy, $this->sortDirection)->paginate(12);
     }
 }; ?>
 
@@ -69,14 +67,19 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
             @forelse ($this->orders as $order)
                 <flux:table.row wire:key="order-{{ $order->id }}">
                     <flux:table.cell variant="strong">
-                        <flux:text>{{ $order->purchase_id }}</flux:text>
+                        <flux:text>
+                            <flux:link variant="ghost" wire:navigate
+                                href="http://tortuga.test/checkout/exito?payment_id={{ $order->purchase_id }}">
+                                {{ $order->purchase_id }}
+                            </flux:link>
+                        </flux:text>
                     </flux:table.cell>
 
                     <flux:table.cell>{{ $order->buyer_name }}</flux:table.cell>
                     <flux:table.cell>{{ $order->buyer_email }}</flux:table.cell>
 
                     <flux:table.cell class="whitespace-nowrap">
-                        ${{ number_format($order->total, 2, ',', '.') }} UYU
+                        ${{ number_format($order->total, 2, ',', '.') }}&nbsp;UYU
                     </flux:table.cell>
 
                     <flux:table.cell>{{ \Carbon\Carbon::parse($order->purchase_date)->format('d/m/Y') }}
@@ -85,7 +88,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
                     <flux:table.cell>
                         <flux:badge color="{{ $order->status === 'completed' ? 'green' : 'yellow' }}" size="sm"
                             inset="top bottom">
-                            {{ ucfirst($order->status) }}
+                            {{ $order->status == 'completed' ? 'Completado' : 'Incompleto' }}
                         </flux:badge>
                     </flux:table.cell>
 

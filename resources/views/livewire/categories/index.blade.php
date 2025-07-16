@@ -59,11 +59,6 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
             <flux:input wire:model.live="search" size="sm" variant="filled" placeholder="Buscar..."
                 icon="magnifying-glass" />
         </div>
-
-        {{-- <flux:tabs variant="segmented" class="w-auto! ml-2" size="sm">
-            <flux:tab icon="list-bullet" icon:variant="outline" />
-            <flux:tab icon="squares-2x2" icon:variant="outline" />
-        </flux:tabs> --}}
     </div>
 
     <flux:table :paginate="$this->categories">

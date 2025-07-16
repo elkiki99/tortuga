@@ -8,9 +8,12 @@ Route::get('/', function () {
     return view('main');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified', 'is_admin'])
-    ->name('dashboard');
+Route::middleware(['auth', 'verified', 'is_admin'])->group(function () {
+    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Volt::route('productos', 'products.index')->name('products.index');
+    Volt::route('categorias', 'categories.index')->name('categories.index');
+    Volt::route('pedidos', 'orders.index')->name('orders.index');
+});
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('ajustes', 'ajustes/perfil');
@@ -22,20 +25,17 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('wishlist', 'client.wishlist')->name('client.wishlist');
 });
 
+Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
+Volt::route('categorias/{category:slug}', 'categories.show')->name('categories.show');
+
 Route::post('/webhook', WebhookController::class)->name('webhook');
 
 Volt::route('checkout', 'client.checkout')->name('client.checkout');
 
 Volt::route('checkout/exito', 'client.checkout.success')->name('checkout.success');
+
+Volt::route('ajustes/pedidos', 'orders.user')->name('orders.user');
 // Volt::route('checkout/error', 'client.checkout.failure')->name('checkout.failure');
 // Volt::route('checkout/pendiente', 'client.checkout.pending')->name('checkout.pending');
-
-Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
-Volt::route('productos', 'products.index')->name('products.index');
-
-Volt::route('pedidos', 'orders.index')->name('orders.index');
-
-Volt::route('categorias/{category:slug}', 'categories.show')->name('categories.show');
-Volt::route('categorias', 'categories.index')->name('categories.index');
 
 require __DIR__ . '/auth.php';

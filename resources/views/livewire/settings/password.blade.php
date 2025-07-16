@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.dashboard')] #[Title('Password • Tortuga')] class extends Component {
+new #[Layout('components.layouts.dashboard')] #[Title('Contraseña • Tortuga')] class extends Component {
     public string $current_password = '';
     public string $password = '';
     public string $password_confirmation = '';

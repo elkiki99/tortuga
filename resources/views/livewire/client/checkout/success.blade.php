@@ -167,10 +167,13 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                                     alt="{{ $item->product->name }}" class="w-16 h-16 object-cover">
                             </div>
 
+                            @php
+                                $price = $item->product->discount_price ?? $item->product->price;
+                            @endphp
+
                             <div>
                                 <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
-                                <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU
-                                </flux:subheading>
+                                <flux:subheading>${{ number_format($price, 2, ',', '.') }}&nbsp;UYU</flux:subheading>
                             </div>
                         </div>
                     </div>
@@ -183,7 +186,8 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
 
                 <div class="flex items-center justify-between">
                     <flux:subheading size="lg">Total</flux:subheading>
-                    <flux:heading size="lg">${{ $order->total }}UYU</flux:heading>
+                    <flux:heading size="lg">${{ number_format($order->total, 2, ',', '.') }}&nbsp;UYU
+                    </flux:heading>
                 </div>
             </div>
 
