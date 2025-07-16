@@ -50,7 +50,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Apariencia • Tortuga')]
                         <flux:table.cell>
                             <flux:badge color="{{ $order->status === 'completed' ? 'green' : 'yellow' }}" size="sm"
                                 inset="top bottom">
-                                {{ ucfirst($order->status) }}
+                                {{ $order->status == 'completed' ? 'Completado' : 'En proceso' }}
                             </flux:badge>
                         </flux:table.cell>
 

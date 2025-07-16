@@ -88,7 +88,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
                     <flux:table.cell>
                         <flux:badge color="{{ $order->status === 'completed' ? 'green' : 'yellow' }}" size="sm"
                             inset="top bottom">
-                            {{ $order->status == 'completed' ? 'Completado' : 'Incompleto' }}
+                            {{ $order->status == 'completed' ? 'Completado' : 'En proceso' }}
                         </flux:badge>
                     </flux:table.cell>
 
@@ -110,8 +110,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
                             </flux:menu>
                         </flux:dropdown>
 
-                        {{-- <!-- Delete order modal -->
-                        <livewire:orders.delete :$order wire:key="delete-order-{{ $order->id }}" /> --}}
+                        <!-- Delete order modal -->
+                        <livewire:orders.delete :$order wire:key="delete-order-{{ $order->id }}" />
                     </flux:table.cell>
                 </flux:table.row>
             @empty

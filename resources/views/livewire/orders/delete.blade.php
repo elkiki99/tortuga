@@ -24,6 +24,7 @@ new class extends Component {
         } else {
             $this->redirectRoute('orders.index', navigate: true);
         }
+
         Flux::modals()->close();
     }
 }; ?>
@@ -35,7 +36,9 @@ new class extends Component {
                 <flux:heading size="lg">¿Eliminar pedido?</flux:heading>
 
                 <flux:subheading>
-                    Esta acción eliminará permanentemente el pedido con el código<strong>{{ Str::ucfirst($order->purchase_id) }}</strong>. Asegurate de haber entregado este pedido antes de eliminarlo. ¿Deseas continuar?
+                    Esta acción eliminará permanentemente el pedido con el
+                    código<strong>{{ Str::ucfirst($order->purchase_id) }}</strong>. Asegurate de haber entregado este
+                    pedido antes de eliminarlo. ¿Deseas continuar?
                 </flux:subheading>
             </div>
 
