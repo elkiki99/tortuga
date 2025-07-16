@@ -13,10 +13,14 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     public function mount(Product $product)
     {
+        if ($product->in_stock == false && (!Auth::check() || !Auth::user()->isAdmin())) {
+            abort(404);
+        }
+
         $this->product = $product->load([
             'featuredImage',
             'images' => function ($query) {
-                $query->where('is_featured', false)->take(4);
+                $query->where('is_featured', false)->get();
             },
             'category',
             'brand',
@@ -24,16 +28,16 @@ new #[Layout('components.layouts.app')] class extends Component {
 
         $this->images = $this->product->images;
 
-        $this->relatedProducts = Product::where('in_stock', true)->where('category_id', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(4)->get();
+        $this->relatedProducts = Product::where('in_stock', true)->where('category_id', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->get();
 
-        $this->complete_look = Product::where('in_stock', true)->where('category_id', '!=', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(4)->get();
+        $this->complete_look = Product::where('in_stock', true)->where('category_id', '!=', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->get();
     }
 
     #[On('productUpdated')]
     public function updatedProduct()
     {
         $this->product->refresh();
-        $this->images = $this->product->images()->where('is_featured', false)->take(4)->get();
+        $this->images = $this->product->images()->where('is_featured', false)->get();
     }
 
     public function render(): mixed
@@ -47,38 +51,45 @@ new #[Layout('components.layouts.app')] class extends Component {
         @include('livewire.partials.breadcrumb')
 
         <div class="flex flex-col lg:flex-row gap-6">
-            <div class="flex gap-2 lg:w-3/4">
-                <div class="flex flex-col gap-2 w-1/6">
+            <div class="flex gap-2 lg:w-3/5">
+                <div class="flex flex-col gap-2 w-1/8">
                     @php
                         $thumbnailImages = $this->images;
-                        $totalThumbnails = 4;
+                        $totalThumbnails = $this->images->count();
                     @endphp
 
                     @for ($i = 0; $i < $totalThumbnails; $i++)
-                        <div class="flex-1 rounded-sm aspect-square bg-gray-100 overflow-hidden">
+                        <div class="w-full aspect-square rounded-sm bg-gray-100 overflow-hidden">
                             @if (isset($thumbnailImages[$i]) && $thumbnailImages[$i]->path)
                                 <img src="{{ Storage::url($thumbnailImages[$i]->path) }}"
                                     alt="{{ $thumbnailImages[$i]->alt_text ?? $this->product->name . ' - Imagen ' . ($i + 1) }}"
-                                    class="object-cover w-full h-full">
+                                    class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
                             @else
                                 <img src="https://via.placeholder.com/150?text=Placeholder+{{ $i + 1 }}"
-                                    alt="{{ $this->product->name . ' - Miniatura ' . ($i + 1) }}"
-                                    class="object-cover w-full h-full">
+                                    alt="{{ $this->product->name . '-m-' . ($i + 1) }}"
+                                    class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
                             @endif
                         </div>
                     @endfor
                 </div>
 
                 <div
-                    class="flex-1 bg-gray-100 flex items-center rounded-sm justify-center aspect-square overflow-hidden relative">
+                    class="flex-1 aspect-square bg-gray-100 flex items-center justify-center rounded-sm overflow-hidden relative">
+
                     @if ($this->product->featuredImage)
                         <img src="{{ Storage::url($this->product->featuredImage->path) }}"
-                            alt="{{ $this->product->featuredImage->alt_text ?? $this->product->name . ' - Imagen principal' }}"
-                            class="object-contain w-full h-full">
+                            alt="{{ $this->product->featuredImage->alt_text ?? $this->product->name }}"
+                            class="object-contain w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
                     @else
                         <img src="https://via.placeholder.com/640x640?text=Sin+imagen+principal"
-                            alt="{{ $this->product->name . ' - Sin imagen principal' }}"
-                            class="object-contain w-full h-full">
+                            alt="{{ $this->product->name }}"
+                            class="object-contain w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
+                    @endif
+
+                    @if (!$this->product->in_stock)
+                        <div class="absolute top-0 left-0 w-full text-center py-2 bg-red-600 bg-opacity-50">
+                            <span class="text-white font-semibold text-lg select-none">VENDIDO</span>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -109,7 +120,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                         ${{ $product->price }} UYU
                     </flux:subheading>
 
-                    <flux:heading size="lg">
+                    <flux:heading size="xl">
                         <strong>${{ $product->discount_price }} UYU</strong>
                     </flux:heading>
 
@@ -117,7 +128,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                         Hasta 6 cuotas de ${{ number_format($product->discount_price / 6, 2) }} UYU
                     </flux:subheading>
                 @else
-                    <flux:heading size="lg">
+                    <flux:heading size="xl">
                         <strong>${{ $product->price }} UYU</strong>
                     </flux:heading>
 

@@ -46,6 +46,6 @@ new class extends Component {
 
 <flux:button wire:click="toggleWishlist" @class([
     '!text-red-600' => $liked,
-    '!text-red-200' => !$liked,
+    '!text-red-300' => !$liked,
     '!rounded-full hover:cursor-pointer',
 ]) variant="ghost" icon="heart" />

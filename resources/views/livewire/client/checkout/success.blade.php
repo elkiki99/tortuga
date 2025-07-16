@@ -1,20 +1,112 @@
 <?php
 
 use Livewire\Attributes\{Layout, Title};
+use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
+use App\Models\OrderItem;
+use App\Models\Product;
+use App\Models\Order;
+use Carbon\Carbon;
 
 new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class extends Component {
+    public $order;
+    public $items = [];
+    public $purchaseId;
+
     public function mount()
     {
-        $paymentId = request()->query('payment_id');
+        $this->purchaseId = request()->query('payment_id');
 
-        if (!$paymentId) {
+        if (!$this->purchaseId) {
             abort(404);
+        }
+
+        $existingOrder = Order::where('purchase_id', $this->purchaseId)->first();
+
+        if ($existingOrder) {
+            $this->order = $existingOrder;
+            $this->items = $existingOrder->items()->with('product')->get();
+            return;
+        }
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            $cart = $user->cart;
+
+            if ($cart && $cart->items->isNotEmpty()) {
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'buyer_name' => $user->name,
+                    'buyer_email' => $user->email,
+                    'purchase_id' => $this->purchaseId,
+                    'purchase_date' => Carbon::now(),
+                    'total' => $cart->items->sum(fn($item) => $item->product->discount_price ?? $item->product->price),
+                    'status' => 'completed',
+                    'payment_method' => 'mercadopago',
+                ]);
+
+                foreach ($cart->items as $item) {
+                    if ($item->product) {
+                        OrderItem::create([
+                            'order_id' => $order->id,
+                            'product_id' => $item->product->id,
+                            'price' => $item->product->discount_price ?? $item->product->price,
+                        ]);
+
+                        $item->product->update(['in_stock' => false]);
+                    }
+                }
+
+                $cart->items()->delete();
+
+                $this->order = $order;
+                $this->items = $order->items()->with('product')->get();
+            }
+        } else {
+            $cartItems = session('cart', []);
+            $productIds = collect($cartItems)->pluck('product_id');
+            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+            if ($products->isEmpty()) {
+                abort(404);
+            }
+
+            $total = $products->sum(fn($p) => $p->discount_price ?? $p->price);
+
+            $order = Order::create([
+                'user_id' => null,
+                'buyer_name' => session('guest.name'),
+                'buyer_email' => session('guest.email'),
+                'purchase_id' => $this->purchaseId,
+                'purchase_date' => Carbon::now(),
+                'total' => $total,
+                'status' => 'completed',
+                'payment_method' => 'mercadopago',
+            ]);
+
+            foreach ($cartItems as $item) {
+                $product = $products[$item['product_id']] ?? null;
+
+                if ($product) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $product->id,
+                        'price' => $product->discount_price ?? $product->price,
+                    ]);
+
+                    $product->update(['in_stock' => false]);
+                }
+            }
+
+            session()->forget(['cart', 'guest.name', 'guest.surname', 'guest.email']);
+
+            $this->order = $order;
+            $this->items = $order->items()->with('product')->get();
         }
     }
 }; ?>
 
-<section class="container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12">
+<section class="container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12 space-y-6">
     <flux:text size="xs">
         <flux:link variant="subtle" href="{{ route('home') }}" wire:navigate>
             <flux:icon.arrow-left variant="micro" class="mr-1 mb-0.5 inline-block" />
@@ -22,11 +114,56 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
         </flux:link>
     </flux:text>
 
-    <flux:heading class="mt-6" size="xl">Éxito</flux:heading>
-    <flux:text>Tu pago con ID <strong>{{ request()->query('payment_id') }}</strong> fue procesado correctamente.
-    </flux:text>
-
-    <div class="flex justify-center items-center min-h-[70vh]">
-        <flux:icon.rocket-launch variant="solid" class="size-48 dark:text-zinc-700 text-zinc-100" />
+    <div>
+        <flux:heading size="xl">¡Gracias por tu compra!</flux:heading>
+        <flux:subheading>
+            Tu pago con id <strong>{{ $this->purchaseId }}</strong> fue procesado correctamente.
+        </flux:subheading>
     </div>
+
+    <div class="spacey-y-6 w-1/2">
+        <div class="space-y-4 flex-1 flex flex-col py-4">
+            @forelse ($items as $item)
+                <div class="flex items-center justify-between">
+                    <div class="flex items-start gap-4">
+                        <div class="block w-full aspect-square object-cover bg-gray-100">
+                            <img src="{{ Storage::url($item->product->featuredImage->path ?? '') }}"
+                                alt="{{ $item->product->name }}" class="w-16 h-16 object-cover">
+                        </div>
+
+                        <div>
+                            <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
+                            <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU
+                            </flux:subheading>
+                        </div>
+                    </div>
+                </div>
+                <flux:separator />
+            @empty
+                <flux:text>No hay productos todavía.
+                    <flux:link href="{{ route('home') }}" wire:navigate>Vuelve a la tienda</flux:link>
+                </flux:text>
+            @endforelse
+        </div>
+
+        <div class="flex items-center justify-between">
+            <flux:subheading size="lg">Total</flux:subheading>
+            <flux:heading size="lg">${{ $order->total }}UYU</flux:heading>
+        </div>
+
+        <div class="flex mt-6">
+            <flux:spacer />
+
+            <flux:text size="xs">
+                <flux:link target="_blank" rel="noopener noreferrer"
+                    href="https://www.mercadopago.com.uy/tools/receipt-view/{{ $purchaseId }}">
+                    Ver comprobante
+                    <flux:icon.arrow-right variant="micro" class="ml-1 mb-0.5 inline-block" />
+                </flux:link>
+            </flux:text>
+        </div>
+    </div>
+    {{-- <div class="flex justify-center items-center min-h-[30vh] mt-12">
+        <flux:icon.rocket-launch variant="solid" class="size-48 dark:text-zinc-700 text-zinc-100" />
+    </div> --}}
 </section>

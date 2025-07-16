@@ -40,7 +40,13 @@ new class extends Component {
         $this->brand_id = $product->brand_id;
 
         $this->visibleImages = $product->images->pluck('id')->toArray();
-        // dd($this->visibleImages);
+    }
+
+    protected function messages()
+    {
+        return [
+            'discount_price.lte' => 'El precio con descuento debe ser menor o igual al precio original.',
+        ];
     }
 
     public function updateProduct()
@@ -54,8 +60,8 @@ new class extends Component {
             'in_stock' => 'required|boolean',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
-            'featured_image' => 'nullable|image|max:2048',
-            'attachments.*' => 'nullable|image|max:2048',
+            'featured_image' => 'nullable|image|max:2048|mimes:png,jpg,jpeg,webp',
+            'attachments.*' => 'nullable|image|max:2048|mimes:png,jpg,jpeg,webp',
         ]);
 
         $this->product->update([
@@ -70,8 +76,9 @@ new class extends Component {
         ]);
 
         if ($this->featured_image) {
-            $this->product->featuredImage->delete();
-
+            if ($this->product->featuredImage) {
+                $this->product->featuredImage->delete();
+            }
             $featuredPath = $this->featured_image->store('products', 'public');
 
             $this->product->images()->create([
@@ -123,7 +130,7 @@ new class extends Component {
             $this->attachments = array_values($this->attachments);
         }
     }
-    
+
     #[Computed]
     public function categories()
     {
@@ -155,6 +162,7 @@ new class extends Component {
                 <flux:input.group.prefix>UYU</flux:input.group.prefix>
                 <flux:input type="number" wire:model="price" required min="0" />
             </flux:input.group>
+            <flux:error name="price" />
         </flux:field>
 
         <flux:field>
@@ -163,6 +171,7 @@ new class extends Component {
                 <flux:input.group.prefix>UYU</flux:input.group.prefix>
                 <flux:input type="number" wire:model="discount_price" min="0" />
             </flux:input.group>
+            <flux:error name="discount_price" />
         </flux:field>
 
         <flux:input label="Tamaño" wire:model="size" badge="Opcional" placeholder="XS" />

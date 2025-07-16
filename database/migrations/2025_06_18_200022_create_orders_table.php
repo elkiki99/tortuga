@@ -20,7 +20,7 @@ return new class extends Migration
             $table->dateTime('purchase_date');
             $table->decimal('total', 10, 2);
             $table->enum('status', ['pending', 'completed', 'cancelled'])->default('pending');
-            $table->enum('payment_method', ['credit_card', 'paypal', 'bank_transfer'])->default('credit_card');
+            $table->enum('payment_method', ['credit_card', 'paypal', 'bank_transfer', 'mercadopago'])->default('mercado_pago');
             $table->timestamps();
         });
     }

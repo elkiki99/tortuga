@@ -33,8 +33,8 @@ new class extends Component {
             'in_stock' => 'required|boolean',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
-            'featured_image' => 'required|image|max:2048',
-            'attachments.*' => 'nullable|image|max:2048',
+            'featured_image' => 'required|image|max:2048|mimes:png,jpg,jpeg,webp',
+            'attachments.*' => 'nullable|image|max:2048|mimes:png,jpg,jpeg,webp',
         ]);
 
         $product = Product::create([

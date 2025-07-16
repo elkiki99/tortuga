@@ -3,7 +3,7 @@
 use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class extends Component {
+new #[Layout('components.layouts.blank')] #[Title('Error • Tortuga')] class extends Component {
     public function mount()
     {
         $paymentId = request()->query('payment_id');

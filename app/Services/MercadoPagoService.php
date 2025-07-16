@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Exceptions\MPApiException;
+use MercadoPago\MercadoPagoConfig;
 
 class MercadoPagoService
 {
@@ -28,9 +28,7 @@ class MercadoPagoService
             'back_urls' => [
                 'success' => config('app.url') . '/checkout/exito',
                 'pending' => config('app.url') . '/checkout',
-                'failure' => config('app.url') . '/checkout',
-                // 'pending' => config('app.url') . '/checkout/pendiente',
-                // 'failure' => config('app.url') . '/checkout/error',
+                'failure' => config('app.url'),
             ],
             'notification_url' => config('app.url') . '/webhook',
             'notification_url' => route('webhook'),

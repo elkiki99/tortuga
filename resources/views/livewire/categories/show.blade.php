@@ -63,9 +63,11 @@ new #[Layout('components.layouts.app')] class extends Component {
                     <flux:heading size="xl" level="1">
                         {{ Str::ucfirst($category->name) }}
                     </flux:heading>
-                    <flux:subheading>
-                        {{ Str::ucfirst($category->description) }}</strong>
-                    </flux:subheading>
+                    @if ($category->description)
+                        <flux:subheading>
+                            {{ Str::ucfirst($category->description) }}</strong>
+                        </flux:subheading>
+                    @endif
                 </div>
             </div>
 

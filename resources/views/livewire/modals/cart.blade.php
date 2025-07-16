@@ -95,10 +95,10 @@ new class extends Component {
                                     class="block w-full aspect-square object-cover bg-gray-100">
                                     @if ($item->product->featuredImage)
                                         <img src="{{ Storage::url($item->product->featuredImage->path) }}"
-                                            alt="{{ $item->product->name }}" class="object cover w-16 h-16">
+                                            alt="{{ $item->product->name }}" class="object-cover w-16 h-16">
                                     @else
                                         <img src="{{ $item->product->featuredImage }}" alt="{{ $item->product->name }}"
-                                            class="object cover w-16 h-16">
+                                            class="object-cover w-16 h-16">
                                     @endif
                                 </a>
 
@@ -119,10 +119,10 @@ new class extends Component {
                                         class="block w-full aspect-square object-cover bg-gray-100">
                                         @if ($item['product']->featuredImage)
                                             <img src="{{ Storage::url($item['product']->featuredImage->path) }}"
-                                                alt="{{ $item['product']->name }}" class="object cover w-16 h-16">
+                                                alt="{{ $item['product']->name }}" class="object-cover w-16 h-16">
                                         @else
                                             <img src="{{ $item['product']->featuredImage }}"
-                                                alt="{{ $item['product']->name }}" class="object cover w-16 h-16">
+                                                alt="{{ $item['product']->name }}" class="object-cover w-16 h-16">
                                         @endif
                                     </a>
                                     <div>
@@ -155,8 +155,8 @@ new class extends Component {
                 <footer class="space-y-6">
                     <flux:separator />
                     <div class="flex items-center justify-between">
-                        <flux:heading size="lg">Total</flux:heading>
-                        <flux:heading size="lg">${{ number_format($total, 2) }} UYU</flux:heading>
+                        <flux:subheading size="lg">Total</flux:subheading>
+                        <flux:heading size="lg">${{ $total }} UYU</flux:heading>
                     </div>
                     <div class="flex flex-col">
                         <flux:button as:link href="{{ route('client.checkout') }}" variant="primary"

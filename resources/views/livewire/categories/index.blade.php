@@ -45,7 +45,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
 <div class="space-y-6">
     <div class="relative w-full">
         <flux:heading size="xl" level="1">{{ __('Categorías') }}</flux:heading>
-        <flux:subheading size="lg" class="mb-6">{{ __('Administra los categorías de tu tienda') }}
+        <flux:subheading size="lg" class="mb-6">{{ __('Administra las categorías de tu tienda') }}
         </flux:subheading>
         <flux:separator variant="subtle" />
     </div>
@@ -89,8 +89,10 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
                         </flux:text>
                     </flux:table.cell>
 
-                    <flux:table.cell>{{ Str::of($category->description)->ucfirst()->limit(50) }}</flux:table.cell>
-
+                    <flux:table.cell>
+                        {{ $category->description ? Str::of($category->description)->ucfirst()->limit(50) : 'Sin descripción' }}
+                    </flux:table.cell>
+                    
                     <flux:table.cell>
                         @if ($category->parent_id === null)
                             <flux:badge color="green" size="sm" inset="top bottom">
@@ -108,7 +110,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
                             <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom">
                             </flux:button>
                             <flux:menu>
-                                <flux:menu.item href="{{ route('categories.show', $category->slug) }}" wire:navigate icon-trailing="chevron-right">Ver categoría</flux:menu.item>
+                                <flux:menu.item href="{{ route('categories.show', $category->slug) }}" wire:navigate
+                                    icon-trailing="chevron-right">Ver categoría</flux:menu.item>
                                 <flux:menu.separator />
 
                                 <flux:modal.trigger name="edit-category-{{ $category->id }}">

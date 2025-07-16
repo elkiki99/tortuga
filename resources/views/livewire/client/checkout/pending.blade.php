@@ -3,7 +3,7 @@
 use Livewire\Attributes\{Layout, Title};
 use Livewire\Volt\Component;
 
-new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class extends Component {
+new #[Layout('components.layouts.blank')] #[Title('Pendiente • Tortuga')] class extends Component {
     $paymentId = request()->query('payment_id');
 
     if (!$paymentId) {
