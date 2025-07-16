@@ -41,14 +41,7 @@ new class extends Component {
 
         $this->visibleImages = $product->images->pluck('id')->toArray();
     }
-
-    protected function messages()
-    {
-        return [
-            'discount_price.lte' => 'El precio con descuento debe ser menor o igual al precio original.',
-        ];
-    }
-
+    
     public function updateProduct()
     {
         $this->validate([

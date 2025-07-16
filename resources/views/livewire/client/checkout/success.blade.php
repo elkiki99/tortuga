@@ -128,17 +128,32 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
 
 <section class="container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12 space-y-6">
     <flux:text size="xs">
-        <flux:link variant="subtle" href="{{ route('home') }}" wire:navigate>
-            <flux:icon.arrow-left variant="micro" class="mr-1 mb-0.5 inline-block" />
-            Volver al inicio
-        </flux:link>
+        @if (Auth()->check() && Auth::user()->isAdmin())
+            <flux:link variant="subtle" href="{{ route('orders.index') }}" wire:navigate>
+                <flux:icon.arrow-left variant="micro" class="mr-1 mb-0.5 inline-block" />
+                Volver a pedidos
+            </flux:link>
+        @else
+            <flux:link variant="subtle" href="{{ route('home') }}" wire:navigate>
+                <flux:icon.arrow-left variant="micro" class="mr-1 mb-0.5 inline-block" />
+                Volver al inicio
+            </flux:link>
+        @endif
     </flux:text>
 
     <div>
-        <flux:heading size="xl">¡Gracias por tu compra!</flux:heading>
-        <flux:subheading>
-            Tu pago fue procesado correctamente.
-        </flux:subheading>
+        @if (Auth()->check() && Auth::user()->isAdmin())
+            <flux:heading size="xl">Pago exitoso confirmado</flux:heading>
+            <flux:subheading>
+                Este pago fue procesada correctamente y está asociada a la orden de compra
+                <strong>{{ $this->purchaseId }}</strong>.
+            </flux:subheading>
+        @else
+            <flux:heading size="xl">¡Gracias por tu compra!</flux:heading>
+            <flux:subheading>
+                Tu pago fue procesado correctamente.
+            </flux:subheading>
+        @endif
     </div>
 
     <div class="lg:flex lg:items-start lg:gap-6">
@@ -172,17 +187,19 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                 </div>
             </div>
 
-            <div class="flex">
-                <flux:spacer />
+            @if (!Auth::check() || !Auth::user()->isAdmin())
+                <div class="flex">
+                    <flux:spacer />
 
-                <flux:text size="xs">
-                    <flux:link target="_blank" rel="noopener noreferrer"
-                        href="https://www.mercadopago.com.uy/tools/receipt-view/{{ $purchaseId }}">
-                        Ver comprobante
-                        <flux:icon.arrow-right variant="micro" class="ml-1 mb-0.5 inline-block" />
-                    </flux:link>
-                </flux:text>
-            </div>
+                    <flux:text size="xs">
+                        <flux:link target="_blank" rel="noopener noreferrer"
+                            href="https://www.mercadopago.com.uy/tools/receipt-view/{{ $purchaseId }}">
+                            Ver comprobante
+                            <flux:icon.arrow-right variant="micro" class="ml-1 mb-0.5 inline-block" />
+                        </flux:link>
+                    </flux:text>
+                </div>
+            @endif
         </div>
 
         <div class="lg:flex justify-center items-center min-h-[60vh] lg:w-1/2 hidden">

@@ -32,15 +32,17 @@ new #[Layout('components.layouts.app')] #[Title('Wishlist • Tortuga')] class e
 
     <flux:heading size="xl">Wishlist</flux:heading>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
-        @forelse ($products as $product)
-            <livewire:components.product-card wire:key="product-{{ $product->id }}" :product="$product" />
-        @empty
-            <flux:text>
-                Tu wishlist está vacía. Agrega productos a tu lista de deseos para verlos aquí.
-            </flux:text>
-        @endforelse
-    </div>
+    @if ($products->count() > 0)
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+            @foreach ($products as $product)
+                <livewire:components.product-card wire:key="product-{{ $product->id }}" :product="$product" />
+            @endforeach
+        </div>
+    @else
+        <flux:subheading>
+            Tu wishlist está vacía. Agrega productos a tu lista de deseos para verlos aquí.
+        </flux:subheading>
+    @endif
 
     @if ($paginator->hasPages())
         <flux:pagination :paginator="$paginator" />

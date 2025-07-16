@@ -62,7 +62,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
         </flux:modal.trigger>
 
         <div class="w-full">
-            <flux:input wire:model.live="search" size="sm" variant="filled" placeholder="Buscar..."
+            <flux:input wire:model.live="search" size="sm" variant="filled" placeholder="Buscar por nombre o categoría..."
                 icon="magnifying-glass" />
         </div>
 

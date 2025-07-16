@@ -23,8 +23,18 @@ class Order extends Model
         'payment_method',
     ];
 
-    public function items() : HasMany
+    public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function scopeSearch($query, $term)
+    {
+        if (trim($term) === '') return $query;
+
+        return $query->where(function ($query) use ($term) {
+            $query->where('buyer_email', 'like', '%' . $term . '%')
+                ->orWhere('purchase_id', 'like', '%' . $term . '%');
+        });
     }
 }

@@ -33,6 +33,8 @@ Volt::route('checkout/exito', 'client.checkout.success')->name('checkout.success
 Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
 Volt::route('productos', 'products.index')->name('products.index');
 
+Volt::route('pedidos', 'orders.index')->name('orders.index');
+
 Volt::route('categorias/{category:slug}', 'categories.show')->name('categories.show');
 Volt::route('categorias', 'categories.index')->name('categories.index');
 

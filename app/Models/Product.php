@@ -52,6 +52,11 @@ class Product extends Model
     {
         if (trim($term) === '') return $query;
 
-        return $query->where('name', 'like', '%' . $term . '%');
+        return $query->where(function ($q) use ($term) {
+            $q->where('name', 'like', '%' . $term . '%')
+                ->orWhereHas('category', function ($q) use ($term) {
+                    $q->where('name', 'like', '%' . $term . '%');
+                });
+        });
     }
 }
