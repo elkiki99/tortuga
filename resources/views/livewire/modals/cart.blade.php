@@ -92,7 +92,7 @@ new class extends Component {
                         <div wire:key="item-{{ $item->product->id }}" class="flex items-center justify-between">
                             <div class="flex items-start gap-4">
                                 <a href="{{ route('products.show', $item->product->slug) }}" wire:navigate
-                                    class="block w-full aspect-square object-cover bg-gray-100">
+                                    class="block w-16 h-16 aspect-square object-cover bg-gray-100">
                                     @if ($item->product->featuredImage)
                                         <img src="{{ Storage::url($item->product->featuredImage->path) }}"
                                             alt="{{ $item->product->name }}" class="object-cover w-16 h-16">
@@ -102,10 +102,13 @@ new class extends Component {
                                     @endif
                                 </a>
 
+                                @php
+                                    $price = $item->product->discount_price ?? $item->product->price;
+                                @endphp
+                                
                                 <div>
                                     <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
-                                    <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU
-                                    </flux:subheading>
+                                    <flux:subheading>${{ number_format($price, 2, ',', '.') }}&nbsp;UYU</flux:subheading>
                                 </div>
                             </div>
                             <flux:button icon="trash" class="mr-2" variant="subtle"
@@ -116,7 +119,7 @@ new class extends Component {
                             @if ($item['product'])
                                 <div class="flex items-start gap-4">
                                     <a href="{{ route('products.show', $item['product']->slug) }}" wire:navigate
-                                        class="block w-full aspect-square object-cover bg-gray-100">
+                                        class="block w-16 h-16 aspect-square object-cover bg-gray-100">
                                         @if ($item['product']->featuredImage)
                                             <img src="{{ Storage::url($item['product']->featuredImage->path) }}"
                                                 alt="{{ $item['product']->name }}" class="object-cover w-16 h-16">
@@ -125,10 +128,14 @@ new class extends Component {
                                                 alt="{{ $item['product']->name }}" class="object-cover w-16 h-16">
                                         @endif
                                     </a>
+
+                                    @php
+                                        $price = $item['product']->discount_price ?? $item['product']->price;
+                                    @endphp
+
                                     <div>
                                         <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
-                                        <flux:subheading>
-                                            ${{ $item['product']->discount_price ?? $item['product']->price }}UYU
+                                        <flux:subheading>${{ number_format($price, 2, ',', '.') }}&nbsp;UYU
                                         </flux:subheading>
                                     </div>
                                 </div>
@@ -156,7 +163,7 @@ new class extends Component {
                     <flux:separator />
                     <div class="flex items-center justify-between">
                         <flux:subheading size="lg">Total</flux:subheading>
-                        <flux:heading size="lg">${{ $total }} UYU</flux:heading>
+                        <flux:heading size="lg">${{ number_format($total, 2, ',', '.') }}&nbsp;UYU</flux:heading>
                     </div>
                     <div class="flex flex-col">
                         <flux:button as:link href="{{ route('client.checkout') }}" variant="primary"

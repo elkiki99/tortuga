@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('buyer_name');
-            $table->string('buyer_email')->unique();
+            $table->string('buyer_email');
             $table->string('purchase_id')->unique();
             $table->dateTime('purchase_date');
             $table->decimal('total', 10, 2);

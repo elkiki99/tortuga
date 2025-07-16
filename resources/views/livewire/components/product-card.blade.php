@@ -36,12 +36,12 @@ new class extends Component {
     @if ($product->discount_price)
         <div class="flex items-center gap-2">
             <flux:heading class="text-red-600 !mb-0" size="lg">
-                <strong>${{ $product->discount_price }} UYU</strong>
+                <strong>${{ number_format($product->discount_price, 2, ',', '.') }}&nbsp;UYU</strong>
             </flux:heading>
-            <flux:subheading class="line-through">${{ $product->price }} UYU</flux:subheading>
+            <flux:subheading class="line-through">${{ number_format($product->price, 2, ',', '.') }}&nbsp;UYU</flux:subheading>
         </div>
     @else
-        <flux:heading size="lg"><strong>${{ $product->price }} UYU</strong></flux:heading>
+        <flux:heading size="lg"><strong>${{ number_format($product->price, 2, ',', '.') }}&nbsp;UYU</strong></flux:heading>
     @endif
 
     {{-- Nombre y categoría --}}

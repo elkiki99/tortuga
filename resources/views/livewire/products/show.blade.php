@@ -117,23 +117,23 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                 @if ($product->discount_price)
                     <flux:subheading class="line-through">
-                        ${{ $product->price }} UYU
+                        ${{ number_format($product->price, 2, ',', '.') }} UYU
                     </flux:subheading>
 
                     <flux:heading size="xl">
-                        <strong>${{ $product->discount_price }} UYU</strong>
+                        <strong>${{ number_format($product->discount_price, 2, ',', '.') }} UYU</strong>
                     </flux:heading>
 
                     <flux:subheading class="text-gray-500">
-                        Hasta 6 cuotas de ${{ number_format($product->discount_price / 6, 2) }} UYU
+                        Hasta 6 cuotas de ${{ number_format($product->discount_price / 6, 2, ',', '.') }} UYU
                     </flux:subheading>
                 @else
                     <flux:heading size="xl">
-                        <strong>${{ $product->price }} UYU</strong>
+                        <strong>${{ number_format($product->price, 2, ',', '.') }} UYU</strong>
                     </flux:heading>
 
                     <flux:subheading class="text-gray-500">
-                        Hasta 6 cuotas de ${{ number_format($product->price / 6, 2) }} UYU
+                        Hasta 6 cuotas de ${{ number_format($product->price / 6, 2, ',', '.') }} UYU
                     </flux:subheading>
                 @endif
 

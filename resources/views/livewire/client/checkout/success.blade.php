@@ -1,7 +1,9 @@
 <?php
 
 use Livewire\Attributes\{Layout, Title};
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\OrderPurchased;
 use Livewire\Volt\Component;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -45,6 +47,8 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                     'payment_method' => 'mercadopago',
                 ]);
 
+                $itemsForEmail = [];
+
                 foreach ($cart->items as $item) {
                     if ($item->product) {
                         OrderItem::create([
@@ -54,8 +58,15 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                         ]);
 
                         $item->product->update(['in_stock' => false]);
+
+                        $itemsForEmail[] = [
+                            'name' => $item->product->name,
+                            'price' => $item->product->discount_price ?? $item->product->price,
+                        ];
                     }
                 }
+
+                Mail::to($user->email)->send(new OrderPurchased(name: $user->name, purchaseId: $this->purchaseId, items: $itemsForEmail, total: $order->total));
 
                 $cart->items()->delete();
 
@@ -84,6 +95,8 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                 'payment_method' => 'mercadopago',
             ]);
 
+            $itemsForEmail = [];
+
             foreach ($cartItems as $item) {
                 $product = $products[$item['product_id']] ?? null;
 
@@ -95,8 +108,15 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                     ]);
 
                     $product->update(['in_stock' => false]);
+
+                    $itemsForEmail[] = [
+                        'name' => $product->name,
+                        'price' => $product->discount_price ?? $product->price,
+                    ];
                 }
             }
+
+            Mail::to(session('guest.email'))->send(new OrderPurchased(name: session('guest.name') . ' ' . session('guest.surname'), purchaseId: $this->purchaseId, items: $itemsForEmail, total: $order->total));
 
             session()->forget(['cart', 'guest.name', 'guest.surname', 'guest.email']);
 
@@ -117,53 +137,56 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
     <div>
         <flux:heading size="xl">¡Gracias por tu compra!</flux:heading>
         <flux:subheading>
-            Tu pago con id <strong>{{ $this->purchaseId }}</strong> fue procesado correctamente.
+            Tu pago fue procesado correctamente.
         </flux:subheading>
     </div>
 
-    <div class="spacey-y-6 w-1/2">
-        <div class="space-y-4 flex-1 flex flex-col py-4">
-            @forelse ($items as $item)
-                <div class="flex items-center justify-between">
-                    <div class="flex items-start gap-4">
-                        <div class="block w-full aspect-square object-cover bg-gray-100">
-                            <img src="{{ Storage::url($item->product->featuredImage->path ?? '') }}"
-                                alt="{{ $item->product->name }}" class="w-16 h-16 object-cover">
-                        </div>
+    <div class="lg:flex lg:items-start lg:gap-6">
+        <div class="space-y-6 w-full lg:w-1/2">
+            <div class="space-y-4 flex-1 flex flex-col py-4">
+                @forelse ($items as $item)
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-start gap-4">
+                            <div class="block w-full aspect-square object-cover bg-gray-100">
+                                <img src="{{ Storage::url($item->product->featuredImage->path ?? '') }}"
+                                    alt="{{ $item->product->name }}" class="w-16 h-16 object-cover">
+                            </div>
 
-                        <div>
-                            <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
-                            <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU
-                            </flux:subheading>
+                            <div>
+                                <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
+                                <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU
+                                </flux:subheading>
+                            </div>
                         </div>
                     </div>
+                    <flux:separator />
+                @empty
+                    <flux:text>No hay productos todavía.
+                        <flux:link href="{{ route('home') }}" wire:navigate>Vuelve a la tienda</flux:link>
+                    </flux:text>
+                @endforelse
+
+                <div class="flex items-center justify-between">
+                    <flux:subheading size="lg">Total</flux:subheading>
+                    <flux:heading size="lg">${{ $order->total }}UYU</flux:heading>
                 </div>
-                <flux:separator />
-            @empty
-                <flux:text>No hay productos todavía.
-                    <flux:link href="{{ route('home') }}" wire:navigate>Vuelve a la tienda</flux:link>
+            </div>
+
+            <div class="flex">
+                <flux:spacer />
+
+                <flux:text size="xs">
+                    <flux:link target="_blank" rel="noopener noreferrer"
+                        href="https://www.mercadopago.com.uy/tools/receipt-view/{{ $purchaseId }}">
+                        Ver comprobante
+                        <flux:icon.arrow-right variant="micro" class="ml-1 mb-0.5 inline-block" />
+                    </flux:link>
                 </flux:text>
-            @endforelse
+            </div>
         </div>
 
-        <div class="flex items-center justify-between">
-            <flux:subheading size="lg">Total</flux:subheading>
-            <flux:heading size="lg">${{ $order->total }}UYU</flux:heading>
-        </div>
-
-        <div class="flex mt-6">
-            <flux:spacer />
-
-            <flux:text size="xs">
-                <flux:link target="_blank" rel="noopener noreferrer"
-                    href="https://www.mercadopago.com.uy/tools/receipt-view/{{ $purchaseId }}">
-                    Ver comprobante
-                    <flux:icon.arrow-right variant="micro" class="ml-1 mb-0.5 inline-block" />
-                </flux:link>
-            </flux:text>
+        <div class="lg:flex justify-center items-center min-h-[60vh] lg:w-1/2 hidden">
+            <flux:icon.rocket-launch variant="solid" class="size-48 dark:text-zinc-700 text-zinc-100" />
         </div>
     </div>
-    {{-- <div class="flex justify-center items-center min-h-[30vh] mt-12">
-        <flux:icon.rocket-launch variant="solid" class="size-48 dark:text-zinc-700 text-zinc-100" />
-    </div> --}}
 </section>

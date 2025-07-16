@@ -188,9 +188,13 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                                         class="w-16 h-16 object-cover">
                                 </div>
 
+                                @php
+                                    $price = $item->product->discount_price ?? $item->product->price;
+                                @endphp
+                                
                                 <div>
                                     <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
-                                    <flux:subheading>${{ $item->product->discount_price ?? $item->product->price }}UYU
+                                    <flux:subheading>${{ number_format($price, 2, ',', '.') }}&nbsp;UYU
                                     </flux:subheading>
                                 </div>
                             </div>
@@ -204,11 +208,14 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                                         <img src="{{ Storage::url($item['product']->featuredImage->path ?? '') }}" alt="{{ $item['product']->name }}"
                                             class="w-16 h-16 object-cover">
                                     </div>
+
+                                    @php
+                                        $price = $item['product']->discount_price ?? $item['product']->price;
+                                    @endphp
+
                                     <div>
                                         <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
-                                        <flux:subheading>
-                                            ${{ $item['product']->discount_price ?? $item['product']->price }}UYU
-                                        </flux:subheading>
+                                        <flux:subheading>${{ number_format($price, 2, ',', '.') }}&nbsp;UYU</flux:subheading>
                                     </div>
                                 </div>
                             @endif
@@ -227,7 +234,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                 <footer class="space-y-6 mt-auto">
                     <div class="flex items-center justify-between">
                         <flux:subheading size="lg">Total</flux:subheading>
-                        <flux:heading size="lg">${{ $total }}UYU</flux:heading>
+                        <flux:heading size="lg">${{ number_format($total, 2, ',', '.') }}&nbsp;UYU</flux:heading>
                     </div>
                 </footer>
 
