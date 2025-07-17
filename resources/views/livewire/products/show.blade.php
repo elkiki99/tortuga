@@ -99,15 +99,13 @@ new #[Layout('components.layouts.app')] class extends Component {
                 <div class="flex items-center gap-4">
                     <flux:heading size="xl" level="1">{{ Str::ucfirst($product->name) }}</flux:heading>
 
-                    @auth
-                        @if (Auth::user()->isAdmin())
-                            <flux:modal.trigger name="edit-product-{{ $product->id }}">
-                                <flux:button icon="pencil" size="sm" variant="ghost" />
-                            </flux:modal.trigger>
+                    @can('edit', $product)
+                        <flux:modal.trigger name="edit-product-{{ $product->id }}">
+                            <flux:button icon="pencil" size="sm" variant="ghost" />
+                        </flux:modal.trigger>
 
-                            <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
-                        @endif
-                    @endauth
+                        <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
+                    @endcan
                 </div>
 
                 <flux:subheading size="lg" class="mb-4">
@@ -151,12 +149,15 @@ new #[Layout('components.layouts.app')] class extends Component {
                         @endif
 
                         @if ($product->size)
-                            <flux:card class="w-auto py-2 inline-block">
-                                <flux:heading>{{ $product->size }}</flux:heading>
+                            <flux:card class="w-auto py-2 px-4 inline-block">
+                                <div class="flex items-center gap-2">
+                                    <flux:heading>{{ $product->size }}</flux:heading>
+                                    <flux:icon.tag variant="micro" />
+                                </div>
                             </flux:card>
                         @endif
                     </div>
-                    
+
                     <div class="flex flex-grow items-center gap-4">
                         <livewire:cart.add :product="$product" />
                         <livewire:wishlist.add :product="$product" />
@@ -172,17 +173,15 @@ new #[Layout('components.layouts.app')] class extends Component {
                     <flux:link href="mailto:{{ config('mail.from.address') }}">¿Querés reservar esta prenda? Mandanos
                         un mail</flux:link>
 
-                    @auth
-                        @if (Auth::user()->isAdmin())
-                            <div class="mt-6">
-                                <flux:modal.trigger name="delete-product-{{ $product->id }}">
-                                    <flux:badge as="button" color="red" icon="trash">Eliminar producto</flux:button>
-                                </flux:modal.trigger>
+                    @can('delete', $product)
+                        <div class="mt-6">
+                            <flux:modal.trigger name="delete-product-{{ $product->id }}">
+                                <flux:badge as="button" color="red" icon="trash">Eliminar producto</flux:button>
+                            </flux:modal.trigger>
 
-                                <livewire:products.delete :$product wire:key="delete-product-{{ $product->id }}" />
-                            </div>
-                        @endif
-                    @endauth
+                            <livewire:products.delete :$product wire:key="delete-product-{{ $product->id }}" />
+                        </div>
+                    @endcan
                 </div>
             </div>
         </div>

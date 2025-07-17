@@ -27,6 +27,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
 
         if ($existingOrder) {
             $this->order = $existingOrder;
+            $this->authorize('view', $this->order);
             $this->items = $existingOrder->items()->with('product')->get();
             return;
         }
@@ -128,7 +129,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
 
 <section class="container mx-auto px-4 mt-6 md:px-6 lg:px-8 my-12 space-y-6">
     <flux:text size="xs">
-        @if (Auth()->check() && Auth::user()->isAdmin())
+        @can('delete', $order)
             <flux:link variant="subtle" href="{{ route('orders.index') }}" wire:navigate>
                 <flux:icon.arrow-left variant="micro" class="mr-1 mb-0.5 inline-block" />
                 Volver a pedidos
@@ -138,7 +139,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                 <flux:icon.arrow-left variant="micro" class="mr-1 mb-0.5 inline-block" />
                 Volver al inicio
             </flux:link>
-        @endif
+        @endcan
     </flux:text>
 
     <div>

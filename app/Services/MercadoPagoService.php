@@ -17,6 +17,8 @@ class MercadoPagoService
 
     public function createPreference(array $items, array $payer)
     {
+        $externalReference = uniqid();
+
         $request = [
             'items' => $items,
             'payer' => $payer,
@@ -33,7 +35,7 @@ class MercadoPagoService
             'notification_url' => config('app.url') . '/webhook',
             'notification_url' => route('webhook'),
             'statement_descriptor' => config('app.name'),
-            'external_reference' => uniqid(),
+            'external_reference' => $externalReference,
             'expires' => false,
             'auto_return' => 'approved',
         ];
@@ -42,6 +44,7 @@ class MercadoPagoService
 
         try {
             $preference = $client->create($request);
+            session()->put('guest_order_access', $externalReference);
             return $preference;
         } catch (MPApiException $e) {
             // The rest of the code below will not be executed.

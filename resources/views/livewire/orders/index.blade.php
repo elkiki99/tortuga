@@ -21,7 +21,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
 
     public function mount()
     {
-        $this->authorize('viewAny');
+        $this->authorize('viewAny', Order::class);
     }
 
     public function sort($column)
