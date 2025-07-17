@@ -12,6 +12,11 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
     public $sortDirection = 'desc';
     public $search = '';
 
+    public function mount()
+    {
+        $this->authorize('viewAny', Product::class);
+    }
+
     #[On('productCreated')]
     #[On('productUpdated')]
     #[On('productDeleted')]
@@ -111,7 +116,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                         </flux:badge>
                     </flux:table.cell>
 
-                    <flux:table.cell class="hidden xl:table-cell">{{ Str::ucfirst($product->brand->name) }}
+                    <flux:table.cell class="hidden xl:table-cell">
+                        {{ $product->brand?->name ? Str::ucfirst($product->brand->name) : 'Sin marca' }}
                     </flux:table.cell>
 
                     <flux:table.cell class="hidden md:table-cell">{{ $product->created_at->format('d/m/Y') }}

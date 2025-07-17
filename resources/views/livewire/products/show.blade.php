@@ -51,26 +51,28 @@ new #[Layout('components.layouts.app')] class extends Component {
 
         <div class="flex flex-col lg:flex-row gap-6">
             <div class="flex gap-2 lg:w-3/5">
-                <div class="flex flex-col gap-2 w-1/8">
-                    @php
-                        $thumbnailImages = $this->images;
-                        $totalThumbnails = $this->images->count();
-                    @endphp
+                @php
+                    $thumbnailImages = $this->images;
+                    $totalThumbnails = $this->images->count();
+                @endphp
 
-                    @for ($i = 0; $i < $totalThumbnails; $i++)
-                        <div class="w-full aspect-square rounded-sm bg-gray-100 overflow-hidden">
-                            @if (isset($thumbnailImages[$i]) && $thumbnailImages[$i]->path)
-                                <img src="{{ Storage::url($thumbnailImages[$i]->path) }}"
-                                    alt="{{ $thumbnailImages[$i]->alt_text ?? $this->product->name . ' - Imagen ' . ($i + 1) }}"
-                                    class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
-                            @else
-                                <img src="https://via.placeholder.com/150?text=Placeholder+{{ $i + 1 }}"
-                                    alt="{{ $this->product->name . '-m-' . ($i + 1) }}"
-                                    class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
-                            @endif
-                        </div>
-                    @endfor
-                </div>
+                @if ($totalThumbnails > 0)
+                    <div class="flex flex-col gap-2 w-1/8">
+                        @for ($i = 0; $i < $totalThumbnails; $i++)
+                            <div class="w-full aspect-square rounded-sm bg-gray-100 overflow-hidden">
+                                @if (isset($thumbnailImages[$i]) && $thumbnailImages[$i]->path)
+                                    <img src="{{ Storage::url($thumbnailImages[$i]->path) }}"
+                                        alt="{{ $thumbnailImages[$i]->alt_text ?? $this->product->name . ' - Imagen ' . ($i + 1) }}"
+                                        class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
+                                @else
+                                    <img src="https://via.placeholder.com/150?text=Placeholder+{{ $i + 1 }}"
+                                        alt="{{ $this->product->name . '-m-' . ($i + 1) }}"
+                                        class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
+                                @endif
+                            </div>
+                        @endfor
+                    </div>
+                @endif
 
                 <div
                     class="flex-1 aspect-square bg-gray-100 flex items-center justify-center rounded-sm overflow-hidden relative">
@@ -141,12 +143,20 @@ new #[Layout('components.layouts.app')] class extends Component {
                         {{ Str::ucfirst($product->description) }}
                     </flux:text>
 
-                    @if ($product->brand)
-                        <flux:heading>
-                            {{ Str::ucfirst($product->brand->name) }}
-                        </flux:heading>
-                    @endif
+                    <div class="space-y-4">
+                        @if ($product->brand)
+                            <flux:heading>
+                                {{ Str::ucfirst($product->brand->name) }}
+                            </flux:heading>
+                        @endif
 
+                        @if ($product->size)
+                            <flux:card class="w-auto py-2 inline-block">
+                                <flux:heading>{{ $product->size }}</flux:heading>
+                            </flux:card>
+                        @endif
+                    </div>
+                    
                     <div class="flex flex-grow items-center gap-4">
                         <livewire:cart.add :product="$product" />
                         <livewire:wishlist.add :product="$product" />

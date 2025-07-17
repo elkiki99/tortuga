@@ -13,7 +13,7 @@ new class extends Component {
 
     public function deleteProduct()
     {
-        $this->authorize('delete');
+        $this->authorize('delete', $this->product);
         
         $this->product->delete();
 

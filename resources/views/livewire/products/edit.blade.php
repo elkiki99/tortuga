@@ -44,7 +44,7 @@ new class extends Component {
     
     public function updateProduct()
     {
-        $this->authorize('edit');
+        $this->authorize('edit', $this->product);
 
         $this->validate([
             'name' => 'required|string|max:255',

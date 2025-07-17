@@ -12,6 +12,11 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
     public $sortDirection = 'asc';
     public $search = '';
 
+    public function mount()
+    {
+        $this->authorize('viewAny', Category::class);
+    }
+
     #[On('categoryCreated')]
     #[On('categoryUpdated')]
     #[On('categoryDeleted')]

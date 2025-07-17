@@ -20,10 +20,11 @@ new class extends Component {
 
     public function updateCategory()
     {
+        $this->authorize('edit', $this->category);
+
         $this->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            // 'parent_id' => 'nullable|exists:categories,id|not_in:' . $this->category->id, // no puede ser su propio padre
         ]);
 
         $this->category->update([

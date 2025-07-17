@@ -2,10 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\Product;
 use App\Models\User;
 
-class ProductPolicy
+class CategoryPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -13,14 +12,6 @@ class ProductPolicy
     public function viewAny(User $user): bool
     {
         return $user->isAdmin();
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(?User $user, Product $product): bool
-    {
-        return optional($user)->isAdmin() || $product->in_stock;
     }
 
     /**

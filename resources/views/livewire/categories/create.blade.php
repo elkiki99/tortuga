@@ -11,6 +11,8 @@ new class extends Component {
 
     public function createCategory()
     {
+        $this->authorize('create', Category::class);
+
         $this->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',

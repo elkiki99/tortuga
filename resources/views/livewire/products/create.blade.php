@@ -24,7 +24,7 @@ new class extends Component {
 
     public function createProduct()
     {
-        $this->authorize('create');
+        $this->authorize('create', Product::class);
 
         $this->validate([
             'name' => 'required|string|max:255',

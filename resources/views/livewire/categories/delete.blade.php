@@ -13,6 +13,8 @@ new class extends Component {
 
     public function deleteCategory()
     {
+        $this->authorize('delete', $this->category);
+
         if ($this->category->parent_id === null && $this->category->children()->exists()) {
             Flux::toast(variant: 'warning', heading: 'Error al eliminar categoría', text: 'No puedes eliminar esta categoría ya que tiene subcategorías existentes');
         } else {
