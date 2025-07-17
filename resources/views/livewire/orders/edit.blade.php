@@ -29,6 +29,8 @@ new class extends Component {
 
     public function updateOrder()
     {
+        $this->authorize('edit', $this->order);
+
         $this->validate([
             'status' => 'required|string|max:255|in:pending,payed,cancelled,delivered',
         ]);
