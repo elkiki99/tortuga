@@ -44,6 +44,8 @@ new class extends Component {
     
     public function updateProduct()
     {
+        $this->authorize('edit');
+
         $this->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1023',
@@ -229,7 +231,7 @@ new class extends Component {
 
         <div class="flex justify-end gap-2">
             <flux:button type="button" variant="ghost" x-on:click="$flux.modals().close()">Cancelar</flux:button>
-            <flux:button type="submit" variant="primary">Actualizar producto</flux:button>
+            <flux:button type="submit" variant="primary">Actualizar</flux:button>
         </div>
     </form>
 </flux:modal>

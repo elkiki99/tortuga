@@ -43,7 +43,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                     'purchase_id' => $this->purchaseId,
                     'purchase_date' => Carbon::now(),
                     'total' => $cart->items->sum(fn($item) => $item->product->discount_price ?? $item->product->price),
-                    'status' => 'completed',
+                    'status' => 'payed',
                     'payment_method' => 'mercadopago',
                 ]);
 
@@ -91,7 +91,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                 'purchase_id' => $this->purchaseId,
                 'purchase_date' => Carbon::now(),
                 'total' => $total,
-                'status' => 'completed',
+                'status' => 'payed',
                 'payment_method' => 'mercadopago',
             ]);
 
@@ -154,6 +154,39 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                 Tu pago fue procesado correctamente.
             </flux:subheading>
         @endif
+
+        @php
+            $statusMap = [
+                'pending' => [
+                    'color' => 'yellow',
+                    'icon' => 'clock',
+                    'label' => 'Pendiente',
+                ],
+                'payed' => [
+                    'color' => 'blue',
+                    'icon' => 'currency-dollar',
+                    'label' => 'Pago',
+                ],
+                'cancelled' => [
+                    'color' => 'red',
+                    'icon' => 'x-circle',
+                    'label' => 'Cancelado',
+                ],
+                'delivered' => [
+                    'color' => 'green',
+                    'icon' => 'check-circle',
+                    'label' => 'Entregado',
+                ],
+            ];
+
+            $status = $order->status;
+            $config = $statusMap[$status] ?? $statusMap['pending'];
+        @endphp
+
+        <flux:badge class="mt-4" variant="pill" color="{{ $config['color'] }}" icon="{{ $config['icon'] }}"
+            size="sm" inset="top bottom">
+            <span class="hidden sm:inline">{{ $config['label'] }}</span>
+        </flux:badge>
     </div>
 
     <div class="lg:flex lg:items-start lg:gap-6">
@@ -179,9 +212,6 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                     </div>
                     <flux:separator />
                 @empty
-                    <flux:text>No hay productos todavía.
-                        <flux:link href="{{ route('home') }}" wire:navigate>Vuelve a la tienda</flux:link>
-                    </flux:text>
                 @endforelse
 
                 <div class="flex items-center justify-between">
@@ -219,7 +249,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
         </div>
 
         <div class="lg:flex justify-center items-center min-h-[60vh] lg:w-1/2 hidden">
-            <flux:icon.rocket-launch variant="solid" class="size-48 dark:text-zinc-700 text-zinc-100" />
+            <flux:icon.shopping-bag variant="solid" class="size-48 dark:text-zinc-700 text-zinc-100" />
         </div>
     </div>
 </section>

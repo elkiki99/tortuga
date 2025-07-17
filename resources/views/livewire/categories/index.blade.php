@@ -52,11 +52,14 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
 
     <div class="flex items-center gap-4">
         <flux:modal.trigger name="create-category">
-            <flux:button size="sm" variant="primary" icon="plus">Agregar categoría</flux:button>
+            <flux:button size="sm" variant="primary" icon="plus">
+                <span class="hidden sm:inline">Agregar categoría</span>
+                <span class="inline sm:hidden">Agregar</span>
+            </flux:button>
         </flux:modal.trigger>
 
         <div class="w-full">
-            <flux:input wire:model.live="search" size="sm" variant="filled" placeholder="Buscar..."
+            <flux:input wire:model.live="search" size="sm" variant="filled" placeholder="Buscar por nombre..."
                 icon="magnifying-glass" />
         </div>
     </div>
@@ -85,9 +88,20 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
                     </flux:table.cell>
 
                     <flux:table.cell>
-                        {{ $category->description ? Str::of($category->description)->ucfirst()->limit(50) : 'Sin descripción' }}
+                        <span class="inline sm:hidden">
+                            {{ $category->description ? Str::of($category->description)->ucfirst()->limit(15) : 'Sin descripción' }}
+                        </span>
+                        <span class="hidden sm:inline md:hidden">
+                            {{ $category->description ? Str::of($category->description)->ucfirst()->limit(40) : 'Sin descripción' }}
+                        </span>
+                        <span class="hidden md:inline xl:hidden">
+                            {{ $category->description ? Str::of($category->description)->ucfirst()->limit(50) : 'Sin descripción' }}
+                        </span>
+                        <span class="hidden xl:inline">
+                            {{ $category->description ? Str::of($category->description)->ucfirst()->limit(80) : 'Sin descripción' }}
+                        </span>
                     </flux:table.cell>
-                    
+
                     <flux:table.cell>
                         @if ($category->parent_id === null)
                             <flux:badge color="green" size="sm" inset="top bottom">

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\{Layout, On};
+use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
 use App\Models\Product;
 
@@ -13,9 +14,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     public function mount(Product $product)
     {
-        if ($product->in_stock == false && (!Auth::check() || !Auth::user()->isAdmin())) {
-            abort(404);
-        }
+        $this->authorize('view', $product);
 
         $this->product = $product->load([
             'featuredImage',
@@ -109,7 +108,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                     @endauth
                 </div>
 
-                <flux:subheading size="lg" class="mb-6">
+                <flux:subheading size="lg" class="mb-4">
                     <flux:link variant="subtle" href="{{ route('categories.show', $product->category->slug) }}"
                         wire:navigate>
                         {{ Str::ucfirst($product->category->name) }}</flux:link>

@@ -58,9 +58,11 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
 
     <div class="flex items-center gap-4">
         <flux:modal.trigger name="create-product">
-            <flux:button size="sm" variant="primary" icon="plus">Agregar producto</flux:button>
+            <flux:button size="sm" variant="primary" icon="plus">
+                <span class="hidden sm:inline">Agregar producto</span>
+                <span class="inline sm:hidden">Agregar</span>
+            </flux:button>
         </flux:modal.trigger>
-
         <div class="w-full">
             <flux:input wire:model.live="search" size="sm" variant="filled"
                 placeholder="Buscar por nombre o categoría..." icon="magnifying-glass" />
@@ -71,13 +73,14 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
         <flux:table.columns>
             <flux:table.column sortable :sorted="$sortBy === 'name'" :direction="$sortDirection"
                 wire:click="sort('name')">Nombre</flux:table.column>
-            <flux:table.column sortable {{-- :sorted="$sortBy === 'price'" --}} :direction="$sortDirection" wire:click="sort('price')">
+            <flux:table.column sortable :sorted="$sortBy === 'price'" :direction="$sortDirection"
+                wire:click="sort('price')">
                 Precio</flux:table.column>
             <flux:table.column>Categoría</flux:table.column>
-            <flux:table.column>Marca</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'created_at'" :direction="$sortDirection"
-                wire:click="sort('created_at')">Creación</flux:table.column>
-            <flux:table.column>En stock</flux:table.column>
+            <flux:table.column class="hidden xl:table-cell">Marca</flux:table.column>
+            <flux:table.column class="hidden md:table-cell" sortable :sorted="$sortBy === 'created_at'"
+                :direction="$sortDirection" wire:click="sort('created_at')">Creación</flux:table.column>
+            <flux:table.column class="hidden lg:table-cell">En stock</flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -87,7 +90,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                         <flux:text>
                             <flux:link variant="ghost" wire:navigate
                                 href="{{ route('products.show', $product->slug) }}">
-                                {{ Str::ucfirst($product->name) }}
+                                {{ Str::of($product->name)->ucfirst()->limit(15) }}
                             </flux:link>
                         </flux:text>
                     </flux:table.cell>
@@ -108,11 +111,13 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                         </flux:badge>
                     </flux:table.cell>
 
-                    <flux:table.cell>{{ Str::ucfirst($product->brand->name) }}</flux:table.cell>
+                    <flux:table.cell class="hidden xl:table-cell">{{ Str::ucfirst($product->brand->name) }}
+                    </flux:table.cell>
 
-                    <flux:table.cell>{{ $product->created_at->format('d/m/Y') }}</flux:table.cell>
+                    <flux:table.cell class="hidden md:table-cell">{{ $product->created_at->format('d/m/Y') }}
+                    </flux:table.cell>
 
-                    <flux:table.cell>
+                    <flux:table.cell class="hidden lg:table-cell">
                         @if ($product->in_stock == true)
                             <flux:badge color="green" size="sm" inset="top bottom">
                                 Si

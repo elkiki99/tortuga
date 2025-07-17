@@ -12,10 +12,16 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
     public $sortDirection = 'desc';
     public $search = '';
 
+    #[On('orderUpdated')]
     #[On('orderDeleted')]
     public function refreshPage()
     {
         $this->dispatch('$refresh');
+    }
+
+    public function mount()
+    {
+        $this->authorize('viewAny');
     }
 
     public function sort($column)
@@ -53,14 +59,14 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
         <flux:table.columns>
             <flux:table.column sortable :sorted="$sortBy === 'purchase_id'" :direction="$sortDirection"
                 wire:click="sort('purchase_id')">Código</flux:table.column>
-            <flux:table.column>Comprador</flux:table.column>
+            <flux:table.column class="hidden xl:table-cell">Comprador</flux:table.column>
             <flux:table.column>Email</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'total'" :direction="$sortDirection"
-                wire:click="sort('total')">Total</flux:table.column>
+                wire:click="sort('total')" class="hidden md:table-cell">Total</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'purchase_date'" :direction="$sortDirection"
-                wire:click="sort('purchase_date')">Fecha</flux:table.column>
+                wire:click="sort('purchase_date')" class="hidden sm:table-cell">Fecha</flux:table.column>
             <flux:table.column>Estado</flux:table.column>
-            <flux:table.column>Método</flux:table.column>
+            <flux:table.column class="hidden xl:table-cell">Método</flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -75,24 +81,55 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
                         </flux:text>
                     </flux:table.cell>
 
-                    <flux:table.cell>{{ $order->buyer_name }}</flux:table.cell>
+                    <flux:table.cell class="hidden xl:table-cell">{{ $order->buyer_name }}</flux:table.cell>
+
                     <flux:table.cell>{{ $order->buyer_email }}</flux:table.cell>
 
-                    <flux:table.cell class="whitespace-nowrap">
+                    <flux:table.cell class="whitespace-nowrap hidden md:table-cell">
                         ${{ number_format($order->total, 2, ',', '.') }}&nbsp;UYU
                     </flux:table.cell>
 
-                    <flux:table.cell>{{ \Carbon\Carbon::parse($order->purchase_date)->format('d/m/Y') }}
+                    <flux:table.cell class="hidden sm:table-cell">
+                        {{ \Carbon\Carbon::parse($order->purchase_date)->format('d/m/Y') }}
                     </flux:table.cell>
 
+                    @php
+                        $statusMap = [
+                            'pending' => [
+                                'color' => 'yellow',
+                                'icon' => 'clock',
+                                'label' => 'Pendiente',
+                            ],
+                            'payed' => [
+                                'color' => 'blue',
+                                'icon' => 'currency-dollar',
+                                'label' => 'Pago',
+                            ],
+                            'cancelled' => [
+                                'color' => 'red',
+                                'icon' => 'x-circle',
+                                'label' => 'Cancelado',
+                            ],
+                            'delivered' => [
+                                'color' => 'green',
+                                'icon' => 'check-circle',
+                                'label' => 'Entregado',
+                            ],
+                        ];
+
+                        $status = $order->status;
+                        $config = $statusMap[$status] ?? $statusMap['pending'];
+                    @endphp
+
                     <flux:table.cell>
-                        <flux:badge color="{{ $order->status === 'completed' ? 'green' : 'yellow' }}" size="sm"
-                            inset="top bottom">
-                            {{ $order->status == 'completed' ? 'Completado' : 'En proceso' }}
+                        <flux:badge variant="pill" color="{{ $config['color'] }}" icon="{{ $config['icon'] }}"
+                            size="sm" inset="top bottom">
+                                <span class="hidden sm:inline">{{ $config['label'] }}</span>
                         </flux:badge>
                     </flux:table.cell>
 
-                    <flux:table.cell>{{ ucfirst($order->payment_method) }}</flux:table.cell>
+                    <flux:table.cell class="hidden xl:table-cell">{{ ucfirst($order->payment_method) }}
+                    </flux:table.cell>
 
                     <flux:table.cell>
                         <flux:dropdown>
@@ -104,11 +141,18 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
                                     wire:navigate icon-trailing="chevron-right">Ver pedido</flux:menu.item>
                                 <flux:menu.separator />
 
+                                <flux:modal.trigger name="edit-order-{{ $order->id }}">
+                                    <flux:menu.item icon="pencil-square">Editar pedido</flux:menu.item>
+                                </flux:modal.trigger>
+
                                 <flux:modal.trigger name="delete-order-{{ $order->id }}">
                                     <flux:menu.item variant="danger" icon="trash">Eliminar pedido</flux:menu.item>
                                 </flux:modal.trigger>
                             </flux:menu>
                         </flux:dropdown>
+
+                        <!-- Update sumary modal -->
+                        <livewire:orders.edit :$order wire:key="edit-order-{{ $order->id }}" />
 
                         <!-- Delete order modal -->
                         <livewire:orders.delete :$order wire:key="delete-order-{{ $order->id }}" />

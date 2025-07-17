@@ -13,6 +13,8 @@ new class extends Component {
 
     public function deleteProduct()
     {
+        $this->authorize('delete');
+        
         $this->product->delete();
 
         Flux::toast(variant: 'danger', heading: 'Producto eliminado', text: 'El producto fue eliminado exitosamente');

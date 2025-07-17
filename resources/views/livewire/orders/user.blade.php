@@ -24,8 +24,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Apariencia • Tortuga')]
                 <flux:table.column>Código</flux:table.column>
                 <flux:table.column>Total</flux:table.column>
                 <flux:table.column>Fecha</flux:table.column>
-                <flux:table.column>Estado</flux:table.column>
-                <flux:table.column>Método</flux:table.column>
+                <flux:table.column class="hidden md:table-cell">Estado</flux:table.column>
+                <flux:table.column class="hidden lg:table-cell">Método</flux:table.column>
             </flux:table.columns>
 
             <flux:table.rows>
@@ -47,14 +47,14 @@ new #[Layout('components.layouts.dashboard')] #[Title('Apariencia • Tortuga')]
                         <flux:table.cell>{{ \Carbon\Carbon::parse($order->purchase_date)->format('d/m/Y') }}
                         </flux:table.cell>
 
-                        <flux:table.cell>
+                        <flux:table.cell class="hidden md:table-cell">
                             <flux:badge color="{{ $order->status === 'completed' ? 'green' : 'yellow' }}" size="sm"
                                 inset="top bottom">
                                 {{ $order->status == 'completed' ? 'Completado' : 'En proceso' }}
                             </flux:badge>
                         </flux:table.cell>
 
-                        <flux:table.cell>{{ ucfirst($order->payment_method) }}</flux:table.cell>
+                        <flux:table.cell class="hidden lg:table-cell">{{ ucfirst($order->payment_method) }}</flux:table.cell>
                     </flux:table.row>
                 @empty
                     <flux:table.row>

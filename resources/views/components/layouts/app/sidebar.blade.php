@@ -31,7 +31,7 @@
             </flux:navlist.group>
 
             <flux:navlist.group>
-                <flux:navlist.item icon="cube" href="{{ route('orders.index') }}" wire:navigate>{{ __('Pedidos') }}</flux:navlist.item>
+                <flux:navlist.item icon="cube" href="{{ route('orders.index') }}" :current="request()->routeIs('orders.index')" wire:navigate>{{ __('Pedidos') }}</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group>

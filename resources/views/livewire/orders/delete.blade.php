@@ -37,7 +37,7 @@ new class extends Component {
 
                 <flux:subheading>
                     Esta acción eliminará permanentemente el pedido con el
-                    código<strong>{{ Str::ucfirst($order->purchase_id) }}</strong>. Asegurate de haber entregado este
+                    código <strong>{{ Str::ucfirst($order->purchase_id) }}</strong>. Asegurate de haber entregado este
                     pedido antes de eliminarlo. ¿Deseas continuar?
                 </flux:subheading>
             </div>
