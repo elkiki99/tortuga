@@ -16,6 +16,18 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
     public $items = [];
     public $purchaseId;
 
+    public function updateStats(): void
+    {
+        if (!$this->order) {
+            return;
+        }
+
+        $stats = Stats::firstOrCreate(['date' => now()->toDateString()], ['orders_count' => 0, 'total_revenue' => 0]);
+
+        $stats->increment('orders_count');
+        $stats->increment('total_revenue', $this->order->total);
+    }
+
     public function mount()
     {
         $this->purchaseId = request()->query('payment_id');
@@ -126,10 +138,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
             $this->items = $order->items()->with('product')->get();
         }
 
-        $stats = Stats::firstOrCreate(['date' => now()->toDateString()], ['orders_count' => 0, 'total_revenue' => 0]);
-
-        $stats->increment('orders_count');
-        $stats->increment('total_revenue', $order->total);
+        $this->updateStats();
     }
 }; ?>
 
