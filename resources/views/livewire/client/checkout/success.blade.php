@@ -7,6 +7,7 @@ use App\Mail\OrderPurchased;
 use Livewire\Volt\Component;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Stats;
 use App\Models\Order;
 use Carbon\Carbon;
 
@@ -124,6 +125,11 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
             $this->order = $order;
             $this->items = $order->items()->with('product')->get();
         }
+
+        $stats = Stats::firstOrCreate(['date' => now()->toDateString()], ['orders_count' => 0, 'total_revenue' => 0]);
+
+        $stats->increment('orders_count');
+        $stats->increment('total_revenue', $order->total);
     }
 }; ?>
 

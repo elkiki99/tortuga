@@ -81,10 +81,26 @@ new class extends Component {
         </div>
 
         <flux:select variant="listbox" searchable placeholder="Selecciona un estado" label="Estado" wire:model="status">
-            <flux:select.option value="pending">Pendiente</flux:select.option>
-            <flux:select.option value="payed">Pago</flux:select.option>
-            <flux:select.option value="cancelled">Cancelado</flux:select.option>
-            <flux:select.option value="delivered">Entregado</flux:select.option>
+            <flux:select.option value="pending">
+                <div class="flex items-center gap-2">
+                    <flux:icon.clock variant="mini" class="text-yellow-400" /> Pendiente
+                </div>
+            </flux:select.option>
+            <flux:select.option value="payed">
+                <div class="flex items-center gap-2">
+                    <flux:icon.currency-dollar variant="mini" class="text-blue-400" /> Pago
+                </div>
+            </flux:select.option>
+            <flux:select.option value="cancelled">
+                <div class="flex items-center gap-2">
+                    <flux:icon.x-circle variant="mini" class="text-red-400" /> Cancelado
+                </div>
+            </flux:select.option>
+            <flux:select.option value="delivered">
+                <div class="flex items-center gap-2">
+                    <flux:icon.check-circle variant="mini" class="text-green-400" /> Entregado
+                </div>
+            </flux:select.option>
         </flux:select>
 
         <div class="flex justify-end gap-2">

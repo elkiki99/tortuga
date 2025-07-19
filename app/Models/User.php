@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\TrendCalculable;
 use Illuminate\Support\Str;
 use App\Models\Wishlist;
 use App\Models\Order;
@@ -16,7 +17,7 @@ use App\Models\Cart;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, TrendCalculable;
 
     /**
      * The attributes that are mass assignable.
@@ -61,14 +62,14 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
     /**
      * Get the user's cart.
      */
-    public function cart() : HasOne
+    public function cart(): HasOne
     {
         return $this->hasOne(Cart::class);
     }
@@ -76,12 +77,12 @@ class User extends Authenticatable
     /**
      * Get the user's wishlist.
      */
-    public function wishlist() : HasOne
+    public function wishlist(): HasOne
     {
         return $this->hasOne(Wishlist::class);
     }
 
-    public function orders() : HasMany
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
     }
@@ -92,5 +93,36 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public static function weeklyTrend(): array
+    {
+        $now = now();
+        $startOfThisWeek = $now->copy()->startOfWeek();
+        $startOfLastWeek = $startOfThisWeek->copy()->subWeek();
+        $endOfLastWeek = $startOfThisWeek->copy()->subSecond();
+
+        $thisWeek = self::where('created_at', '>=', $startOfThisWeek)->count();
+        $lastWeek = self::whereBetween('created_at', [$startOfLastWeek, $endOfLastWeek])->count();
+
+        return self::calculateTrend($lastWeek, $thisWeek);
+    }
+
+    protected static function calculateTrend($previous, $current): array
+    {
+        if ($previous == 0 && $current == 0) {
+            return ['trend' => '0%', 'trendUp' => false];
+        }
+
+        if ($previous == 0) {
+            return ['trend' => '100%', 'trendUp' => true];
+        }
+
+        $change = (($current - $previous) / $previous) * 100;
+
+        return [
+            'trend' => number_format(abs($change), 1) . '%',
+            'trendUp' => $change >= 0,
+        ];
     }
 }

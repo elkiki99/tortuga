@@ -162,9 +162,9 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
                 <flux:table.row>
                     <flux:table.cell colspan="7" class="text-center">
                         @if ($this->search != '')
-                            No se encontraron órdenes para "{{ $this->search }}"
+                            No se encontraron pedidos para "{{ $this->search }}"
                         @else
-                            No hay órdenes registradas aún.
+                            No hay pedidos registrados aún.
                         @endif
                     </flux:table.cell>
                 </flux:table.row>

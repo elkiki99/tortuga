@@ -5,7 +5,7 @@ use Livewire\Volt\Component;
 use Livewire\WithPagination;
 use App\Models\Order;
 
-new #[Layout('components.layouts.dashboard')] #[Title('Apariencia • Tortuga')] class extends Component {
+new #[Layout('components.layouts.dashboard')] #[Title('Mis pedidos • Tortuga')] class extends Component {
     use WithPagination;
 
     #[Computed]

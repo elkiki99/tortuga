@@ -8,6 +8,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Product;
 use App\Models\Image;
 use App\Models\Brand;
+use App\Models\Stats;
 use App\Models\User;
 
 class DatabaseSeeder extends Seeder
@@ -25,5 +26,7 @@ class DatabaseSeeder extends Seeder
 
         Product::factory(50)->create();
         Image::factory(200)->create();
+
+        Stats::factory()->count(30)->create();
     }
 }

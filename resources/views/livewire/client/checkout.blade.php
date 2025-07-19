@@ -183,7 +183,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                     @auth
                         <div wire:key="item-{{ $item->product->id }}" class="flex items-center justify-between">
                             <div class="flex items-start gap-4">
-                                <div class="block w-full aspect-square object-cover bg-gray-100">
+                                <div class="block w-24 h-24 aspect-square object-cover bg-gray-100">
                                     <img src="{{ Storage::url($item->product->featuredImage->path ?? '') }}" alt="{{ $item->product->name }}"
                                         class="w-16 h-16 object-cover">
                                 </div>
@@ -204,7 +204,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                         <div wire:key="item-{{ $item['product_id'] }}" class="flex items-center justify-between">
                             @if ($item['product'])
                                 <div class="flex items-start gap-4">
-                                    <div class="block w-full aspect-square object-cover bg-gray-100">
+                                    <div class="block w-24 h-24 aspect-square object-cover bg-gray-100">
                                         <img src="{{ Storage::url($item['product']->featuredImage->path ?? '') }}" alt="{{ $item['product']->name }}"
                                             class="w-16 h-16 object-cover">
                                     </div>
