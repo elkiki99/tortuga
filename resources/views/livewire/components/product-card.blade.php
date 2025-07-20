@@ -14,12 +14,11 @@ new class extends Component {
 }; ?>
 
 <article class="relative">
-    {{-- Botón corazón en la esquina superior derecha --}}
-    @auth
+    @can('add', \App\Models\Wishlist::class)
         <div class="absolute top-2 right-2 z-10">
             <livewire:wishlist.add :product="$product" :key="'wishlist-add-' . $product->id" />
         </div>
-    @endauth
+    @endcan
 
     <a href="{{ route('products.show', $product->slug) }}" wire:navigate
         class="block rounded-md w-full aspect-square overflow-hidden bg-gray-100 mb-4">
@@ -32,7 +31,6 @@ new class extends Component {
         @endif
     </a>
 
-    {{-- Precio --}}
     @if ($product->discount_price)
         <div class="flex items-center gap-2">
             <flux:heading class="text-red-600 !mb-0" size="lg">
@@ -44,7 +42,6 @@ new class extends Component {
         <flux:heading size="lg"><strong>${{ number_format($product->price, 2, ',', '.') }}&nbsp;UYU</strong></flux:heading>
     @endif
 
-    {{-- Nombre y categoría --}}
     <div class="mt-2">
         <flux:heading class="!mb-1" size="lg">{{ Str::ucfirst($product->name) }}</flux:heading>
         <flux:subheading>

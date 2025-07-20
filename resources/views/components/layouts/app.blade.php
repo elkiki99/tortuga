@@ -46,14 +46,16 @@
 
         <flux:spacer />
 
-        <div class="max-lg:hidden">
+        <div class="max-lg:hidden mx-2">
             <flux:input size="sm" variant="filled" placeholder="Buscar..." icon="magnifying-glass" />
         </div>
 
         <!-- Cart open modal -->
-        <flux:navbar class="mx-2">
-            <livewire:modals.cart />
-        </flux:navbar>
+        @can('add', \App\Models\Cart::class)
+            <flux:navbar class="!mr-2">
+                <livewire:modals.cart />
+            </flux:navbar>
+        @endcan
 
         @if (Route::has('login'))
             @auth

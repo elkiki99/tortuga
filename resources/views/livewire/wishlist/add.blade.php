@@ -8,7 +8,7 @@ new class extends Component {
     public bool $liked = false;
 
     public function mount($product)
-    {
+    {        
         $this->product = $product;
 
         if (Auth::check()) {
@@ -20,6 +20,8 @@ new class extends Component {
 
     public function toggleWishlist()
     {
+        $this->authorize('add', \App\Models\Wishlist::class);
+
         $this->liked = !$this->liked;
 
         if (Auth::check()) {

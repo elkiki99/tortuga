@@ -76,7 +76,6 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                 <div
                     class="flex-1 aspect-square bg-gray-100 flex items-center justify-center rounded-sm overflow-hidden relative">
-
                     @if ($this->product->featuredImage)
                         <img src="{{ Storage::url($this->product->featuredImage->path) }}"
                             alt="{{ $this->product->featuredImage->alt_text ?? $this->product->name }}"
@@ -160,7 +159,10 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                     <div class="flex flex-grow items-center gap-4">
                         <livewire:cart.add :product="$product" />
-                        <livewire:wishlist.add :product="$product" />
+
+                        @can('add', \App\Models\Wishlist::class)
+                            <livewire:wishlist.add :product="$product" />
+                        @endcan
                     </div>
 
                     <flux:callout icon="credit-card">

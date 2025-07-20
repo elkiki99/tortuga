@@ -11,6 +11,8 @@ new #[Layout('components.layouts.app')] #[Title('Wishlist • Tortuga')] class e
     #[On('wishlistUpdated')]
     public function render(): mixed
     {
+        $this->authorize('view', \App\Models\Wishlist::class);
+
         $wishlist = Auth::user()->wishlist()->firstOrCreate();
 
         $items = $wishlist->items()->with('product')->latest()->paginate(12);

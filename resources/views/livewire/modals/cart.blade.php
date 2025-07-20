@@ -8,11 +8,14 @@ new class extends Component {
     #[On('open-cart')]
     public function openCart(): void
     {
+        $this->authorize('view', \App\Models\Cart::class);
         Flux::modal('open-cart')->show();
     }
 
     public function removeFromCart($itemId): void
     {
+        $this->authorize('add', \App\Models\Cart::class);
+
         if (Auth::check()) {
             $cart = Auth::user()->cart;
             $cart->items()->where('id', $itemId)->delete();
@@ -25,6 +28,8 @@ new class extends Component {
 
     public function clearCart(): void
     {
+        $this->authorize('add', \App\Models\Cart::class);
+
         if (Auth::check()) {
             $cart = Auth::user()->cart;
             $cart->items()->delete();
@@ -35,6 +40,8 @@ new class extends Component {
 
     public function render(): mixed
     {
+        $this->authorize('view', \App\Models\Cart::class);
+
         if (Auth::check()) {
             $cart = Auth::user()->cart;
             if ($cart) {

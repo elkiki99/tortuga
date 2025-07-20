@@ -31,7 +31,7 @@ Volt::route('categorias/{category:slug}', 'categories.show')->name('categories.s
 
 Route::post('/webhook', WebhookController::class)->name('webhook');
 
-Volt::route('checkout', 'client.checkout')->name('client.checkout');
+Volt::route('checkout', 'client.checkout')->name('client.checkout')->middleware('can:view,App\Models\Checkout');
 
 Volt::route('checkout/exito', 'client.checkout.success')->name('checkout.success');
 

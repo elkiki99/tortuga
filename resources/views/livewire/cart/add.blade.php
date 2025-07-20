@@ -13,6 +13,8 @@ new class extends Component {
 
     public function addToCart()
     {
+        $this->authorize('add', \App\Models\Cart::class);
+
         if (Auth::check()) {
             $cart = Auth::user()->cart()->firstOrCreate([]);
 
@@ -43,8 +45,15 @@ new class extends Component {
 }; ?>
 
 <div class="flex-1">
-    <flux:button wire:click="addToCart" variant="primary" class="!rounded-full w-full hover:cursor-pointer"
-        icon="shopping-cart">
-        Agregar al carrito
-    </flux:button>
+    @can('add', \App\Models\Cart::class)
+        <flux:button wire:click="addToCart" variant="primary" class="!rounded-full w-full hover:cursor-pointer"
+            icon="shopping-cart">
+            Agregar al carrito
+        </flux:button>
+    @else
+        <flux:button variant="primary" class="!rounded-full w-full hover:cursor-not-allowed"
+            icon="shopping-cart">
+            Agregar al carrito
+        </flux:button>
+    @endcan
 </div>
