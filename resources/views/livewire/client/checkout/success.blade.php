@@ -22,7 +22,17 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
             return;
         }
 
-        $stats = Stats::firstOrCreate(['date' => now()->toDateString()], ['orders_count' => 0, 'total_revenue' => 0]);
+        $date = now()->startOfDay()->toDateTimeString();
+
+        $stats = Stats::where('date', $date)->first();
+
+        if (!$stats) {
+            $stats = Stats::create([
+                'date' => $date,
+                'orders_count' => 0,
+                'total_revenue' => 0,
+            ]);
+        }
 
         $stats->increment('orders_count');
         $stats->increment('total_revenue', $this->order->total);

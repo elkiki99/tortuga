@@ -16,6 +16,7 @@ class Stats extends Model
     ];
 
     protected $fillable = [
+        'date',
         'orders_count',
         'total_revenue',
     ];

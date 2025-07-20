@@ -146,9 +146,9 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
             }
 
             $payer = [
-                'name' => session('guest.name') ?? null,
-                'surname' => session('guest.surname') ?? null,
-                'email' => session('guest.email') ?? null,
+                'name' => session('guest.name'),
+                'surname' => session('guest.surname'),
+                'email' => session('guest.email'),
             ];
         }
 

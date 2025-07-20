@@ -88,6 +88,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Ventas • Tortuga')] cla
         <flux:chart wire:model="data" class="aspect-1/1 md:aspect-2/1 xl:aspect-3/1">
             <flux:chart.svg>
                 <flux:chart.line field="revenue" class="text-emerald-500 dark:text-emerald-400" />
+                        <flux:chart.point field="revenue" class="text-emerald-500 dark:text-emerald-400" />
+
                 <flux:chart.axis axis="x" field="date">
                     <flux:chart.axis.line />
                     <flux:chart.axis.tick />

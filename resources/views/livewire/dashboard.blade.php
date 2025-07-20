@@ -71,7 +71,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Panel • Tortuga')] clas
     #[Computed]
     public function orders()
     {
-        return Order::latest()->take(5)->get();
+        return Order::latest()->where('status', '!=', 'delivered')->take(5)->get();
     }
 }; ?>
 
@@ -107,7 +107,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Panel • Tortuga')] clas
             @endforeach
         </div>
 
-        <flux:heading size="lg">Últimos pedidos</flux:heading>
+        <flux:heading size="lg">Últimos pedidos pendientes</flux:heading>
         <div
             class="relative h-full px-4 flex-1 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
             <flux:table>
