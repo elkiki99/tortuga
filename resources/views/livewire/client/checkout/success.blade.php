@@ -221,7 +221,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                 @forelse ($items as $item)
                     <div class="flex items-center justify-between">
                         <div class="flex items-start gap-4">
-                            <div class="block w-full aspect-square object-cover bg-gray-100">
+                            <div class="block w-24 h-24 aspect-square object-cover bg-gray-100">
                                 <img src="{{ Storage::url($item->product->featuredImage->path ?? '') }}"
                                     alt="{{ $item->product->name }}" class="w-16 h-16 object-cover">
                             </div>
