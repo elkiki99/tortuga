@@ -54,14 +54,14 @@ new #[Layout('components.layouts.dashboard')] #[Title('Ventas • Tortuga')] cla
 
 <div class="space-y-6">
     <div>
-        <div class="flex items-center gap-2">
+        <div class="sm:flex sm:items-center sm:gap-2">
             <div class="relative w-full">
                 <flux:heading size="xl" level="1">Ventas</flux:heading>
                 <flux:subheading size="lg" class="mb-6">Visualiza el histórico de ventas de tu tienda
                 </flux:subheading>
             </div>
 
-            <flux:select wire:model.live="range" variant="listbox" class="max-w-fit" align="end">
+            <flux:select wire:model.live="range" variant="listbox" class="max-w-fit mb-6 sm:mb-0 ml-auto" align="end">
                 <x-slot name="trigger">
                     <flux:select.button size="sm">
                         <flux:icon.arrows-up-down variant="micro" class="mr-2 text-zinc-400" />
