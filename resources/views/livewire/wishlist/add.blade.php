@@ -30,16 +30,16 @@ new class extends Component {
             if ($this->liked) {
                 $wishlist->items()->firstOrCreate(['product_id' => $this->product->id]);
 
-                Flux::toast(heading: 'Producto añadido', text: 'Producto añadido a tu wishlist exitosamente.', variant: 'success');
+                Flux::toast(heading: 'Producto añadido', text: 'Producto añadido a tu wishlist exitosamente', variant: 'success');
             } else {
                 $wishlist->items()->where('product_id', $this->product->id)->delete();
 
-                Flux::toast(heading: 'Producto eliminado', text: 'Producto eliminado de tu wishlist exitosamente.', variant: 'danger');
+                Flux::toast(heading: 'Producto eliminado', text: 'Producto eliminado de tu wishlist exitosamente', variant: 'danger');
             }
         } else {
             $this->liked = false;
 
-            Flux::toast(heading: 'Inicia sesión', text: 'Debes iniciar sesión para usar la wishlist.', variant: 'warning');
+            Flux::toast(heading: 'Inicia sesión', text: 'Debes iniciar sesión para usar la wishlist', variant: 'warning');
         }
 
         $this->dispatch('wishlistUpdated');
