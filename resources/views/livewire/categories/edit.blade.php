@@ -18,6 +18,7 @@ new class extends Component {
         $this->parent_id = $category->parent_id;
     }
 
+
     public function updateCategory()
     {
         $this->authorize('edit', $this->category);
@@ -29,7 +30,7 @@ new class extends Component {
 
         $this->category->update([
             'name' => $this->name,
-            'slug' => \Str::slug($this->name),
+            // 'slug' => \Str::slug($this->name),
             'description' => $this->description,
             'parent_id' => $this->parent_id ?: null,
         ]);

@@ -1,7 +1,7 @@
 <?php
 
 use Livewire\Volt\Component;
-use Livewire\Attributes\Layout;
+use Livewire\Attributes\{Layout, On};
 use Livewire\WithPagination;
 use App\Models\Category;
 use App\Models\Product;
@@ -11,20 +11,59 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     public Category $category;
 
+    public ?int $selectedSubcategoryId = null;
+    public string $sortBy = 'newest';
+
+    #[On('categoryUpdated')]
+    public function refreshPage()
+    {
+        $this->dispatch('$refresh');
+    }
+
+    #[On('subcategorySelected')]
+    public function setSubcategory(?int $subcategoryId)
+    {
+        $this->selectedSubcategoryId = $subcategoryId;
+        $this->resetPage();
+    }
+
     public function mount(Category $category)
     {
         $this->category = $category;
     }
 
+    public function updatedSortBy()
+    {
+        $this->resetPage();
+    }
+
     public function render(): mixed
     {
-        if ($this->category->children()->exists()) {
-            $childIds = $this->category->children()->pluck('id');
+        $query = Product::query()
+            ->where('in_stock', true)
+            ->when(
+                $this->selectedSubcategoryId,
+                function ($query) {
+                    $query->where('category_id', $this->selectedSubcategoryId);
+                },
+                function ($query) {
+                    if ($this->category->children()->exists()) {
+                        $childIds = $this->category->children()->pluck('id');
+                        $query->whereIn('category_id', $childIds);
+                    } else {
+                        $query->where('category_id', $this->category->id);
+                    }
+                },
+            );
 
-            $products = Product::whereIn('category_id', $childIds)->where('in_stock', true)->latest()->paginate(12);
-        } else {
-            $products = Product::where('category_id', $this->category->id)->where('in_stock', true)->latest()->paginate(12);
-        }
+        match ($this->sortBy) {
+            'oldest' => $query->oldest(),
+            'cheapest' => $query->orderByRaw('COALESCE(discount_price, price) ASC'),
+            'priciest' => $query->orderByRaw('COALESCE(discount_price, price) DESC'),
+            default => $query->latest(), // newest
+        };
+
+        $products = $query->paginate(12);
 
         return view('livewire.categories.show', compact('products'))->title($this->category->name . ' • Tortuga Second Hand');
     }
@@ -36,33 +75,44 @@ new #[Layout('components.layouts.app')] class extends Component {
             @include('livewire.partials.breadcrumb')
 
             <div class="flex items-center gap-4">
-                <flux:select variant="listbox" class="sm:max-w-fit" align="end">
+                <flux:select wire:model.live="sortBy" variant="listbox" class="sm:max-w-fit">
                     <x-slot name="trigger">
                         <flux:select.button size="sm">
                             <flux:icon.arrows-up-down variant="micro" class="mr-2 text-zinc-400" />
                             <flux:select.selected />
                         </flux:select.button>
                     </x-slot>
-                    <flux:select.option value="newest" selected>Más reciente</flux:select.option>
+                    <flux:select.option value="newest">Más reciente</flux:select.option>
                     <flux:select.option value="oldest">Más antiguo</flux:select.option>
                     <flux:select.option value="cheapest">Precio más bajo</flux:select.option>
                     <flux:select.option value="priciest">Precio más alto</flux:select.option>
                 </flux:select>
 
-                <flux:modal.trigger name="more-filters-{{ $category->id }}">
-                    <flux:button variant="primary" size="sm">Más filtros</flux:button>
-                </flux:modal.trigger>
+                @if ($category->parent_id == null)
+                    <flux:modal.trigger name="more-filters-{{ $category->id }}">
+                        <flux:button variant="primary" size="sm">Más filtros</flux:button>
+                    </flux:modal.trigger>
 
-                <livewire:modals.more-filters :$category />
+                    <livewire:modals.more-filters :$category />
+                @endif
             </div>
         </div>
 
         <div class="space-y-6">
             <div class="flex items-start justify-between gap-24">
                 <div>
-                    <flux:heading size="xl" level="1">
-                        {{ Str::ucfirst($category->name) }}
-                    </flux:heading>
+                    <div class="flex items-center gap-4 mb-2">
+                        <flux:heading size="xl" level="1">{{ Str::ucfirst($category->name) }}</flux:heading>
+
+                        @can('edit', $category)
+                            <flux:modal.trigger name="edit-category-{{ $category->id }}">
+                                <flux:button icon="pencil" size="sm" variant="ghost" />
+                            </flux:modal.trigger>
+
+                            <livewire:categories.edit :$category wire:key="edit-category-{{ $category->id }}" />
+                        @endcan
+                    </div>
+
                     @if ($category->description)
                         <flux:subheading>
                             {{ Str::ucfirst($category->description) }}</strong>

@@ -6,7 +6,8 @@
 </head>
 
 <body class="bg-white dark:bg-zinc-800">
-    <flux:header container sticky class="z-20 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
+    <flux:header container sticky
+        class="z-20 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-between w-full">
         <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
         <a href="{{ route('home') }}"
@@ -14,7 +15,6 @@
             <x-app-logo />
         </a>
 
-        <flux:spacer />
         <flux:spacer />
 
         <flux:navbar class="-mb-px max-lg:hidden">
@@ -45,10 +45,6 @@
         </flux:navbar>
 
         <flux:spacer />
-
-        <div class="max-lg:hidden mx-2">
-            <flux:input size="sm" variant="filled" placeholder="Buscar..." icon="magnifying-glass" />
-        </div>
 
         <!-- Cart open modal -->
         @can('add', \App\Models\Cart::class)
@@ -133,11 +129,6 @@
                 <flux:navlist.item href="#">No hay categorías disponibles</flux:navlist.item>
             @endforelse
         </flux:navlist>
-
-        <flux:spacer />
-
-        <flux:input size="sm" class="-mb-px lg:hidden mb-2" variant="filled" placeholder="Buscar..."
-            icon="magnifying-glass" />
     </flux:sidebar>
 
     <div class="min-h-[91vh] flex flex-col flex-grow">
