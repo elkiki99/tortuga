@@ -29,4 +29,26 @@ class CartPolicy
 
         return !$user->isAdmin();
     }
+
+    /**
+     * Determine whether the user can remove items from the wishlist.
+     */
+    public function remove(?User $user): bool
+    {
+        if (!$user) {
+            return true;
+        }
+        return !$user->isAdmin();
+    }
+
+    /**
+     * Determine whether the user can clear the cart.
+     */
+    public function clear(?User $user): bool
+    {
+        if (!$user) {
+            return true;
+        }
+        return !$user->isAdmin();
+    }
 }

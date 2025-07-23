@@ -1,11 +1,10 @@
 <?php
 
+use App\Models\{Category, Brand, Product};
 use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
 use Livewire\Volt\Component;
-use App\Models\Category;
-use App\Models\Product;
-use App\Models\Brand;
+use App\Helpers\Slug;
 
 new class extends Component {
     use WithFileUploads;
@@ -41,7 +40,7 @@ new class extends Component {
 
         $product = Product::create([
             'name' => $this->name,
-            'slug' => \Str::slug($this->name),
+            'slug' => Slug::generate($this->name, Product::class),
             'description' => $this->description,
             'price' => $this->price,
             'discount_price' => $this->discount_price,

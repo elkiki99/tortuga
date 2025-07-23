@@ -26,7 +26,7 @@ new class extends Component {
     
     <flux:radio.group wire:model.live="subcategorySelected">
         @foreach ($category->children as $child)
-            <flux:radio name="subcategorySelected" value="{{ $child->id }}" label="{{ $child->name }}"
+            <flux:radio name="subcategorySelected" value="{{ $child->id }}" label="{{ Str::ucfirst($child->name) }}"
                 description="{{ $child->description ?? '' }}" />
         @endforeach
 

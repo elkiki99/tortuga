@@ -2,6 +2,7 @@
 
 use Livewire\Volt\Component;
 use App\Models\Category;
+use App\Helpers\Slug;
 
 new class extends Component {
     public $name;
@@ -21,7 +22,7 @@ new class extends Component {
 
         Category::create([
             'name' => $this->name,
-            'slug' => \Str::slug($this->name),
+            'slug' => Slug::generate($this->name, Category::class),
             'description' => $this->description,
             'parent_id' => $this->parent_id,
         ]);
@@ -41,7 +42,7 @@ new class extends Component {
             <flux:text class="mt-2">Agrega una nueva categoría a tu tienda</flux:text>
         </div>
 
-        <flux:input placeholder="Nombre de la categoría" wire:model="name" label="Nombre" required />
+        <flux:input placeholder="Nombre de la categoría" wire:model="name" label="Nombre" autofocus required />
 
         <flux:textarea label="Descripción" badge="Opcional" placeholder="Descripción de la categoría"
             wire:model="description" rows="3" />

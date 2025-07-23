@@ -18,7 +18,6 @@ new class extends Component {
         $this->parent_id = $category->parent_id;
     }
 
-
     public function updateCategory()
     {
         $this->authorize('edit', $this->category);
