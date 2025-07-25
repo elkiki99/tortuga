@@ -60,12 +60,12 @@ new #[Layout('components.layouts.app')] class extends Component {
             'oldest' => $query->oldest(),
             'cheapest' => $query->orderByRaw('COALESCE(discount_price, price) ASC'),
             'priciest' => $query->orderByRaw('COALESCE(discount_price, price) DESC'),
-            default => $query->latest(), // newest
+            default => $query->latest(),
         };
 
         $products = $query->paginate(12);
 
-        return view('livewire.categories.show', compact('products'))->title($this->category->name . ' • Tortuga Second Hand');
+        return view('livewire.categories.show', compact('products'))->title(Str::ucfirst($this->category->name) . ' • Tortuga Second Hand');
     }
 }; ?>
 

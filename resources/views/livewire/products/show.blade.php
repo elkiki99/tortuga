@@ -41,7 +41,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
     public function render(): mixed
     {
-        return view('livewire.products.show')->title($this->product->name . ' • Tortuga');
+        return view('livewire.products.show')->title(Str::ucfirst($this->product->name) . ' • Tortuga');
     }
 }; ?>
 
@@ -50,39 +50,28 @@ new #[Layout('components.layouts.app')] class extends Component {
         @include('livewire.partials.breadcrumb')
 
         <div class="flex flex-col lg:flex-row gap-6">
-            <div class="flex gap-2 lg:w-3/5">
-                @php
-                    $thumbnailImages = $this->images;
-                    $totalThumbnails = $this->images->count();
-                @endphp
+            <div x-data="{ featured: '{{ Storage::url($this->product->featuredImage?->path) }}' }" class="flex gap-0 lg:w-3/5">
+                @if ($images->count() > 0)
+                    <div class="flex flex-col gap-0 w-1/8">
+                        @forelse ($images as $thumb)
+                            <div class="w-full hover:cursor-zoom-in aspect-square first:rounded-tl-sm last:rounded-bl-sm bg-gray-100 overflow-hidden pr-2 pb-2 bg-white dark:bg-zinc-800"
+                                @mouseenter="featured = '{{ Storage::url($thumb->path) }}'"
+                                @mouseleave="featured = '{{ Storage::url($this->product->featuredImage?->path) }}'">
 
-                @if ($totalThumbnails > 0)
-                    <div class="flex flex-col gap-2 w-1/8">
-                        @for ($i = 0; $i < $totalThumbnails; $i++)
-                            <div class="w-full aspect-square rounded-sm bg-gray-100 overflow-hidden">
-                                @if (isset($thumbnailImages[$i]) && $thumbnailImages[$i]->path)
-                                    <img src="{{ Storage::url($thumbnailImages[$i]->path) }}"
-                                        alt="{{ $thumbnailImages[$i]->alt_text ?? $this->product->name . ' - Imagen ' . ($i + 1) }}"
-                                        class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
-                                @else
-                                    <img src="https://via.placeholder.com/150?text=Placeholder+{{ $i + 1 }}"
-                                        alt="{{ $this->product->name . '-m-' . ($i + 1) }}"
-                                        class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
-                                @endif
+                                <img src="{{ Storage::url($thumb->path) }}"
+                                    alt="{{ $thumb->alt_text ?? $this->product->name }}"
+                                    class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
                             </div>
-                        @endfor
+                        @empty
+                        @endforelse
                     </div>
                 @endif
 
                 <div
-                    class="flex-1 aspect-square bg-gray-100 flex items-center justify-center rounded-sm overflow-hidden relative">
+                    class="flex-1 aspect-square bg-gray-100 flex items-center justify-center rounded-tr-sm rounded-bl-sm rounded-br-sm overflow-hidden relative">
                     @if ($this->product->featuredImage)
-                        <img src="{{ Storage::url($this->product->featuredImage->path) }}"
+                        <img :src="featured"
                             alt="{{ $this->product->featuredImage->alt_text ?? $this->product->name }}"
-                            class="object-contain w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
-                    @else
-                        <img src="https://via.placeholder.com/640x640?text=Sin+imagen+principal"
-                            alt="{{ $this->product->name }}"
                             class="object-contain w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
                     @endif
 
@@ -94,6 +83,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                 </div>
             </div>
 
+            {{-- Product Info --}}
             <div class="lg:w-1/2">
                 <div class="flex items-center gap-4">
                     <flux:heading size="xl" level="1">{{ Str::ucfirst($product->name) }}</flux:heading>
