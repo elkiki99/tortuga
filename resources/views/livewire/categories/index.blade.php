@@ -120,24 +120,28 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
                     </flux:table.cell>
 
                     <flux:table.cell>
-                        <flux:dropdown>
-                            <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom">
-                            </flux:button>
-                            <flux:menu>
-                                <flux:menu.item href="{{ route('categories.show', $category->slug) }}" wire:navigate
-                                    icon-trailing="chevron-right">Ver categoría</flux:menu.item>
-                                <flux:menu.separator />
+                        <div class="flex justify-start w-full">
+                            <flux:dropdown class="ml-auto mr-3">
+                                <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal"
+                                    inset="top bottom">
+                                </flux:button>
+                                <flux:menu>
+                                    <flux:menu.item href="{{ route('categories.show', $category->slug) }}" wire:navigate
+                                        icon-trailing="chevron-right">Ver categoría</flux:menu.item>
+                                    <flux:menu.separator />
 
-                                <flux:modal.trigger name="edit-category-{{ $category->id }}">
-                                    <flux:menu.item icon="pencil-square">Editar categoría</flux:menu.item>
-                                </flux:modal.trigger>
+                                    <flux:modal.trigger name="edit-category-{{ $category->id }}">
+                                        <flux:menu.item icon="pencil-square">Editar categoría</flux:menu.item>
+                                    </flux:modal.trigger>
 
-                                <flux:modal.trigger name="delete-category-{{ $category->id }}">
-                                    <flux:menu.item variant="danger" icon="trash">Eliminar categoría</flux:menu.item>
-                                </flux:modal.trigger>
-                            </flux:menu>
-                        </flux:dropdown>
-
+                                    <flux:modal.trigger name="delete-category-{{ $category->id }}">
+                                        <flux:menu.item variant="danger" icon="trash">Eliminar categoría
+                                        </flux:menu.item>
+                                    </flux:modal.trigger>
+                                </flux:menu>
+                            </flux:dropdown>
+                        </div>
+                        
                         <!-- Update sumary modal -->
                         <livewire:categories.edit :$category wire:key="edit-category-{{ $category->id }}" />
 
@@ -147,7 +151,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
                 </flux:table.row>
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="6" class="text-center">
+                    <flux:table.cell colspan="3" class="text-center">
                         @if ($this->search != '')
                             No hay categorías para la búsqueda "{{ $this->search }}"
                         @else

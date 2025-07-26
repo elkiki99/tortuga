@@ -12,6 +12,7 @@ Route::middleware(['auth', 'verified', 'is_admin'])->group(function () {
     Volt::route('dashboard', 'dashboard')->name('dashboard');
     Volt::route('productos', 'products.index')->name('products.index');
     Volt::route('categorias', 'categories.index')->name('categories.index');
+    Volt::route('marcas', 'brands.index')->name('brands.index');
     Volt::route('pedidos', 'orders.index')->name('orders.index');
     Volt::route('ventas', 'sales')->name('sales');
 });

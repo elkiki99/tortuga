@@ -6,6 +6,7 @@ use Livewire\Volt\Component;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Brand;
+use App\Helpers\Slug;
 
 new class extends Component {
     use WithFileUploads;
@@ -41,7 +42,7 @@ new class extends Component {
 
         $this->visibleImages = $product->images->pluck('id')->toArray();
     }
-    
+
     public function updateProduct()
     {
         $this->authorize('edit', $this->product);
@@ -63,6 +64,7 @@ new class extends Component {
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
+            'slug' => Slug::generate($this->name, Product::class),
             'discount_price' => $this->discount_price,
             'size' => $this->size,
             'in_stock' => $this->in_stock,
@@ -106,7 +108,14 @@ new class extends Component {
         $this->visibleImages = $this->product->images->pluck('id')->toArray();
 
         Flux::modals()->close();
-        $this->dispatch('productUpdated');
+
+        $url = request()->header('Referer');
+
+        if ($url === url()->route('products.index')) {
+            $this->dispatch('productUpdated');
+        } else {
+            $this->redirectRoute('products.show', $this->product->slug, navigate: true);
+        }
 
         Flux::toast(heading: 'Producto actualizado', text: 'El producto fue actualizado exitosamente', variant: 'success');
     }

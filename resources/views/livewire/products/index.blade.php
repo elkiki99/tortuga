@@ -136,24 +136,28 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                     </flux:table.cell>
 
                     <flux:table.cell>
-                        <flux:dropdown>
-                            <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom">
-                            </flux:button>
-                            <flux:menu>
-                                <flux:menu.item href="{{ route('products.show', $product->slug) }}" wire:navigate
-                                    icon-trailing="chevron-right">Ver producto</flux:menu.item>
-                                <flux:menu.separator />
+                        <div class="flex justify-start w-full">
+                            <flux:dropdown class="ml-auto mr-3">
+                                <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal"
+                                    inset="top bottom">
+                                </flux:button>
+                                <flux:menu>
+                                    <flux:menu.item href="{{ route('products.show', $product->slug) }}" wire:navigate
+                                        icon-trailing="chevron-right">Ver producto</flux:menu.item>
+                                    <flux:menu.separator />
 
-                                <flux:modal.trigger name="edit-product-{{ $product->id }}">
-                                    <flux:menu.item icon="pencil-square">Editar producto</flux:menu.item>
-                                </flux:modal.trigger>
+                                    <flux:modal.trigger name="edit-product-{{ $product->id }}">
+                                        <flux:menu.item icon="pencil-square">Editar producto</flux:menu.item>
+                                    </flux:modal.trigger>
 
-                                <flux:modal.trigger name="delete-product-{{ $product->id }}">
-                                    <flux:menu.item variant="danger" icon="trash">Eliminar producto</flux:menu.item>
-                                </flux:modal.trigger>
-                            </flux:menu>
-                        </flux:dropdown>
-
+                                    <flux:modal.trigger name="delete-product-{{ $product->id }}">
+                                        <flux:menu.item variant="danger" icon="trash">Eliminar producto
+                                        </flux:menu.item>
+                                    </flux:modal.trigger>
+                                </flux:menu>
+                            </flux:dropdown>
+                        </div>
+                        
                         <!-- Update sumary modal -->
                         <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
 

@@ -18,8 +18,8 @@ class BrandFactory extends Factory
     {
         return [
             'name' => $this->faker->company(),
-            'slug' => $this->faker->slug(),
-            'logo_path' => $this->faker->imageUrl(480, 480, 'logo'),
+            // 'slug' => $this->faker->slug(),
+            // 'logo_path' => $this->faker->imageUrl(480, 480, 'logo'),
             'description' => $this->faker->paragraph(),
         ];
     }

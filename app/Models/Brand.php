@@ -12,8 +12,15 @@ class Brand extends Model
 
     protected $fillable = [
         'name',
-        'slug',
-        'logo_path',
+        // 'slug',
+        // 'logo_path',
         'description',
     ];
+
+    public function scopeSearch($query, $term)
+    {
+        if (trim($term) === '') return $query;
+
+        return $query->where('name', 'like', '%' . $term . '%');
+    }
 }

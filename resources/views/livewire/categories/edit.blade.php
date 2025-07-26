@@ -2,6 +2,7 @@
 
 use Livewire\Volt\Component;
 use App\Models\Category;
+use App\Helpers\Slug;
 
 new class extends Component {
     public Category $category;
@@ -29,13 +30,20 @@ new class extends Component {
 
         $this->category->update([
             'name' => $this->name,
-            // 'slug' => \Str::slug($this->name),
+            'slug' => Slug::generate($this->name, Category::class),
             'description' => $this->description,
             'parent_id' => $this->parent_id ?: null,
         ]);
 
         Flux::modals()->close();
-        $this->dispatch('categoryUpdated');
+
+        $url = request()->header('Referer');
+
+        if ($url === url()->route('categories.index')) {
+            $this->dispatch('categoryUpdated');
+        } else {
+            $this->redirectRoute('categories.show', $this->category->slug, navigate: true);
+        }
 
         Flux::toast(heading: 'Categoría actualizada', text: 'La categoría fue actualizada exitosamente', variant: 'success');
     }

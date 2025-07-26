@@ -183,10 +183,34 @@ new #[Layout('components.layouts.app')] class extends Component {
         <section>
             <flux:heading size="xl">Más {{ Str::ucfirst($product->category->name) }}</flux:heading>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
-                @foreach ($relatedProducts as $related_product)
-                    <livewire:components.product-card wire:key="product-{{ $product->id }}" :product="$related_product" />
-                @endforeach
+            <div x-data="productCarousel()" x-init="init()" class="relative mt-6">
+                <!-- Scroll wrapper -->
+                <div x-ref="container" class="flex gap-2 overflow-x-hidden scroll-smooth snap-x snap-mandatory">
+                    @foreach ($relatedProducts as $related_product)
+                        <div class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 snap-start pr-4">
+                            <livewire:components.product-card wire:key="related-{{ $related_product->id }}"
+                                :product="$related_product" />
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Botón izquierda -->
+                <button @click="scrollLeft()" class="absolute top-[-10%] left-0 h-full px-2 z-10 flex items-center"
+                    :class="{ 'hidden': !canScrollLeft }" aria-label="Scroll izquierda">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+
+                <!-- Botón derecha -->
+                <button @click="scrollRight()" class="absolute top-[-10%] right-0 h-full px-2 z-10 flex items-center"
+                    :class="{ 'hidden': !canScrollRight }" aria-label="Scroll derecha">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
             </div>
         </section>
     @endif
@@ -195,68 +219,66 @@ new #[Layout('components.layouts.app')] class extends Component {
         <section>
             <flux:heading size="xl">Completa tu look</flux:heading>
 
-            <div x-data="carousel()" x-init="init()" class="relative mt-6">
+            <div x-data="productCarousel()" x-init="init()" class="relative mt-6">
                 <!-- Scroll wrapper -->
-                <div x-ref="container" class="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4">
+                <div x-ref="container" class="flex gap-2 overflow-x-hidden scroll-smooth snap-x snap-mandatory">
                     @foreach ($complete_look as $cl_product)
-                        <div class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 snap-start">
-                            <livewire:components.product-card wire:key="product-{{ $cl_product->id }}"
+                        <div class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 snap-start pr-4">
+                            <livewire:components.product-card wire:key="look-{{ $cl_product->id }}"
                                 :product="$cl_product" />
                         </div>
                     @endforeach
                 </div>
 
-                <!-- Botón izquierda -->
-                <button @click="scrollLeft()"
-                    class="absolute top-0 left-0 h-full px-2 bg-gradient-to-r from-white/90 dark:from-gray-900/90 z-10 flex items-center"
+                <!-- Botones igual que arriba -->
+                <button @click="scrollLeft()" class="absolute top-[-10%] left-0 h-full px-2 z-10 flex items-center"
                     :class="{ 'hidden': !canScrollLeft }" aria-label="Scroll izquierda">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-600 dark:text-gray-300"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
 
-                <!-- Botón derecha -->
-                <button @click="scrollRight()"
-                    class="absolute top-0 right-0 h-full px-2 bg-gradient-to-l from-white/90 dark:from-gray-900/90 z-10 flex items-center"
+                <button @click="scrollRight()" class="absolute top-[-10%] right-0 h-full px-2 z-10 flex items-center"
                     :class="{ 'hidden': !canScrollRight }" aria-label="Scroll derecha">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-600 dark:text-gray-300"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
             </div>
-
-            <script>
-                function carousel() {
-                    return {
-                        canScrollLeft: false,
-                        canScrollRight: false,
-                        init() {
-                            this.updateButtons()
-                            this.$refs.container.addEventListener('scroll', () => this.updateButtons())
-                            window.addEventListener('resize', () => this.updateButtons())
-                        },
-                        scrollLeft() {
-                            this.$refs.container.scrollBy({
-                                left: -this.$refs.container.clientWidth,
-                                behavior: 'smooth'
-                            })
-                        },
-                        scrollRight() {
-                            this.$refs.container.scrollBy({
-                                left: this.$refs.container.clientWidth,
-                                behavior: 'smooth'
-                            })
-                        },
-                        updateButtons() {
-                            const el = this.$refs.container
-                            this.canScrollLeft = el.scrollLeft > 0
-                            this.canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
-                        }
-                    }
-                }
-            </script>
         </section>
     @endif
+
+    <!-- Script compartido -->
+    <script>
+        function productCarousel() {
+            return {
+                canScrollLeft: false,
+                canScrollRight: false,
+                init() {
+                    this.updateButtons()
+                    this.$refs.container.addEventListener('scroll', () => this.updateButtons())
+                    window.addEventListener('resize', () => this.updateButtons())
+                },
+                scrollLeft() {
+                    this.$refs.container.scrollBy({
+                        left: -this.$refs.container.clientWidth,
+                        behavior: 'smooth'
+                    })
+                },
+                scrollRight() {
+                    this.$refs.container.scrollBy({
+                        left: this.$refs.container.clientWidth,
+                        behavior: 'smooth'
+                    })
+                },
+                updateButtons() {
+                    const el = this.$refs.container
+                    this.canScrollLeft = el.scrollLeft > 0
+                    this.canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
+                }
+            }
+        }
+    </script>
 </div>

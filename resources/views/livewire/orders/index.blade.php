@@ -124,7 +124,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
                     <flux:table.cell>
                         <flux:badge variant="pill" color="{{ $config['color'] }}" icon="{{ $config['icon'] }}"
                             size="sm" inset="top bottom">
-                                <span class="hidden sm:inline">{{ $config['label'] }}</span>
+                            <span class="hidden sm:inline">{{ $config['label'] }}</span>
                         </flux:badge>
                     </flux:table.cell>
 
@@ -132,24 +132,27 @@ new #[Layout('components.layouts.dashboard')] #[Title('Pedidos • Tortuga')] cl
                     </flux:table.cell>
 
                     <flux:table.cell>
-                        <flux:dropdown>
-                            <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom">
-                            </flux:button>
-                            <flux:menu>
-                                <flux:menu.item
-                                    href="http://tortuga.test/checkout/exito?payment_id={{ $order->purchase_id }}"
-                                    wire:navigate icon-trailing="chevron-right">Ver pedido</flux:menu.item>
-                                <flux:menu.separator />
+                        <div class="flex justify-start w-full">
+                            <flux:dropdown class="ml-auto mr-3">
+                                <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal"
+                                    inset="top bottom">
+                                </flux:button>
+                                <flux:menu>
+                                    <flux:menu.item
+                                        href="http://tortuga.test/checkout/exito?payment_id={{ $order->purchase_id }}"
+                                        wire:navigate icon-trailing="chevron-right">Ver pedido</flux:menu.item>
+                                    <flux:menu.separator />
 
-                                <flux:modal.trigger name="edit-order-{{ $order->id }}">
-                                    <flux:menu.item icon="pencil-square">Editar pedido</flux:menu.item>
-                                </flux:modal.trigger>
+                                    <flux:modal.trigger name="edit-order-{{ $order->id }}">
+                                        <flux:menu.item icon="pencil-square">Editar pedido</flux:menu.item>
+                                    </flux:modal.trigger>
 
-                                <flux:modal.trigger name="delete-order-{{ $order->id }}">
-                                    <flux:menu.item variant="danger" icon="trash">Eliminar pedido</flux:menu.item>
-                                </flux:modal.trigger>
-                            </flux:menu>
-                        </flux:dropdown>
+                                    <flux:modal.trigger name="delete-order-{{ $order->id }}">
+                                        <flux:menu.item variant="danger" icon="trash">Eliminar pedido</flux:menu.item>
+                                    </flux:modal.trigger>
+                                </flux:menu>
+                            </flux:dropdown>
+                        </div>
 
                         <!-- Update sumary modal -->
                         <livewire:orders.edit :$order wire:key="edit-order-{{ $order->id }}" />
