@@ -30,7 +30,7 @@ new class extends Component {
 
         $this->category->update([
             'name' => $this->name,
-            'slug' => Slug::generate($this->name, Category::class),
+            'slug' => Slug::generate($this->name, Category::class, $this->category->id),
             'description' => $this->description,
             'parent_id' => $this->parent_id ?: null,
         ]);

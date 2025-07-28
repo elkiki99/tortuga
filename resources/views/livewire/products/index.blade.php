@@ -101,7 +101,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                     </flux:table.cell>
 
                     @php
-                        $price = $product->discount_price ?? $product->price;
+                        $price = $product->discount_price != null ? $product->discount_price : $product->price;
                     @endphp
 
                     <flux:table.cell class="whitespace-nowrap">${{ number_format($price, 2, ',', '.') }}&nbsp;UYU

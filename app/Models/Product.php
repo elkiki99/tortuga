@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use App\Traits\TrendCalculable;
 use App\Policies\ProductPolicy;
 use App\Models\Category;
@@ -51,6 +52,24 @@ class Product extends Model
     public function featuredImage(): hasOne
     {
         return $this->hasOne(Image::class)->where('is_featured', true);
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Product $product) {
+            foreach ($product->images as $image) {
+                if (Storage::disk('public')->exists($image->path)) {
+                    Storage::disk('public')->delete($image->path);
+                }
+            }
+
+            if ($product->featuredImage) {
+                $path = $product->featuredImage->path;
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+        });
     }
 
     public function scopeSearch($query, $term)

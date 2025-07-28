@@ -64,7 +64,7 @@ new class extends Component {
             $path = $attachment->store('products', 'public');
             $product->images()->create([
                 'path' => $path,
-                'alt_text' => $this->name . '_' . ($key + 1),
+                'alt_text' => $this->name . '_' . uniqid(),
                 'is_featured' => false,
             ]);
         }
@@ -89,11 +89,12 @@ new class extends Component {
     public function categories()
     {
         return Category::query()
-                ->whereNotNull('categories.parent_id')
-                ->join('categories as parents', 'categories.parent_id', '=', 'parents.id')
-                ->orderBy('parents.name')
-                ->select('categories.*')
-                ->get();
+            ->whereNotNull('parent_id')
+            ->orWhere(function ($query) {
+                $query->whereNull('parent_id')->doesntHave('children');
+            })
+            ->orderBy('name')
+            ->get();
     }
 
     #[Computed]
@@ -138,7 +139,9 @@ new class extends Component {
         <flux:select wire:model="category_id" required label="Categoría" variant="listbox" searchable
             placeholder="Selecciona una categoría">
             @forelse ($this->categories as $category)
-                <flux:select.option value="{{ $category->id }}">{{ $category->parent->name }} - {{ $category->name }}</flux:select.option>
+                <flux:select.option value="{{ $category->id }}">
+                    {{ Str::ucfirst($category->parent?->name) ? Str::ucfirst($category->parent->name) . ' - ' : '' }}{{ Str::ucfirst($category->name) }}
+                </flux:select.option>
             @empty
                 <flux:select.option disabled>No hay categorías</flux:select.option>
             @endforelse
@@ -153,13 +156,19 @@ new class extends Component {
             @endforelse
         </flux:select>
 
-        <flux:input label="Imagen destacada" type="file" wire:model="featured_image" required />
+        <flux:input accept="image/png, image/jpeg, image/jpg, image/webp" label="Imagen destacada" type="file"
+            wire:model="featured_image" required />
 
         @if ($featured_image)
             <img src="{{ $featured_image->temporaryUrl() }}">
         @endif
 
-        <flux:input label="Imágenes" badge="Opcional" type="file" wire:model="attachments" multiple />
+        <flux:input accept="image/png, image/jpeg, image/jpg, image/webp" label="Imágenes" badge="Opcional"
+            type="file" wire:model="attachments" multiple />
+
+        <div x-show="uploading">
+            <progress max="100" x-bind:value="progress"></progress>
+        </div>
 
         @if (count($attachments) > 0)
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2">

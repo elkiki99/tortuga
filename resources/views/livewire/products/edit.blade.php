@@ -64,7 +64,7 @@ new class extends Component {
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'slug' => Slug::generate($this->name, Product::class),
+            'slug' => Slug::generate($this->name, Product::class, $this->product->id),
             'discount_price' => $this->discount_price,
             'size' => $this->size,
             'in_stock' => $this->in_stock,
@@ -90,7 +90,7 @@ new class extends Component {
 
             $this->product->images()->create([
                 'path' => $path,
-                'alt_text' => $this->name . '_' . ($key + 1),
+                'alt_text' => $this->name . '_' . uniqid(),
                 'is_featured' => false,
             ]);
         }
@@ -138,7 +138,13 @@ new class extends Component {
     #[Computed]
     public function categories()
     {
-        return Category::query()->whereNotNull('categories.parent_id')->join('categories as parents', 'categories.parent_id', '=', 'parents.id')->orderBy('parents.name')->select('categories.*')->get();
+        return Category::query()
+            ->whereNotNull('parent_id')
+            ->orWhere(function ($query) {
+                $query->whereNull('parent_id')->doesntHave('children');
+            })
+            ->orderBy('name')
+            ->get();
     }
 
     #[Computed]
@@ -183,7 +189,8 @@ new class extends Component {
         <flux:select wire:model="category_id" required label="Categoría" variant="listbox" searchable
             placeholder="Selecciona una categoría">
             @forelse ($this->categories as $category)
-                <flux:select.option value="{{ $category->id }}">{{ $category->parent->name }} - {{ $category->name }}
+                <flux:select.option value="{{ $category->id }}">
+                    {{ Str::ucfirst($category->parent?->name) ? Str::ucfirst($category->parent->name) . ' - ' : '' }}{{ Str::ucfirst($category->name) }}
                 </flux:select.option>
             @empty
                 <flux:select.option disabled>No hay categorías</flux:select.option>
@@ -199,7 +206,8 @@ new class extends Component {
             @endforelse
         </flux:select>
 
-        <flux:input label="Nueva imagen destacada" type="file" wire:model="featured_image" />
+        <flux:input label="Nueva imagen destacada" accept="image/png, image/jpeg, image/jpg, image/webp" type="file"
+            wire:model="featured_image" />
 
         @if ($featured_image)
             <img src="{{ $featured_image->temporaryUrl() }}">
@@ -210,7 +218,8 @@ new class extends Component {
             @endif
         @endif
 
-        <flux:input label="Agregar más imágenes" badge="Opcional" type="file" wire:model="attachments" multiple />
+        <flux:input label="Agregar más imágenes" accept="image/png, image/jpeg, image/jpg, image/webp"
+        badge="Opcional" type="file" wire:model="attachments" multiple />
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
             @foreach ($product->images as $img)
