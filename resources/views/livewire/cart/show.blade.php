@@ -22,7 +22,7 @@ new class extends Component {
     {
         $this->showCart();
     }
-    
+
     public function showCart()
     {
         $this->authorize('view', \App\Models\Cart::class);
@@ -40,7 +40,7 @@ new class extends Component {
                     fn($item) => (object) [
                         'id' => $item->id,
                         'product' => $item->product,
-                        'price' => $item->product->discount_price ?? $item->product->price,
+                        'price' => $item->product->discount_price != null ? $item->product->discount_price : $item->product->price,
                     ],
                 );
             }
@@ -56,7 +56,7 @@ new class extends Component {
                         ? (object) [
                             'id' => $product->id,
                             'product' => $product,
-                            'price' => $product->discount_price ?? $product->price,
+                            'price' => $product->discount_price != null ? $product->discount_price : $product->price,
                         ]
                         : null;
                 })

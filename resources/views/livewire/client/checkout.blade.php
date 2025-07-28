@@ -24,7 +24,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
             if ($cart) {
                 $this->items = $cart->items()->with('product')->get();
-                $this->total = $this->items->sum(fn($item) => $item->product->discount_price ?? $item->product->price);
+                $this->total = $this->items->sum(fn($item) => $item->product->discount_price != null ? $item->product->discount_price : $item->product->price);
                 $this->createPreference();
             } else {
                 $this->items = [];
@@ -46,7 +46,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                 })
                 ->filter(fn($item) => $item['product']);
 
-            $this->total = $this->items->sum(fn($item) => $item['product']->discount_price ?? $item['product']->price);
+            $this->total = $this->items->sum(fn($item) => $item['product']->discount_price != null ? $item['product']->discount_price : $item['product']->price);
 
             $this->providedInfo = session()->has('guest.name') && session()->has('guest.surname') && session()->has('guest.email');
 
@@ -184,14 +184,17 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                         <div wire:key="item-{{ $item->product->id }}" class="flex items-center justify-between">
                             <div class="flex items-start gap-4">
                                 <div class="block w-24 h-24 aspect-square object-cover bg-gray-100">
-                                    <img src="{{ Storage::url($item->product->featuredImage->path ?? '') }}" alt="{{ $item->product->name }}"
-                                        class="w-16 h-16 object-cover">
+                                    <img src="{{ Storage::url($item->product->featuredImage->path ?? '') }}"
+                                        alt="{{ $item->product->name }}" class="w-16 h-16 object-cover">
                                 </div>
 
                                 @php
-                                    $price = $item->product->discount_price ?? $item->product->price;
+                                    $price =
+                                        $item->product->discount_price != null
+                                            ? $item->product->discount_price
+                                            : $item->product->price;
                                 @endphp
-                                
+
                                 <div>
                                     <flux:heading>{{ Str::ucfirst($item->product->name) }}</flux:heading>
                                     <flux:subheading>${{ number_format($price, 2, ',', '.') }}&nbsp;UYU
@@ -205,17 +208,18 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
                             @if ($item['product'])
                                 <div class="flex items-start gap-4">
                                     <div class="block w-24 h-24 aspect-square object-cover bg-gray-100">
-                                        <img src="{{ Storage::url($item['product']->featuredImage->path ?? '') }}" alt="{{ $item['product']->name }}"
-                                            class="w-16 h-16 object-cover">
+                                        <img src="{{ Storage::url($item['product']->featuredImage->path ?? '') }}"
+                                            alt="{{ $item['product']->name }}" class="w-16 h-16 object-cover">
                                     </div>
 
                                     @php
-                                        $price = $item['product']->discount_price ?? $item['product']->price;
+                                        $price = $item['product']->discount_price != null ? $item['product']->discount_price : $item['product']->price;
                                     @endphp
 
                                     <div>
                                         <flux:heading>{{ Str::ucfirst($item['product']->name) }}</flux:heading>
-                                        <flux:subheading>${{ number_format($price, 2, ',', '.') }}&nbsp;UYU</flux:subheading>
+                                        <flux:subheading>${{ number_format($price, 2, ',', '.') }}&nbsp;UYU
+                                        </flux:subheading>
                                     </div>
                                 </div>
                             @endif
@@ -246,12 +250,12 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
                             <div class="flex items-center gap-4 w-full">
                                 <div class="w-1/2">
-                                <flux:input required wire:model="guestName" type="text" placeholder="Tu nombre"
-                                    label="Nombre" />
+                                    <flux:input required wire:model="guestName" type="text" placeholder="Tu nombre"
+                                        label="Nombre" />
                                 </div>
                                 <div class="w-1/2">
-                                <flux:input required wire:model="guestSurname" type="text" placeholder="Tu apellido"
-                                    label="Apellido" />
+                                    <flux:input required wire:model="guestSurname" type="text"
+                                        placeholder="Tu apellido" label="Apellido" />
                                 </div>
                             </div>
 

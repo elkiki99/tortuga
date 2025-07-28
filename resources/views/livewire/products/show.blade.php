@@ -193,7 +193,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                         </div>
                     @endforeach
                 </div>
-
+                
                 <!-- Botón izquierda -->
                 <button @click="scrollLeft()" class="absolute top-[-10%] left-0 h-full px-2 z-10 flex items-center"
                     :class="{ 'hidden': !canScrollLeft }" aria-label="Scroll izquierda">

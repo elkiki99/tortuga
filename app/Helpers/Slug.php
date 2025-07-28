@@ -10,7 +10,7 @@ class Slug
     {
         $slug = Str::slug($name);
         $original = $slug;
-        $i = 1;
+        $i = 2;
 
         while ($model::where('slug', $slug)->exists()) {
             $slug = $original . '-' . $i++;

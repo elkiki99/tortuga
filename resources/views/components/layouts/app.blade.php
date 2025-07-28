@@ -49,7 +49,7 @@
         <!-- Cart open modal -->
         @can('add', \App\Models\Cart::class)
             <flux:navbar class="!mr-2">
-                <livewire:modals.cart />
+                <livewire:cart.show />
             </flux:navbar>
         @endcan
 

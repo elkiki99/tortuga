@@ -18,14 +18,17 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $name = $this->faker->words(2, true);
+        $price = $this->faker->numberBetween(10, 1000) * 1.0;
+
         return [
             'code' => $this->faker->unique()->ean8(),
-            'name' => $this->faker->words(2, true),
-            'slug' => $this->faker->slug(),
+            'name' => $name,
+            'slug' => \Illuminate\Support\Str::slug($name),
             'description' => $this->faker->paragraph(),
-            'price' => $this->faker->randomFloat(2, 10, 1000),
+            'price' => number_format($price, 2, '.', ''),
             'size' => $this->faker->randomElement(['S', 'M', 'L', 'XL', 'XXL']),
-            'discount_price' => $this->faker->optional()->randomFloat(2, 5, 500),
+            'discount_price' => $this->faker->optional()->numberBetween(5, 500) . '.00',
             'in_stock' => $this->faker->boolean(),
             'brand_id' => Brand::inRandomOrder()->value('id'),
             'category_id' => Category::whereNotNull('parent_id')->inRandomOrder()->value('id'),
