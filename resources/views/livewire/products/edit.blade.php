@@ -1,8 +1,8 @@
 <?php
 
-use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
 use Livewire\Volt\Component;
+use Livewire\Attributes\On;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Brand;
@@ -11,7 +11,7 @@ use App\Helpers\Slug;
 new class extends Component {
     use WithFileUploads;
 
-    public Product $product;
+    public ?Product $product = null;
 
     public $name;
     public $description;
@@ -22,25 +22,49 @@ new class extends Component {
     public $category_id;
     public $brand_id;
 
+    public $categories = [];
+    public $brands = [];
+
     public $featured_image;
     public array $attachments = [];
     public array $imagesToDelete = [];
     public array $visibleImages = [];
 
-    public function mount(Product $product)
+    #[On('editProduct')]
+    public function openEditProductModal($id)
     {
-        $this->product = $product;
+        $this->product = Product::with(['category', 'brand', 'images'])->findOrFail($id);
+        
+        $this->authorize('edit', $this->product);
 
-        $this->name = $product->name;
-        $this->description = $product->description;
-        $this->price = $product->price;
-        $this->discount_price = $product->discount_price;
-        $this->size = $product->size;
-        $this->in_stock = (bool) $product->in_stock;
-        $this->category_id = $product->category_id;
-        $this->brand_id = $product->brand_id;
+        $this->name = $this->product->name;
+        $this->description = $this->product->description;
+        $this->price = $this->product->price;
+        $this->discount_price = $this->product->discount_price;
+        $this->size = $this->product->size;
+        $this->in_stock = (bool) $this->product->in_stock;
+        $this->category_id = $this->product->category_id;
+        $this->brand_id = $this->product->brand_id;
+        $this->visibleImages = $this->product->images->pluck('id')->toArray();
 
-        $this->visibleImages = $product->images->pluck('id')->toArray();
+        $this->categories = Category::query()
+            ->whereNotNull('parent_id')
+            ->orWhere(function ($query) {
+                $query->whereNull('parent_id')->doesntHave('children');
+            })
+            ->orderBy('name')
+            ->get();
+
+        $this->brands = Brand::all();
+
+        $this->modal('edit-product')->show();
+    }
+
+    public function closeEditProductModal()
+    {
+        $this->product = null;
+        $this->categories = [];
+        $this->brands = [];
     }
 
     public function updateProduct()
@@ -107,15 +131,15 @@ new class extends Component {
         $this->imagesToDelete = [];
         $this->visibleImages = $this->product->images->pluck('id')->toArray();
 
-        Flux::modals()->close();
+        $this->modal('edit-product')->close();
 
-        $url = request()->header('Referer');
+        // $url = request()->header('Referer');
 
-        if ($url === url()->route('products.index')) {
+        // if ($url === url()->current('productos') || $url === url()->current('productos?page=*')) {
             $this->dispatch('productUpdated');
-        } else {
-            $this->redirectRoute('products.show', $this->product->slug, navigate: true);
-        }
+        // } else {
+        //     $this->redirectRoute('products.show', $this->product->slug, navigate: true);
+        // }
 
         Flux::toast(heading: 'Producto actualizado', text: 'El producto fue actualizado exitosamente', variant: 'success');
     }
@@ -134,28 +158,10 @@ new class extends Component {
             $this->attachments = array_values($this->attachments);
         }
     }
-
-    #[Computed]
-    public function categories()
-    {
-        return Category::query()
-            ->whereNotNull('parent_id')
-            ->orWhere(function ($query) {
-                $query->whereNull('parent_id')->doesntHave('children');
-            })
-            ->orderBy('name')
-            ->get();
-    }
-
-    #[Computed]
-    public function brands()
-    {
-        return Brand::all();
-    }
 }; ?>
 
-<flux:modal name="edit-product-{{ $product->id }}" class="md:w-auto">
-    <form wire:submit.prevent="updateProduct" class="space-y-6">
+<form wire:submit.prevent="updateProduct">
+    <flux:modal name="edit-product" wire:close="closeEditProductModal" class="md:w-auto space-y-6">
         <div>
             <flux:heading size="lg">Editar producto</flux:heading>
             <flux:text class="mt-2">Modifica los datos del producto</flux:text>
@@ -188,9 +194,9 @@ new class extends Component {
 
         <flux:select wire:model="category_id" required label="Categoría" variant="listbox" searchable
             placeholder="Selecciona una categoría">
-            @forelse ($this->categories as $category)
+            @forelse ($categories as $category)
                 <flux:select.option value="{{ $category->id }}">
-                    {{ Str::ucfirst($category->parent?->name) ? Str::ucfirst($category->parent->name) . ' - ' : '' }}{{ Str::ucfirst($category->name) }}
+                    {{ Str::ucfirst($category->parent?->name) ? Str::ucfirst($category?->parent->name) . ' - ' : '' }}{{ Str::ucfirst($category->name) }}
                 </flux:select.option>
             @empty
                 <flux:select.option disabled>No hay categorías</flux:select.option>
@@ -199,7 +205,7 @@ new class extends Component {
 
         <flux:select wire:model="brand_id" label="Marca" badge="Opcional" variant="listbox" searchable
             placeholder="Selecciona una marca">
-            @forelse ($this->brands as $brand)
+            @forelse ($brands as $brand)
                 <flux:select.option value="{{ $brand->id }}">{{ $brand->name }}</flux:select.option>
             @empty
                 <flux:select.option disabled>No hay marcas</flux:select.option>
@@ -211,28 +217,27 @@ new class extends Component {
 
         @if ($featured_image)
             <img src="{{ $featured_image->temporaryUrl() }}">
-        @else
-            @if ($product->featuredImage)
-                <img src="{{ Storage::url($product->featuredImage->path) }}"
-                    alt="{{ $product->featuredImage->alt_text }}">
-            @endif
+        @elseif ($product && $product->featuredImage)
+            <img src="{{ Storage::url($product->featuredImage->path) }}" alt="{{ $product->featuredImage->alt_text }}">
         @endif
 
-        <flux:input label="Agregar más imágenes" accept="image/png, image/jpeg, image/jpg, image/webp"
-        badge="Opcional" type="file" wire:model="attachments" multiple />
+        <flux:input label="Agregar más imágenes" accept="image/png, image/jpeg, image/jpg, image/webp" badge="Opcional"
+            type="file" wire:model="attachments" multiple />
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-            @foreach ($product->images as $img)
-                @if (in_array($img->id, $visibleImages))
-                    <div class="relative">
-                        <div class="absolute top-2 right-2">
-                            <flux:button variant="ghost" icon="x-mark"
-                                wire:click="removeImage('db', {{ $img->id }})" />
+            @if ($product)
+                @foreach ($product->images as $img)
+                    @if (in_array($img->id, $visibleImages))
+                        <div class="relative">
+                            <div class="absolute top-2 right-2">
+                                <flux:button variant="ghost" icon="x-mark"
+                                    wire:click="removeImage('db', {{ $img->id }})" />
+                            </div>
+                            <img class="w-full" src="{{ Storage::url($img->path) }}" alt="{{ $img->alt_text }}">
                         </div>
-                        <img class="w-full" src="{{ Storage::url($img->path) }}" alt="{{ $img->alt_text }}">
-                    </div>
-                @endif
-            @endforeach
+                    @endif
+                @endforeach
+            @endif
 
             @foreach ($attachments as $index => $img)
                 <div class="relative">
@@ -248,8 +253,9 @@ new class extends Component {
         <flux:switch label="En stock" wire:model.live="in_stock" />
 
         <div class="flex justify-end gap-2">
-            <flux:button type="button" variant="ghost" x-on:click="$flux.modals().close()">Cancelar</flux:button>
+            <flux:button type="button" variant="ghost" x-on:click="$flux.modal('edit-product').close()">Cancelar
+            </flux:button>
             <flux:button type="submit" variant="primary">Actualizar</flux:button>
         </div>
-    </form>
-</flux:modal>
+    </flux:modal>
+</form>

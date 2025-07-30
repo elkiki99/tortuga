@@ -89,9 +89,9 @@ new #[Layout('components.layouts.app')] class extends Component {
                     <flux:heading size="xl" level="1">{{ Str::ucfirst($product->name) }}</flux:heading>
 
                     @can('edit', $product)
-                        <flux:modal.trigger name="edit-product-{{ $product->id }}">
-                            <flux:button icon="pencil" size="sm" variant="ghost" />
-                        </flux:modal.trigger>
+                        {{-- <flux:modal.trigger name="edit-product-{{ $product->id }}"> --}}
+                            <flux:button wire:click="$dispatchTo('products.edit', 'editProduct', { id: {{ $product->id }} })" icon="pencil" size="sm" variant="ghost" />
+                        {{-- </flux:modal.trigger> --}}
 
                         <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
                     @endcan

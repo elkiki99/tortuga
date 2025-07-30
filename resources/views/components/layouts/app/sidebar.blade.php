@@ -15,37 +15,44 @@
 
         <flux:navlist variant="outline">
             <flux:navlist.group :heading="__('Plataforma')" class="grid">
-                <flux:navlist.item icon="home" :href="route('dashboard')"
-                    :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Panel') }}</flux:navlist.item>
+                <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
+                    wire:navigate>{{ __('Panel') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 
         <flux:navlist variant="outline">
             <flux:navlist.group :heading="__('E-commerce')" class="grid">
                 <flux:navlist.item icon="shopping-cart" :href="route('products.index')"
-                    :current="request()->routeIs('products.index')" wire:navigate>{{ __('Productos') }}</flux:navlist.item>
+                    :current="request()->routeIs('products.index')" wire:navigate>{{ __('Productos') }}
+                </flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group>
-                <flux:navlist.item icon="tag" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>{{ __('Categorías') }}</flux:navlist.item>
+                <flux:navlist.item icon="tag" :href="route('categories.index')"
+                    :current="request()->routeIs('categories.index')" wire:navigate>{{ __('Categorías') }}
+                </flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group>
-                <flux:navlist.item icon="finger-print" :href="route('brands.index')" :current="request()->routeIs('brands.index')" wire:navigate>{{ __('Marcas') }}</flux:navlist.item>
+                <flux:navlist.item icon="finger-print" :href="route('brands.index')"
+                    :current="request()->routeIs('brands.index')" wire:navigate>{{ __('Marcas') }}</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group>
-                <flux:navlist.item icon="cube" href="{{ route('orders.index') }}" :current="request()->routeIs('orders.index')" wire:navigate>{{ __('Pedidos') }}</flux:navlist.item>
+                <flux:navlist.item icon="cube" href="{{ route('orders.index') }}"
+                    :current="request()->routeIs('orders.index')" wire:navigate>{{ __('Pedidos') }}</flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group>
-                <flux:navlist.item icon="credit-card" href="https://www.mercadopago.com.uy/home" rel="noopener noreferrer" target="_blank">{{ __('Pagos') }}</flux:navlist.item>
+                <flux:navlist.item icon="credit-card" href="https://www.mercadopago.com.uy/home"
+                    rel="noopener noreferrer" target="_blank">{{ __('Pagos') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 
         <flux:navlist variant="outline">
             <flux:navlist.group :heading="__('Métricas')" class="grid">
-               <flux:navlist.item icon="presentation-chart-line" href="{{ route('sales') }}" :current="request()->routeIs('sales')" wire:navigate>{{ __('Ventas') }}</flux:navlist.item>
+                <flux:navlist.item icon="presentation-chart-line" href="{{ route('sales') }}"
+                    :current="request()->routeIs('sales')" wire:navigate>{{ __('Ventas') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 
@@ -53,6 +60,10 @@
 
         <!-- Desktop User Menu -->
         <flux:dropdown class="hidden lg:block" position="bottom" align="start">
+            <div class="px-1 py-2">
+                <div class="text-xs leading-none text-zinc-400">Usuario</div>
+            </div>
+
             <flux:profile :name="auth()->user()->name" :initials="auth()->user()->initials()"
                 icon:trailing="chevrons-up-down" />
 

@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\{Category, Brand, Product};
-use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
 use Livewire\Volt\Component;
+use Livewire\Attributes\On;
 use App\Helpers\Slug;
 
 new class extends Component {
@@ -18,8 +18,29 @@ new class extends Component {
     public $category_id;
     public $brand_id;
 
+    public $categories = [];
+    public $brands = [];
+
     public $featured_image;
     public $attachments = [];
+
+    #[On('createProduct')]
+    public function loadModal()
+    {
+        $this->authorize('create', Product::class);
+
+        $this->categories = Category::query()
+            ->whereNotNull('parent_id')
+            ->orWhere(function ($query) {
+                $query->whereNull('parent_id')->doesntHave('children');
+            })
+            ->orderBy('name')
+            ->get();
+
+        $this->brands = Brand::all();
+
+        Flux::modal("create-product")->show();
+    }
 
     public function createProduct()
     {
@@ -84,24 +105,6 @@ new class extends Component {
         unset($this->attachments[$index]);
         $this->attachments = array_values($this->attachments);
     }
-
-    #[Computed]
-    public function categories()
-    {
-        return Category::query()
-            ->whereNotNull('parent_id')
-            ->orWhere(function ($query) {
-                $query->whereNull('parent_id')->doesntHave('children');
-            })
-            ->orderBy('name')
-            ->get();
-    }
-
-    #[Computed]
-    public function brands()
-    {
-        return Brand::all();
-    }
 }; ?>
 
 <flux:modal name="create-product" class="md:w-auto">
@@ -138,7 +141,7 @@ new class extends Component {
 
         <flux:select wire:model="category_id" required label="Categoría" variant="listbox" searchable
             placeholder="Selecciona una categoría">
-            @forelse ($this->categories as $category)
+            @forelse ($categories as $category)
                 <flux:select.option value="{{ $category->id }}">
                     {{ Str::ucfirst($category->parent?->name) ? Str::ucfirst($category->parent->name) . ' - ' : '' }}{{ Str::ucfirst($category->name) }}
                 </flux:select.option>
@@ -149,7 +152,7 @@ new class extends Component {
 
         <flux:select wire:model="brand_id" label="Marca" badge="Opcional" variant="listbox" searchable
             placeholder="Selecciona una marca">
-            @forelse ($this->brands as $brand)
+            @forelse ($brands as $brand)
                 <flux:select.option value="{{ $brand->id }}">{{ $brand->name }}</flux:select.option>
             @empty
                 <flux:select.option disabled>No hay marcas</flux:select.option>
@@ -165,10 +168,6 @@ new class extends Component {
 
         <flux:input accept="image/png, image/jpeg, image/jpg, image/webp" label="Imágenes" badge="Opcional"
             type="file" wire:model="attachments" multiple />
-
-        <div x-show="uploading">
-            <progress max="100" x-bind:value="progress"></progress>
-        </div>
 
         @if (count($attachments) > 0)
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2">

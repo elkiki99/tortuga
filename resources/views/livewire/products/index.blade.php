@@ -3,6 +3,7 @@
 use Livewire\Attributes\{Layout, Title, Computed, On};
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Url;
 use App\Models\Product;
 
 new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] class extends Component {
@@ -10,6 +11,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
 
     public $sortBy = 'created_at';
     public $sortDirection = 'desc';
+
+    #[Url]
     public $search = '';
 
     public function mount()
@@ -40,15 +43,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
     {
         return Product::query()
             ->search($this->search)
-            ->when(
-                $this->sortBy === 'price',
-                function ($query) {
-                    $query->orderByRaw("COALESCE(discount_price, price) {$this->sortDirection}");
-                },
-                function ($query) {
-                    $query->orderBy($this->sortBy, $this->sortDirection);
-                },
-            )
+            ->when($this->sortBy === 'price', fn($query) => $query->orderByRaw("COALESCE(discount_price, price) {$this->sortDirection}"), fn($query) => $query->orderBy($this->sortBy, $this->sortDirection))
+            ->with(['category', 'brand'])
             ->paginate(12);
     }
 }; ?>
@@ -146,23 +142,18 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                                         icon-trailing="chevron-right">Ver producto</flux:menu.item>
                                     <flux:menu.separator />
 
-                                    <flux:modal.trigger name="edit-product-{{ $product->id }}">
-                                        <flux:menu.item icon="pencil-square">Editar producto</flux:menu.item>
-                                    </flux:modal.trigger>
+                                    <flux:menu.item icon="pencil-square"
+                                        wire:click="$dispatchTo('products.edit', 'editProduct', { id: {{ $product->id }} })">
+                                        Editar producto
+                                    </flux:menu.item>
 
-                                    <flux:modal.trigger name="delete-product-{{ $product->id }}">
-                                        <flux:menu.item variant="danger" icon="trash">Eliminar producto
-                                        </flux:menu.item>
-                                    </flux:modal.trigger>
+                                    <flux:menu.item icon="trash" variant="danger"
+                                        wire:click="$dispatchTo('products.delete', 'deleteProduct', { id: {{ $product->id }} })">
+                                        Eliminar producto
+                                    </flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>
                         </div>
-                        
-                        <!-- Update sumary modal -->
-                        <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
-
-                        <!-- Delete product modal -->
-                        <livewire:products.delete :$product wire:key="delete-product-{{ $product->id }}" />
                     </flux:table.cell>
                 </flux:table.row>
             @empty
@@ -185,5 +176,12 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
         </div>
     @endif
 
+    <!-- Create product modal -->
     <livewire:products.create />
+
+    <!-- Update sumary modal -->
+    <livewire:products.edit />
+
+    <!-- Delete product modal -->
+    <livewire:products.delete />
 </div>
