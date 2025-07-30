@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('size')->nullable();
             $table->decimal('discount_price', 10, 2)->nullable();
             $table->boolean('in_stock')->default(true);
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('brand_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });

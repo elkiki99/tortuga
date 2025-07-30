@@ -1,22 +1,39 @@
 <?php
 
 use Livewire\Volt\Component;
+use Livewire\Attributes\On;
 use App\Models\Category;
 use App\Helpers\Slug;
 
 new class extends Component {
-    public Category $category;
+    public ?Category $category = null;
 
     public $name;
     public $description;
     public $parent_id = null;
+    public $originalSlug;
 
-    public function mount(Category $category)
+    #[On('editCategory')]
+    public function openEditCategoryModal($id)
     {
-        $this->category = $category;
-        $this->name = $category->name;
-        $this->description = $category->description;
-        $this->parent_id = $category->parent_id;
+        $this->category = Category::findOrFail($id);
+
+        $this->authorize('edit', $this->category);
+
+        $this->name = $this->category->name;
+        $this->description = $this->category->description;
+        $this->parent_id = $this->category->parent_id;
+        $this->originalSlug = $this->category->slug;
+
+        $this->modal('edit-category')->show();
+    }
+
+    public function closeEditCategoryModal()
+    {
+        $this->category = null;
+        $this->name = '';
+        $this->description = '';
+        $this->parent_id = null;
     }
 
     public function updateCategory()
@@ -35,22 +52,25 @@ new class extends Component {
             'parent_id' => $this->parent_id ?: null,
         ]);
 
-        Flux::modals()->close();
+        $wasSlugChanged = $this->originalSlug !== $this->category->slug;
+
+        $this->modal('edit-category')->close();
 
         $url = request()->header('Referer');
+        $path = parse_url($url, PHP_URL_PATH);
 
-        if ($url === url()->route('categories.index')) {
-            $this->dispatch('categoryUpdated');
-        } else {
+        if (Str::startsWith($path, '/categorias/') && $path !== '/categorias' && $wasSlugChanged) {
             $this->redirectRoute('categories.show', $this->category->slug, navigate: true);
+        } else {
+            $this->dispatch('categoryUpdated');
         }
-
+        
         Flux::toast(heading: 'Categoría actualizada', text: 'La categoría fue actualizada exitosamente', variant: 'success');
     }
 }; ?>
 
-<flux:modal name="edit-category-{{ $category->id }}" class="md:w-auto">
-    <form wire:submit.prevent="updateCategory" class="space-y-6">
+<form wire:submit.prevent="updateCategory">
+    <flux:modal name="edit-category" wire:close="closeEditCategoryModal" class="md:w-auto space-y-6">
         <div>
             <flux:heading size="lg">Editar categoría</flux:heading>
             <flux:text class="mt-2">Actualizá los datos de la categoría</flux:text>
@@ -61,15 +81,20 @@ new class extends Component {
         <flux:textarea label="Descripción" badge="Opcional" placeholder="Descripción de la categoría"
             wire:model="description" rows="3" />
 
-        @if ($category->parent_id)
+        @if ($category && $category->parent_id)
             <flux:badge color="yellow" size="sm">Subcategoría de {{ $category->parent->name }}</flux:badge>
         @else
             <flux:badge color="green" size="sm">Categoría principal</flux:badge>
         @endif
 
-        <div class="flex justify-end gap-2">
-            <flux:button type="button" variant="ghost" x-on:click="$flux.modals().close()">Cancelar</flux:button>
-            <flux:button type="submit" variant="primary">Actualizar</flux:button>
+        <div class="flex gap-2">
+            <flux:spacer />
+
+            <flux:modal.close>
+                <flux:button variant="ghost">Cancelar</flux:button>
+            </flux:modal.close>
+
+            <flux:button variant="primary" type="submit">Actualizar</flux:button>
         </div>
-    </form>
-</flux:modal>
+    </flux:modal>
+</form>

@@ -53,7 +53,7 @@ new class extends Component {
             <flux:spacer />
 
             <flux:modal.close>
-                <flux:button x-on:click="$flux.modal('delete-product').close()" variant="ghost">Cancelar</flux:button>
+                <flux:button variant="ghost">Cancelar</flux:button>
             </flux:modal.close>
 
             <flux:button variant="danger" type="submit">Eliminar</flux:button>

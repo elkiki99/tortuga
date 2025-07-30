@@ -3,6 +3,7 @@
 use Livewire\Attributes\{Layout, Title, Computed, On};
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Url;
 use App\Models\Category;
 
 new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')] class extends Component {
@@ -10,6 +11,8 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
 
     public $sortBy = 'name';
     public $sortDirection = 'asc';
+
+    #[Url]
     public $search = '';
 
     public function mount()
@@ -56,12 +59,10 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
     </div>
 
     <div class="flex items-center gap-4">
-        <flux:modal.trigger name="create-category">
-            <flux:button size="sm" variant="primary" icon="plus">
-                <span class="hidden sm:inline">Agregar categoría</span>
-                <span class="inline sm:hidden">Agregar</span>
-            </flux:button>
-        </flux:modal.trigger>
+        <flux:button wire:click="dispatchTo('categories.create', 'createCategory')" size="sm" variant="primary" icon="plus">
+            <span class="hidden sm:inline">Agregar categoría</span>
+            <span class="inline sm:hidden">Agregar</span>
+        </flux:button>
 
         <div class="w-full">
             <flux:input wire:model.live="search" size="sm" variant="filled" placeholder="Buscar por nombre..."
@@ -130,23 +131,17 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
                                         icon-trailing="chevron-right">Ver categoría</flux:menu.item>
                                     <flux:menu.separator />
 
-                                    <flux:modal.trigger name="edit-category-{{ $category->id }}">
-                                        <flux:menu.item icon="pencil-square">Editar categoría</flux:menu.item>
-                                    </flux:modal.trigger>
+                                    <flux:menu.item icon="pencil-square"
+                                        wire:click="$dispatchTo('categories.edit', 'editCategory', { id: {{ $category->id }} })">
+                                        Editar categoría</flux:menu.item>
 
-                                    <flux:modal.trigger name="delete-category-{{ $category->id }}">
-                                        <flux:menu.item variant="danger" icon="trash">Eliminar categoría
-                                        </flux:menu.item>
-                                    </flux:modal.trigger>
+                                    <flux:menu.item variant="danger" icon="trash"
+                                        wire:click="$dispatchTo('categories.delete', 'deleteCategory', { id: {{ $category->id }} })">
+                                        Eliminar categoría
+                                    </flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>
                         </div>
-                        
-                        <!-- Update sumary modal -->
-                        <livewire:categories.edit :$category wire:key="edit-category-{{ $category->id }}" />
-
-                        <!-- Delete category modal -->
-                        <livewire:categories.delete :$category wire:key="delete-category-{{ $category->id }}" />
                     </flux:table.cell>
                 </flux:table.row>
             @empty
@@ -169,5 +164,12 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
         </div>
     @endif
 
+    <!-- Create category modal -->
     <livewire:categories.create />
+
+    <!-- Update category modal -->
+    <livewire:categories.edit />
+
+    <!-- Delete category modal -->
+    <livewire:categories.delete />
 </div>

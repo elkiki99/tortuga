@@ -58,12 +58,11 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
     </div>
 
     <div class="flex items-center gap-4">
-        <flux:modal.trigger name="create-product">
-            <flux:button size="sm" variant="primary" icon="plus">
-                <span class="hidden sm:inline">Agregar producto</span>
-                <span class="inline sm:hidden">Agregar</span>
-            </flux:button>
-        </flux:modal.trigger>
+        <flux:button wire:click="dispatchTo('products.create', 'createProduct')" size="sm" variant="primary"
+            icon="plus">
+            <span class="hidden sm:inline">Agregar producto</span>
+            <span class="inline sm:hidden">Agregar</span>
+        </flux:button>
         <div class="w-full">
             <flux:input wire:model.live="search" size="sm" variant="filled"
                 placeholder="Buscar por nombre o categoría..." icon="magnifying-glass" />
@@ -120,15 +119,9 @@ new #[Layout('components.layouts.dashboard')] #[Title('Productos • Tortuga')] 
                     </flux:table.cell>
 
                     <flux:table.cell class="hidden lg:table-cell">
-                        @if ($product->in_stock == true)
-                            <flux:badge color="green" size="sm" inset="top bottom">
-                                Si
-                            </flux:badge>
-                        @else
-                            <flux:badge color="red" size="sm" inset="top bottom">
-                                No
-                            </flux:badge>
-                        @endif
+                        <flux:badge :color="$product->in_stock ? 'green' : 'red'" size="sm" inset="top bottom">
+                            {{ $product->in_stock ? 'Si' : 'No' }}
+                        </flux:badge>
                     </flux:table.cell>
 
                     <flux:table.cell>

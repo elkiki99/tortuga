@@ -89,11 +89,11 @@ new #[Layout('components.layouts.app')] class extends Component {
                     <flux:heading size="xl" level="1">{{ Str::ucfirst($product->name) }}</flux:heading>
 
                     @can('edit', $product)
-                        {{-- <flux:modal.trigger name="edit-product-{{ $product->id }}"> --}}
-                            <flux:button wire:click="$dispatchTo('products.edit', 'editProduct', { id: {{ $product->id }} })" icon="pencil" size="sm" variant="ghost" />
-                        {{-- </flux:modal.trigger> --}}
+                        <flux:button wire:click="$dispatchTo('products.edit', 'editProduct', { id: {{ $product->id }} })"
+                            icon="pencil" size="sm" variant="ghost" />
 
-                        <livewire:products.edit :$product wire:key="edit-product-{{ $product->id }}" />
+                        <!-- Update category modal -->
+                        <livewire:products.edit />
                     @endcan
                 </div>
 
@@ -167,11 +167,12 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                     @can('delete', $product)
                         <div class="mt-6">
-                            <flux:modal.trigger name="delete-product-{{ $product->id }}">
-                                <flux:badge as="button" color="red" icon="trash">Eliminar producto</flux:button>
-                            </flux:modal.trigger>
+                            <flux:badge
+                                wire:click="$dispatchTo('products.delete', 'deleteProduct', { id: {{ $product->id }} })"
+                                as="button" color="red" icon="trash">Eliminar producto</flux:badge>
 
-                            <livewire:products.delete :$product wire:key="delete-product-{{ $product->id }}" />
+                            <!-- Delete product modal -->
+                            <livewire:products.delete />
                         </div>
                     @endcan
                 </div>
@@ -193,7 +194,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                         </div>
                     @endforeach
                 </div>
-                
+
                 <!-- Botón izquierda -->
                 <button @click="scrollLeft()" class="absolute top-[-10%] left-0 h-full px-2 z-10 flex items-center"
                     :class="{ 'hidden': !canScrollLeft }" aria-label="Scroll izquierda">

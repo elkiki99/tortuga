@@ -21,6 +21,7 @@ new class extends Component {
     public $in_stock;
     public $category_id;
     public $brand_id;
+    public $originalSlug;
 
     public $categories = [];
     public $brands = [];
@@ -34,7 +35,7 @@ new class extends Component {
     public function openEditProductModal($id)
     {
         $this->product = Product::with(['category', 'brand', 'images'])->findOrFail($id);
-        
+
         $this->authorize('edit', $this->product);
 
         $this->name = $this->product->name;
@@ -46,6 +47,7 @@ new class extends Component {
         $this->category_id = $this->product->category_id;
         $this->brand_id = $this->product->brand_id;
         $this->visibleImages = $this->product->images->pluck('id')->toArray();
+        $this->originalSlug = $this->product->slug;
 
         $this->categories = Category::query()
             ->whereNotNull('parent_id')
@@ -96,6 +98,8 @@ new class extends Component {
             'brand_id' => $this->brand_id,
         ]);
 
+        $wasSlugChanged = $this->originalSlug !== $this->product->slug;
+
         if ($this->featured_image) {
             if ($this->product->featuredImage) {
                 $this->product->featuredImage->delete();
@@ -133,13 +137,14 @@ new class extends Component {
 
         $this->modal('edit-product')->close();
 
-        // $url = request()->header('Referer');
+        $url = request()->header('Referer');
+        $path = parse_url($url, PHP_URL_PATH);
 
-        // if ($url === url()->current('productos') || $url === url()->current('productos?page=*')) {
+        if (Str::startsWith($path, '/productos/') && $path !== '/productos' && $wasSlugChanged) {
+            $this->redirectRoute('products.show', $this->product->slug, navigate: true);
+        } else {
             $this->dispatch('productUpdated');
-        // } else {
-        //     $this->redirectRoute('products.show', $this->product->slug, navigate: true);
-        // }
+        }
 
         Flux::toast(heading: 'Producto actualizado', text: 'El producto fue actualizado exitosamente', variant: 'success');
     }
@@ -252,10 +257,14 @@ new class extends Component {
 
         <flux:switch label="En stock" wire:model.live="in_stock" />
 
-        <div class="flex justify-end gap-2">
-            <flux:button type="button" variant="ghost" x-on:click="$flux.modal('edit-product').close()">Cancelar
-            </flux:button>
-            <flux:button type="submit" variant="primary">Actualizar</flux:button>
+        <div class="flex gap-2">
+            <flux:spacer />
+
+            <flux:modal.close>
+                <flux:button variant="ghost">Cancelar</flux:button>
+            </flux:modal.close>
+
+            <flux:button variant="primary" type="submit">Actualizar</flux:button>
         </div>
     </flux:modal>
 </form>

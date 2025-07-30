@@ -105,11 +105,12 @@ new #[Layout('components.layouts.app')] class extends Component {
                         <flux:heading size="xl" level="1">{{ Str::ucfirst($category->name) }}</flux:heading>
 
                         @can('edit', $category)
-                            <flux:modal.trigger name="edit-category-{{ $category->id }}">
-                                <flux:button icon="pencil" size="sm" variant="ghost" />
-                            </flux:modal.trigger>
+                            <flux:button
+                                wire:click="$dispatchTo('categories.edit', 'editCategory', { id: {{ $category->id }} })"
+                                icon="pencil" size="sm" variant="ghost" />
 
-                            <livewire:categories.edit :$category wire:key="edit-category-{{ $category->id }}" />
+                            <!-- Update category modal -->
+                            <livewire:categories.edit />
                         @endcan
                     </div>
 

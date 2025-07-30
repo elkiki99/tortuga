@@ -17,7 +17,7 @@ class StatsFactory extends Factory
     public function definition(): array
     {
         return [
-            'date' => $this->faker->unique()->dateTimeBetween('-730 days', 'now')->format('Y-m-d'),
+            'date' => $this->faker->unique()->dateTimeBetween('-365 days', 'now')->format('Y-m-d'),
             'orders_count' => $this->faker->numberBetween(1, 25),
             'total_revenue' => $this->faker->randomFloat(2, 100, 10000),
         ];

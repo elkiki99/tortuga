@@ -1,6 +1,7 @@
 <?php
 
 use Livewire\Volt\Component;
+use Livewire\Attributes\On;
 use App\Models\Category;
 use App\Helpers\Slug;
 
@@ -9,6 +10,14 @@ new class extends Component {
     public $slug;
     public $description;
     public $parent_id = null;
+
+    #[On('createCategory')]
+    public function loadCreateCategoryModal()
+    {
+        $this->authorize('create', Category::class);
+
+        $this->modal('create-category')->show();
+    }
 
     public function createCategory()
     {
@@ -57,9 +66,14 @@ new class extends Component {
             @endforelse
         </flux:select>
 
-        <div class="flex justify-end gap-2">
-            <flux:button type="button" variant="ghost" x-on:click="$flux.modals().close()">Cancelar</flux:button>
-            <flux:button type="submit" variant="primary">Crear</flux:button>
+        <div class="flex gap-2">
+            <flux:spacer />
+
+            <flux:modal.close>
+                <flux:button variant="ghost">Cancelar</flux:button>
+            </flux:modal.close>
+
+            <flux:button variant="primary" type="submit">Crear</flux:button>
         </div>
     </form>
 </flux:modal>

@@ -18,7 +18,7 @@
         <flux:spacer />
 
         <flux:navbar class="-mb-px max-lg:hidden">
-            @foreach (\App\Models\Category::whereNull('parent_id')->get()->all() as $parent)
+            @foreach (\App\Models\Category::whereNull('parent_id')->where('slug', '!=', 'sin-categoria')->get() as $parent)
                 @php
                     $children = $parent->children;
                 @endphp
@@ -121,10 +121,24 @@
         </a>
 
         <flux:navlist variant="outline">
-            @forelse (\App\Models\Category::take(6)->get() as $category)
-                <flux:navlist.item href="{{ route('categories.show', $category->slug) }}" wire:navigate>
-                    {{ Str::ucfirst($category->name) }}
-                </flux:navlist.item>
+            @forelse (\App\Models\Category::whereNull('parent_id')->where('slug', '!=', 'sin-categoria')->get() as $parent)
+                @php
+                    $children = $parent->children;
+                @endphp
+
+                @if ($children->isNotEmpty())
+                    <flux:navlist.group heading="{{ Str::ucfirst($parent->name) }}" expandable :expanded="false">
+                        @foreach ($children as $child)
+                            <flux:navlist.item href="{{ route('categories.show', $child->slug) }}" wire:navigate>
+                                {{ Str::ucfirst($child->name) }}
+                            </flux:navlist.item>
+                        @endforeach
+                    </flux:navlist.group>
+                @else
+                    <flux:navlist.item href="{{ route('categories.show', $parent->slug) }}" wire:navigate>
+                        {{ Str::ucfirst($parent->name) }}
+                    </flux:navlist.item>
+                @endif
             @empty
                 <flux:navlist.item href="#">No hay categorías disponibles</flux:navlist.item>
             @endforelse

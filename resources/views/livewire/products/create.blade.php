@@ -25,7 +25,7 @@ new class extends Component {
     public $attachments = [];
 
     #[On('createProduct')]
-    public function loadModal()
+    public function loadCreateProductModal()
     {
         $this->authorize('create', Product::class);
 
@@ -39,7 +39,13 @@ new class extends Component {
 
         $this->brands = Brand::all();
 
-        Flux::modal("create-product")->show();
+        $this->modal('create-product')->show();
+    }
+
+    public function closeCreateProductModal()
+    {
+        $this->categories = [];
+        $this->brands = [];
     }
 
     public function createProduct()
@@ -90,7 +96,7 @@ new class extends Component {
             ]);
         }
 
-        Flux::modals()->close();
+        $this->modal('create-product')->close();
 
         $this->reset(['name', 'description', 'price', 'discount_price', 'size', 'in_stock', 'category_id', 'brand_id']);
         $this->reset(['featured_image', 'attachments']);
@@ -107,8 +113,8 @@ new class extends Component {
     }
 }; ?>
 
-<flux:modal name="create-product" class="md:w-auto">
-    <form wire:submit.prevent="createProduct" class="space-y-6">
+<form wire:submit.prevent="createProduct">
+    <flux:modal name="create-product" wire:close="closeCreateProductModal" class="md:w-auto space-y-6">
         <div>
             <flux:heading size="lg">Nuevo producto</flux:heading>
             <flux:text class="mt-2">Agrega un nuevo producto a tu tienda</flux:text>
@@ -184,10 +190,15 @@ new class extends Component {
         @endif
 
         <flux:switch label="En stock" wire:model.live="in_stock" checked="true" />
+        
+        <div class="flex gap-2">
+            <flux:spacer />
 
-        <div class="flex justify-end gap-2">
-            <flux:button type="button" variant="ghost" x-on:click="$flux.modals().close()">Cancelar</flux:button>
-            <flux:button type="submit" variant="primary">Guardar producto</flux:button>
+            <flux:modal.close>
+                <flux:button variant="ghost">Cancelar</flux:button>
+            </flux:modal.close>
+
+            <flux:button variant="primary" type="submit">Crear</flux:button>
         </div>
-    </form>
-</flux:modal>
+    </flux:modal>
+</form>
