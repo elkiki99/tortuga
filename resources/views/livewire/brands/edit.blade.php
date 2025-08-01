@@ -1,20 +1,33 @@
 <?php
 
 use Livewire\Volt\Component;
+use Livewire\Attributes\On;
 use App\Models\Brand;
-// use App\Helpers\Slug;
 
 new class extends Component {
-    public Brand $brand;
+    public ?Brand $brand;
 
     public $name;
     public $description;
 
-    public function mount(Brand $brand)
+    #[On('editBrand')]
+    public function openEditBrandModal($id)
     {
-        $this->brand = $brand;
-        $this->name = $brand->name;
-        $this->description = $brand->description;
+        $this->brand = Brand::findOrFail($id);
+
+        $this->authorize('edit', $this->brand);
+
+        $this->name = $this->brand->name;
+        $this->description = $this->brand->description;
+
+        $this->modal('edit-brand')->show();
+    }
+
+    public function closeEditBrandModal()
+    {
+        $this->brand = null;
+        $this->name = '';
+        $this->description = '';
     }
 
     public function updateBrand()
@@ -28,11 +41,10 @@ new class extends Component {
 
         $this->brand->update([
             'name' => $this->name,
-            // 'slug' => Slug::generate($this->name, Brand::class),
             'description' => $this->description,
         ]);
 
-        Flux::modals()->close();
+        $this->modal('edit-brand')->close();
 
         $this->dispatch('brandUpdated');
         Flux::toast(heading: 'Marca actualizada', text: 'La marca fue actualizada exitosamente', variant: 'success');
@@ -40,21 +52,26 @@ new class extends Component {
 };
 ?>
 
-<flux:modal name="edit-brand-{{ $brand->id }}" class="md:w-auto">
-    <form wire:submit.prevent="updateBrand" class="space-y-6">
+<form wire:submit.prevent="updateBrand">
+    <flux:modal name="edit-brand" class="md:w-auto space-y-6">
         <div>
             <flux:heading size="lg">Editar marca</flux:heading>
             <flux:text class="mt-2">Actualizá los datos de la marca</flux:text>
         </div>
 
-        <flux:input placeholder="Nombre de la marca" wire:model="name" label="Nombre" required />
+        <flux:input placeholder="Nombre de la marca" wire:model="name" label="Nombre" required autofocus />
 
-        <flux:textarea label="Descripción" badge="Opcional" placeholder="Descripción de la marca"
-            wire:model="description" rows="3" />
+        <flux:textarea label="Descripción" badge="Opcional" placeholder="Descripción de la marca" wire:model="description"
+            rows="3" />
 
-        <div class="flex justify-end gap-2">
-            <flux:button type="button" variant="ghost" x-on:click="$flux.modals().close()">Cancelar</flux:button>
-            <flux:button type="submit" variant="primary">Actualizar</flux:button>
+        <div class="flex gap-2">
+            <flux:spacer />
+
+            <flux:modal.close>
+                <flux:button variant="ghost">Cancelar</flux:button>
+            </flux:modal.close>
+
+            <flux:button variant="primary" type="submit">Actualizar</flux:button>
         </div>
-    </form>
-</flux:modal>
+    </flux:modal>
+</form>

@@ -40,6 +40,7 @@ new #[Layout('components.layouts.app')] class extends Component {
     public function render(): mixed
     {
         $query = Product::query()
+            ->with(['category', 'featuredImage'])
             ->where('in_stock', true)
             ->when(
                 $this->selectedSubcategoryId,

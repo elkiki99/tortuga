@@ -9,6 +9,10 @@ class PersistSessionCartToDatabase
 {
     public function __invoke(User $user): void
     {
+        if($user->isAdmin()) {
+           return; 
+        }
+
         $sessionCart = session('cart', []);
 
         if (empty($sessionCart)) {

@@ -21,6 +21,11 @@ new class extends Component {
     {
         $this->authorize('delete', $this->category);
 
+        if ($this->category->slug == 'sin-categoria') {
+            Flux::toast(heading: 'No se puede eliminar', text: 'La categoría "Sin categoría" no puede ser eliminada', variant: 'warning');
+            return;
+        }
+
         if ($this->category->parent_id === null && $this->category->children()->exists()) {
             Flux::toast(variant: 'warning', heading: 'Error al eliminar categoría', text: 'No puedes eliminar esta categoría ya que tiene subcategorías existentes');
         } else {

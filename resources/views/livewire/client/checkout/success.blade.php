@@ -1,6 +1,6 @@
 <?php
 
-use Livewire\Attributes\{Layout, Title};
+use Livewire\Attributes\{Layout, Title, On};
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\OrderPurchased;
@@ -38,6 +38,12 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
         $stats->increment('total_revenue', $this->order->total);
     }
 
+    #[On('orderUpdated')]
+    public function refreshPage()
+    {   
+        $this->dispatch('$refresh');
+    }
+
     public function mount()
     {
         $this->purchaseId = request()->query('payment_id');
@@ -66,7 +72,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                     'buyer_email' => $user->email,
                     'purchase_id' => $this->purchaseId,
                     'purchase_date' => Carbon::now(),
-                    'total' => $cart->items->sum(fn($item) => $item->product->discount_price ?? $item->product->price),
+                    'total' => $cart->items->sum(fn($item) => $item->product->discount_price != null ? $item->product->discount_price : $item->product->price),
                     'status' => 'payed',
                     'payment_method' => 'mercadopago',
                 ]);
@@ -78,14 +84,14 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                         OrderItem::create([
                             'order_id' => $order->id,
                             'product_id' => $item->product->id,
-                            'price' => $item->product->discount_price ?? $item->product->price,
+                            'price' => $item->product->discount_price != null ? $item->product->discount_price : $item->product->price,
                         ]);
 
                         $item->product->update(['in_stock' => false]);
 
                         $itemsForEmail[] = [
                             'name' => $item->product->name,
-                            'price' => $item->product->discount_price ?? $item->product->price,
+                            'price' => $item->product->discount_price != null ? $item->product->discount_price : $item->product->price,
                         ];
                     }
                 }
@@ -106,7 +112,7 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                 abort(404);
             }
 
-            $total = $products->sum(fn($p) => $p->discount_price ?? $p->price);
+            $total = $products->sum(fn($p) => $p->discount_price != null ? p->discount_price : $p->price);
 
             $order = Order::create([
                 'user_id' => null,
@@ -128,14 +134,14 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $product->id,
-                        'price' => $product->discount_price ?? $product->price,
+                        'price' => $product->discount_price != null ? $product->discount_price : $product->price,
                     ]);
 
                     $product->update(['in_stock' => false]);
 
                     $itemsForEmail[] = [
                         'name' => $product->name,
-                        'price' => $product->discount_price ?? $product->price,
+                        'price' => $product->discount_price != null ? $product->discount_price : $product->price,
                     ];
                 }
             }
@@ -169,9 +175,19 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
 
     <div>
         @if (Auth()->check() && Auth::user()->isAdmin())
-            <flux:heading size="xl">Pago exitoso confirmado</flux:heading>
-            <flux:subheading>
-                Este pago fue procesada correctamente y está asociada a la orden de compra
+            <div class="flex items-center gap-4">
+                <flux:heading size="xl" level="1">Pago exitoso confirmado</flux:heading>
+
+                @can('edit', $order)
+                    <flux:button wire:click="$dispatch('editOrder', { id: {{ $order->id }} })"
+                        icon="pencil" size="sm" variant="ghost" />
+
+                    <!-- Update category modal -->
+                    <livewire:orders.edit />
+                @endcan
+            </div>
+            <flux:subheading class="mt-2">
+                Este pago fue procesado correctamente y está asociado a la orden de compra
                 <strong>{{ $this->purchaseId }}</strong>.
             </flux:subheading>
         @else
@@ -227,7 +243,10 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
                             </div>
 
                             @php
-                                $price = $item->product->discount_price ?? $item->product->price;
+                                $price =
+                                    $item->product->discount_price != null
+                                        ? $item->product->discount_price
+                                        : $item->product->price;
                             @endphp
 
                             <div>

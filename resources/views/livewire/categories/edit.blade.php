@@ -6,7 +6,7 @@ use App\Models\Category;
 use App\Helpers\Slug;
 
 new class extends Component {
-    public ?Category $category = null;
+    public ?Category $category;
 
     public $name;
     public $description;
@@ -39,6 +39,11 @@ new class extends Component {
     public function updateCategory()
     {
         $this->authorize('edit', $this->category);
+
+        if($this->category->slug == 'sin-categoria') {
+            Flux::toast(heading: 'No se puede editar', text: 'La categoría "Sin categoría" no puede ser editada', variant: 'warning');
+            return;
+        }
 
         $this->validate([
             'name' => 'required|string|max:255',
@@ -76,7 +81,7 @@ new class extends Component {
             <flux:text class="mt-2">Actualizá los datos de la categoría</flux:text>
         </div>
 
-        <flux:input placeholder="Nombre de la categoría" wire:model="name" label="Nombre" required />
+        <flux:input  placeholder="Nombre de la categoría" wire:model="name" label="Nombre" required autofocus />
 
         <flux:textarea label="Descripción" badge="Opcional" placeholder="Descripción de la categoría"
             wire:model="description" rows="3" />

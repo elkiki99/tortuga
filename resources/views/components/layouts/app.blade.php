@@ -17,8 +17,12 @@
 
         <flux:spacer />
 
+        @php
+            $categories = \App\Models\Category::whereNull('parent_id')->where('slug', '!=', 'sin-categoria')->get();
+        @endphp
+
         <flux:navbar class="-mb-px max-lg:hidden">
-            @foreach (\App\Models\Category::whereNull('parent_id')->where('slug', '!=', 'sin-categoria')->get() as $parent)
+            @foreach ($categories as $parent)
                 @php
                     $children = $parent->children;
                 @endphp
@@ -121,7 +125,7 @@
         </a>
 
         <flux:navlist variant="outline">
-            @forelse (\App\Models\Category::whereNull('parent_id')->where('slug', '!=', 'sin-categoria')->get() as $parent)
+            @forelse ($categories as $parent)
                 @php
                     $children = $parent->children;
                 @endphp

@@ -3,6 +3,7 @@
 use Livewire\Attributes\{Layout, Title, Computed, On};
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Url;
 use App\Models\Brand;
 
 new #[Layout('components.layouts.dashboard')] #[Title('Marcas • Tortuga')] class extends Component {
@@ -10,12 +11,14 @@ new #[Layout('components.layouts.dashboard')] #[Title('Marcas • Tortuga')] cla
 
     public $sortBy = 'name';
     public $sortDirection = 'asc';
+
+    #[Url]
     public $search = '';
 
-    // public function mount()
-    // {
-    //     $this->authorize('viewAny', Brand::class);
-    // }
+    public function mount()
+    {
+        $this->authorize('viewAny', Brand::class);
+    }
 
     #[On('brandCreated')]
     #[On('brandUpdated')]
@@ -83,13 +86,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Marcas • Tortuga')] cla
             @forelse($this->brands as $brand)
                 <flux:table.row wire:key="{{ $brand->id }}">
                     <flux:table.cell variant="strong">
-                        {{-- <flux:text> --}}
-                        {{-- <flux:link variant="ghost" wire:navigate
-                                href="{{ route('brands.show', $brand->slug) }}">
-                                {{ Str::ucfirst($brand->name) }}
-                            </flux:link> --}}
                         {{ Str::ucfirst($brand->name) }}
-                        {{-- </flux:text> --}}
                     </flux:table.cell>
 
                     <flux:table.cell>
@@ -114,26 +111,16 @@ new #[Layout('components.layouts.dashboard')] #[Title('Marcas • Tortuga')] cla
                                     inset="top bottom">
                                 </flux:button>
                                 <flux:menu>
-                                    {{-- <flux:menu.item href="{{ route('brands.show', $brand->slug) }}" wire:navigate
-                                    icon-trailing="chevron-right">Ver marca</flux:menu.item>
-                                <flux:menu.separator /> --}}
+                                    <flux:menu.item icon="pencil-square"
+                                        wire:click="$dispatchTo('brands.edit', 'editBrand', { id: {{ $brand->id }} })">
+                                        Editar marca</flux:menu.item>
 
-                                    <flux:modal.trigger name="edit-brand-{{ $brand->id }}">
-                                        <flux:menu.item icon="pencil-square">Editar marca</flux:menu.item>
-                                    </flux:modal.trigger>
-
-                                    <flux:modal.trigger name="delete-brand-{{ $brand->id }}">
-                                        <flux:menu.item variant="danger" icon="trash">Eliminar marca</flux:menu.item>
-                                    </flux:modal.trigger>
+                                    <flux:menu.item variant="danger" icon="trash"
+                                        wire:click="$dispatchTo('brands.delete', 'deleteBrand', { id: {{ $brand->id }} })">
+                                        Eliminar marca</flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>
                         </div>
-
-                        <!-- Update sumary modal -->
-                        <livewire:brands.edit :$brand wire:key="edit-brand-{{ $brand->id }}" />
-
-                        <!-- Delete brand modal -->
-                        <livewire:brands.delete :$brand wire:key="delete-brand-{{ $brand->id }}" />
                     </flux:table.cell>
                 </flux:table.row>
             @empty
@@ -156,5 +143,12 @@ new #[Layout('components.layouts.dashboard')] #[Title('Marcas • Tortuga')] cla
         </div>
     @endif
 
+    <!-- Create brand modal -->
     <livewire:brands.create />
+
+    <!-- Update brand modal -->
+    <livewire:brands.edit />
+
+    <!-- Delete brand modal -->
+    <livewire:brands.delete />
 </div>

@@ -49,7 +49,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Categorías • Tortuga')
             ->paginate(12);
     }
 }; ?>
-
+    
 <div class="space-y-6">
     <div class="relative w-full">
         <flux:heading size="xl" level="1">{{ __('Categorías') }}</flux:heading>

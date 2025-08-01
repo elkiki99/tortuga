@@ -1,14 +1,20 @@
 <?php
 
 use Livewire\Volt\Component;
+use Livewire\Attributes\On;
 use App\Models\Order;
 
 new class extends Component {
     public ?Order $order;
 
-    public function mount(Order $order)
+    #[On('deleteOrder')]
+    public function openDeleteOrderModal($id)
     {
-        $this->order = $order;
+        $this->order = Order::findOrFail($id);
+
+        $this->authorize('delete', $this->order);
+
+        $this->modal('delete-order')->show();
     }
 
     public function deleteOrder()
@@ -32,14 +38,14 @@ new class extends Component {
 }; ?>
 
 <form wire:submit.prevent="deleteOrder">
-    <flux:modal name="delete-order-{{ $order->id }}" class="md:w-96">
+    <flux:modal name="delete-order" class="md:w-96">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">¿Eliminar pedido?</flux:heading>
 
                 <flux:subheading>
                     Esta acción eliminará permanentemente el pedido con el
-                    código <strong>{{ Str::ucfirst($order->purchase_id) }}</strong>. Asegurate de haber entregado este
+                    código <strong>{{ Str::ucfirst($order?->purchase_id) }}</strong>. Asegurate de haber entregado este
                     pedido antes de eliminarlo. ¿Deseas continuar?
                 </flux:subheading>
             </div>

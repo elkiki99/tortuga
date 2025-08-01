@@ -16,27 +16,19 @@ new #[Layout('components.layouts.app')] class extends Component {
     {
         $this->authorize('view', $product);
 
-        $this->product = $product->load([
-            'featuredImage',
-            'images' => function ($query) {
-                $query->where('is_featured', false)->get();
-            },
-            'category',
-            'brand',
-        ]);
-
+        $this->product = $product;
         $this->images = $this->product->images;
 
-        $this->relatedProducts = Product::where('in_stock', true)->where('category_id', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->get();
+        $this->relatedProducts = Product::with(['featuredImage', 'category'])->where('in_stock', true)->where('category_id', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(12)->get();
 
-        $this->complete_look = Product::where('in_stock', true)->where('category_id', '!=', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->get();
-    }
+        $this->complete_look = Product::with(['featuredImage', 'category'])->where('in_stock', true)->where('category_id', '!=', $product->category_id)->where('id', '!=', $product->id)->inRandomOrder()->take(12)->get();
+    }   
 
     #[On('productUpdated')]
     public function updatedProduct()
     {
         $this->product->refresh();
-        $this->images = $this->product->images()->where('is_featured', false)->get();
+        // $this->images = $this->product->images()->where('is_featured', false)->get();
     }
 
     public function render(): mixed
@@ -50,17 +42,17 @@ new #[Layout('components.layouts.app')] class extends Component {
         @include('livewire.partials.breadcrumb')
 
         <div class="flex flex-col lg:flex-row gap-6">
-            <div x-data="{ featured: '{{ Storage::url($this->product->featuredImage?->path) }}' }" class="flex gap-0 lg:w-3/5">
+            <div x-data="{ featured: '{{ Storage::url($product->featuredImage?->path) }}' }" class="flex gap-0 lg:w-3/5">
                 @if ($images->count() > 0)
                     <div class="flex flex-col gap-0 w-1/8">
                         @forelse ($images as $thumb)
                             <div class="w-full hover:cursor-zoom-in aspect-square first:rounded-tl-sm last:rounded-bl-sm bg-gray-100 overflow-hidden pr-2 pb-2 bg-white dark:bg-zinc-800"
                                 @mouseenter="featured = '{{ Storage::url($thumb->path) }}'"
-                                @mouseleave="featured = '{{ Storage::url($this->product->featuredImage?->path) }}'">
+                                @mouseleave="featured = '{{ Storage::url($product->featuredImage?->path) }}'">
 
                                 <img src="{{ Storage::url($thumb->path) }}"
-                                    alt="{{ $thumb->alt_text ?? $this->product->name }}"
-                                    class="object-cover w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
+                                    alt="{{ $thumb->alt_text ?? $product->name }}"
+                                    class="object-cover w-full h-full @if (!$product->in_stock) filter blur-xs @endif">
                             </div>
                         @empty
                         @endforelse
@@ -69,13 +61,13 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                 <div
                     class="flex-1 aspect-square bg-gray-100 flex items-center justify-center rounded-tr-sm rounded-bl-sm rounded-br-sm overflow-hidden relative">
-                    @if ($this->product->featuredImage)
+                    @if ($product->featuredImage)
                         <img :src="featured"
-                            alt="{{ $this->product->featuredImage->alt_text ?? $this->product->name }}"
-                            class="object-contain w-full h-full @if (!$this->product->in_stock) filter blur-xs @endif">
+                            alt="{{ $product->featuredImage->alt_text ?? $product->name }}"
+                            class="object-contain w-full h-full @if (!$product->in_stock) filter blur-xs @endif">
                     @endif
 
-                    @if (!$this->product->in_stock)
+                    @if (!$product->in_stock)
                         <div class="absolute top-0 left-0 w-full text-center py-2 bg-red-600 bg-opacity-50">
                             <span class="text-white font-semibold text-lg select-none">VENDIDO</span>
                         </div>

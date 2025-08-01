@@ -1,6 +1,7 @@
 <?php
 
 use Livewire\Volt\Component;
+use Livewire\Attributes\On;
 use App\Models\Order;
 use Carbon\Carbon;
 
@@ -15,16 +16,34 @@ new class extends Component {
     public $status;
     public $payment_method;
 
-    public function mount(Order $order)
+    #[On('editOrder')]
+    public function openEditOrderModal($id)
     {
-        $this->order = $order;
-        $this->buyer_name = $order->buyer_name;
-        $this->buyer_email = $order->buyer_email;
-        $this->purchase_id = $order->purchase_id;
-        $this->purchase_date = Carbon::parse($order->purchase_date)->format('Y-m-d');
-        $this->total = number_format($order->total, 2, ',', '.');
-        $this->status = $order->status;
-        $this->payment_method = Str::ucfirst($order->payment_method);
+        $this->order = Order::findOrFail($id);
+
+        $this->authorize('edit', $this->order);
+
+        $this->buyer_name = $this->order->buyer_name;
+        $this->buyer_email = $this->order->buyer_email;
+        $this->purchase_id = $this->order->purchase_id;
+        $this->purchase_date = Carbon::parse($this->order->purchase_date)->format('Y-m-d');
+        $this->total = number_format($this->order->total, 2, ',', '.');
+        $this->status = $this->order->status;   
+        $this->payment_method = Str::ucfirst($this->order->payment_method);
+
+        $this->modal('edit-order')->show();
+    }
+
+    public function closeEditOrderModal()
+    {
+        $this->order = null;
+        $this->buyer_name = '';
+        $this->buyer_email = '';
+        $this->purchase_id = '';
+        $this->purchase_date = '';
+        $this->total = '';
+        $this->status = '';
+        $this->payment_method = '';
     }
 
     public function updateOrder()
@@ -39,15 +58,16 @@ new class extends Component {
             'status' => $this->status,
         ]);
 
-        Flux::modals()->close();
+        $this->modal('edit-order')->close();
+
         $this->dispatch('orderUpdated');
 
         Flux::toast(heading: 'Orden actualizada', text: 'El estado de la orden fue actualizado correctamente', variant: 'success');
     }
 }; ?>
 
-<flux:modal name="edit-order-{{ $order->id }}" class="md:w-auto">
-    <form wire:submit.prevent="updateOrder" class="space-y-6">
+<form wire:submit.prevent="updateOrder">
+    <flux:modal name="edit-order" class="md:w-auto space-y-6">
         <div>
             <flux:heading size="lg">Editar orden</flux:heading>
             <flux:text class="mt-2">Solo puedes modificar el estado de la orden</flux:text>
@@ -103,9 +123,14 @@ new class extends Component {
             </flux:select.option>
         </flux:select>
 
-        <div class="flex justify-end gap-2">
-            <flux:button type="button" variant="ghost" x-on:click="$flux.modals().close()">Cancelar</flux:button>
-            <flux:button type="submit" variant="primary">Actualizar</flux:button>
-        </div>
-    </form>
-</flux:modal>
+        <div class="flex gap-2">
+            <flux:spacer />
+
+            <flux:modal.close>
+                <flux:button variant="ghost">Cancelar</flux:button>
+            </flux:modal.close>
+
+            <flux:button variant="primary" type="submit">Actualizar</flux:button>
+        </div>  
+    </flux:modal>
+</form>
