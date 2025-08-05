@@ -10,7 +10,6 @@ use App\Models\User;
 new #[Layout('components.layouts.dashboard')] #[Title('Panel • Tortuga')] class extends Component {
     public $sortBy = 'purchase_date';
     public $sortDirection = 'desc';
-    public $search = '';
 
     #[On('orderUpdated')]
     #[On('orderDeleted')]
@@ -34,7 +33,7 @@ new #[Layout('components.layouts.dashboard')] #[Title('Panel • Tortuga')] clas
         }
     }
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function stats()
     {
         $revenue = Stats::revenueTrend();
@@ -197,22 +196,16 @@ new #[Layout('components.layouts.dashboard')] #[Title('Panel • Tortuga')] clas
                                             wire:navigate icon-trailing="chevron-right">Ver pedido</flux:menu.item>
                                         <flux:menu.separator />
 
-                                        <flux:modal.trigger name="edit-order-{{ $order->id }}">
-                                            <flux:menu.item icon="pencil-square">Editar pedido</flux:menu.item>
-                                        </flux:modal.trigger>
+                                        <flux:menu.item icon="pencil-square"
+                                            wire:click="$dispatchTo('orders.edit', 'editOrder', { id: {{ $order->id }} })">
+                                            Editar pedido</flux:menu.item>
 
-                                        <flux:modal.trigger name="delete-order-{{ $order->id }}">
-                                            <flux:menu.item variant="danger" icon="trash">Eliminar pedido
-                                            </flux:menu.item>
-                                        </flux:modal.trigger>
+                                        <flux:menu.item variant="danger" icon="trash"
+                                            wire:click="$dispatchTo('orders.delete', 'deleteOrder', { id: {{ $order->id }} })">
+                                            Eliminar pedido
+                                        </flux:menu.item>
                                     </flux:menu>
                                 </flux:dropdown>
-
-                                <!-- Update sumary modal -->
-                                <livewire:orders.edit :$order wire:key="edit-order-{{ $order->id }}" />
-
-                                <!-- Delete order modal -->
-                                <livewire:orders.delete :$order wire:key="delete-order-{{ $order->id }}" />
                             </flux:table.cell>
                         </flux:table.row>
                     @empty
@@ -226,4 +219,10 @@ new #[Layout('components.layouts.dashboard')] #[Title('Panel • Tortuga')] clas
             </flux:table>
         </div>
     </div>
+
+    <!-- Update sumary modal -->
+    <livewire:orders.edit />
+
+    <!-- Delete order modal -->
+    <livewire:orders.delete />
 </div>

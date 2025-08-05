@@ -5,11 +5,11 @@
                 reservados.</flux:text>
 
             <div class="flex space-x-4 rtl:space-x-reverse">
-                <flux:link href="#" class="!text-sm !text-zinc-400 !dark:text-white/50">Política de privacidad
+                <flux:link wire:navigate href="{{ route('privacy') }}" class="!text-sm !text-zinc-400 !dark:text-white/50">Política de privacidad
                 </flux:link>
-                <flux:link href="#" class="!text-sm !text-zinc-400 !dark:text-white/50">Términos de servicio
+                <flux:link wire:navigate href="{{ route('terms') }}" class="!text-sm !text-zinc-400 !dark:text-white/50">Términos de servicio
                 </flux:link>
-                <flux:link href="#" class="!text-sm !text-zinc-400 !dark:text-white/50">Contacto</flux:link>
+                <flux:link wire:navigate href="{{ route('contact') }}" class="!text-sm !text-zinc-400 !dark:text-white/50">Contacto</flux:link>
             </div>
         </div>
     </div>

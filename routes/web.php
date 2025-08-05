@@ -9,7 +9,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified', 'is_admin'])->group(function () {
-    Volt::route('dashboard', 'dashboard')->name('dashboard');
+    Volt::route('panel', 'dashboard')->name('dashboard');
     Volt::route('productos', 'products.index')->name('products.index');
     Volt::route('categorias', 'categories.index')->name('categories.index');
     Volt::route('marcas', 'brands.index')->name('brands.index');
@@ -31,6 +31,22 @@ Volt::route('productos/{product:slug}', 'products.show')->name('products.show');
 Volt::route('categorias/{category:slug}', 'categories.show')->name('categories.show');
 
 Route::post('/webhook', WebhookController::class)->name('webhook');
+
+Route::get('/webhook', function () {
+    abort(404);
+});
+
+Route::get('/contacto', function () {
+    return view('contact');
+})->name('contact');
+
+Route::get('/condiciones', function () {
+    return view('terms');
+})->name('terms');
+
+Route::get('/privacidad', function () {
+    return view('privacy');
+})->name('privacy');
 
 Volt::route('checkout', 'client.checkout')->name('client.checkout')->middleware('can:view,App\Models\Checkout');
 

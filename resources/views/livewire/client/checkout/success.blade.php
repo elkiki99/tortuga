@@ -283,11 +283,11 @@ new #[Layout('components.layouts.blank')] #[Title('Éxito • Tortuga')] class e
             @auth
                 @if (Auth::user()->isAdmin())
                     <div class="mt-6">
-                        <flux:modal.trigger name="delete-order-{{ $order->id }}">
+                        <flux:modal.trigger name="delete-order">
                             <flux:badge as="button" color="red" icon="trash">Eliminar pedido</flux:button>
                         </flux:modal.trigger>
 
-                        <livewire:orders.delete :$order wire:key="delete-order-{{ $order->id }}" />
+                        <livewire:orders.delete :$order wire:key="delete-order" />
                     </div>
                 @endif
             @endauth
