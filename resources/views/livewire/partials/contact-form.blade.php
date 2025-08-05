@@ -1,8 +1,8 @@
 <?php
 
-use Livewire\Volt\Component;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\ContactFormMail;
+use Livewire\Volt\Component;
+use App\Mail\ContactForm;
 
 new class extends Component {
     public string $name = '';
@@ -10,7 +10,7 @@ new class extends Component {
     public string $subject = '';
     public string $message = '';
 
-    public function submit()
+    public function sendContactMessage()
     {
         $this->validate([
             'name' => 'required|string|min:2',
@@ -19,9 +19,11 @@ new class extends Component {
             'message' => 'required|string',
         ]);
 
-        Mail::to('contacto@tusitio.com')->send(new ContactFormMail($this->name, $this->email, $this->subject, $this->message));
+        Mail::to(config('mail.from.address'))->send(new ContactForm($this->name, $this->email, $this->subject, $this->message));
 
         $this->reset(['name', 'email', 'subject', 'message']);
+
+        Flux::toast(heading: 'Email enviado exitosamente', text: 'Tu mensaje ha sido enviado correctamente, te responderemos a la brevedad', variant: 'success');
     }
 }; ?>
 
@@ -37,7 +39,7 @@ new class extends Component {
 
     <flux:separator variant="subtle" />
 
-    <form wire:submit="submit" class="flex flex-col gap-6">
+    <form wire:submit.prevent="sendContactMessage" class="flex flex-col gap-6">
         <!-- Email Address -->
         <flux:input wire:model="email" :label="__('Correo electrónico')" type="email" required autofocus
             autocomplete="email" placeholder="email@example.com" />

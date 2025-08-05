@@ -1,6 +1,6 @@
 <?php
 
-use Livewire\Attributes\{Layout, Title};
+use Livewire\Attributes\{Layout, Title, Validate};
 use App\Services\MercadoPagoService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
@@ -12,9 +12,15 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
     public $preferenceId;
     public $preferenceHash;
 
+    #[Validate('required|string|max:255', as: 'nombre')]
     public $guestName;
+
+    #[Validate('required|string|max:255', as: 'apellido')]
     public $guestSurname;
+
+    #[Validate('required|email', as: 'email')]
     public $guestEmail;
+
     public bool $providedInfo = false;
 
     public function mount()
@@ -58,11 +64,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
     public function saveGuestName()
     {
-        $this->validate([
-            'guestName' => 'required|string|max:255',
-            'guestSurname' => 'required|string|max:255',
-            'guestEmail' => 'required|email',
-        ]);
+        $this->validate();
 
         session(['guest.name' => $this->guestName]);
         session(['guest.surname' => $this->guestSurname]);
@@ -244,7 +246,7 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
                 @if (!Auth::check() && $providedInfo == false)
                     <flux:card class="mt-6">
-                        <div class="space-y-6">
+                        <form wire:submit.prevent="saveGuestName" class="space-y-6">
                             <flux:heading size="lg">Agrega tu nombre y apellido para concluir el pago
                             </flux:heading>
 
@@ -264,11 +266,11 @@ new #[Layout('components.layouts.blank')] #[Title('Checkout • Tortuga')] class
 
                             <div class="flex">
                                 <flux:spacer />
-                                <flux:button variant="primary" wire:click.prevent="saveGuestName"
+                                <flux:button type="submit" variant="primary"
                                     icon-trailing="chevron-right">
                                     Continuar</flux:button>
                             </div>
-                        </div>
+                        </form>
                     </flux:card>
                 @else
                     <div class="mt-6" id="walletBrick_container"></div>
